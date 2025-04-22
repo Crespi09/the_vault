@@ -11,6 +11,20 @@ class OnboardingView extends StatefulWidget {
 }
 
 class _OnboardingViewState extends State<OnboardingView> {
+  late rive.RiveAnimationController _btnController;
+
+  @override
+  void initState() {
+    super.initState();
+    _btnController = rive.OneShotAnimation("active", autoplay: false);
+  }
+
+  @override
+  void dispose() {
+    _btnController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,16 +74,54 @@ class _OnboardingViewState extends State<OnboardingView> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Container(
-                    width: 236,
-                    height: 64,
-                    child: Stack(
-                      children: [
-                        rive.RiveAnimation.asset(
-                          'assets/samples/ui/rive_app/rive/button.riv',
-                        )
-                      ],
+                  const Spacer(),
+                  GestureDetector(
+                    child: Container(
+                      width: 236,
+                      height: 64,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(40),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.3),
+                            blurRadius: 10,
+                            offset: const Offset(0, 10),
+                          ),
+                        ],
+                      ),
+                      child: Stack(
+                        children: [
+                          rive.RiveAnimation.asset(
+                            'assets/samples/ui/rive_app/rive/button.riv',
+                            fit: BoxFit.cover,
+                            controllers: [_btnController],
+                          ),
+                          Center(
+                            child: Transform.translate(
+                              offset: const Offset(4, 4),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: const [
+                                  Icon(Icons.arrow_forward_rounded),
+                                  SizedBox(width: 4),
+                                  Text(
+                                    "Start Now",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontFamily: 'Inter',
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
+                    onTap: () {
+                      _btnController.isActive = true;
+                    },
                   ),
                 ],
               ),
