@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vault_app/app/on_boarding/onboarding_view.dart';
+import 'package:vault_app/app/on_boarding/signin_view.dart';
 
 void main() {
   runApp(const MainApp());
@@ -17,7 +18,8 @@ class MainApp extends StatelessWidget {
         primarySwatch: Colors.blue
       ),
 
-      home: OnboardingView(),
+      // home: OnboardingView(),
+        home : SigninView(),
     );
   }
 }
