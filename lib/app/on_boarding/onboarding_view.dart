@@ -1,7 +1,13 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/physics.dart';
 import 'package:rive/rive.dart' as rive;
+
+// pages 
+import 'package:vault_app/app/on_boarding/signin_view.dart';
+
+
 
 class OnboardingView extends StatefulWidget {
   const OnboardingView({super.key});
@@ -10,17 +16,38 @@ class OnboardingView extends StatefulWidget {
   State<OnboardingView> createState() => _OnboardingViewState();
 }
 
-class _OnboardingViewState extends State<OnboardingView> {
+class _OnboardingViewState extends State<OnboardingView> 
+with TickerProviderStateMixin{
+  AnimationController? _signInAnimController;
+
   late rive.RiveAnimationController _btnController;
 
   @override
   void initState() {
     super.initState();
+    _signInAnimController = AnimationController(
+      duration: const Duration(milliseconds: 350),
+      upperBound: 1, // di default impostato a 1
+      vsync: this
+    );
     _btnController = rive.OneShotAnimation("active", autoplay: false);
+
+
+    const springDesc = SpringDescription(mass: 0.1, stiffness: 40, damping: 1);
+
+    _btnController.isActiveChanged.addListener(() {
+      if(_btnController.isActive){
+        final springAnim = SpringSimulation(springDesc, 0, 1, 0);
+        _signInAnimController?.animateWith(
+          springAnim
+        );
+      }
+    }); 
   }
 
   @override
   void dispose() {
+    _signInAnimController?.dispose();
     _btnController.dispose();
     super.dispose();
   }
@@ -111,7 +138,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                                       fontFamily: 'Inter',
                                       fontWeight: FontWeight.bold,
                                     ),
-                                  ),
+                                  )
                                 ],
                               ),
                             ),
@@ -123,10 +150,33 @@ class _OnboardingViewState extends State<OnboardingView> {
                       _btnController.isActive = true;
                     },
                   ),
+                  const SizedBox(height: 55),
+                  // Text(
+                  //   "possibile descrizione / termini e condizione ...",
+                  //   style: TextStyle(
+                  //     color: Colors.black.withOpacity(0.7),
+                  //     fontFamily: 'Inter',
+                  //     fontSize: 13
+                  //   ),
+                  // )
                 ],
               ),
             ),
           ),
+
+          AnimatedBuilder(
+            animation: _signInAnimController!,
+            builder: (context, child) {
+              return Transform.translate(
+                offset: Offset(
+                  0,
+                  -MediaQuery.of(context).size.height * 
+                  (1 - _signInAnimController!.value),
+                ),
+                child: SigninView()
+              );
+            },
+          )
         ],
       ),
     );

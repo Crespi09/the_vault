@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vault_app/app/on_boarding/onboarding_view.dart';
-import 'package:vault_app/app/on_boarding/signin_view.dart';
+
 
 void main() {
   runApp(const MainApp());
@@ -14,12 +14,8 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue
-      ),
-
-      // home: OnboardingView(),
-        home : SigninView(),
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: OnboardingView(),
     );
   }
 }
