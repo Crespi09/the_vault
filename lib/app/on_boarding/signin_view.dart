@@ -1,5 +1,8 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:rive/rive.dart' hide LinearGradient hide Image;
 import 'package:vault_app/app/theme.dart';
 
 class SigninView extends StatefulWidget {
@@ -12,6 +15,28 @@ class SigninView extends StatefulWidget {
 }
 
 class _SigninViewState extends State<SigninView> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  // ignore: prefer_final_fields
+  bool _isLoading = false;
+
+  // in order to avoid any memory leaks
+  // serve per accedere alle cose che scrivo all'interno dei due campi input
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  void _onCheckRiveInit(Artboard artboard) {
+    final controller = StateMachineController.fromArtboard(
+      artboard,
+      "State Machine 1",
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -81,7 +106,11 @@ class _SigninViewState extends State<SigninView> {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        TextField(decoration: authInputStyle('icon_email')),
+                        TextField(
+                          decoration: authInputStyle('icon_email'),
+                          controller: _emailController,
+                        ),
+
                         SizedBox(height: 24),
                         Align(
                           alignment: Alignment.centerLeft,
@@ -98,6 +127,7 @@ class _SigninViewState extends State<SigninView> {
                         TextField(
                           obscureText: true,
                           decoration: authInputStyle('icon_lock'),
+                          controller: _passwordController,
                         ),
                         const SizedBox(height: 24),
                         Container(
@@ -181,6 +211,26 @@ class _SigninViewState extends State<SigninView> {
                             ),
                           ],
                         ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                Positioned.fill(
+                  child: IgnorePointer(
+                    ignoring: true,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        if (_isLoading)
+                          SizedBox(
+                            width: 100,
+                            height: 100,
+                            child: RiveAnimation.asset(
+                              'assets/samples/ui/rive_app/rive/check.riv',
+                              onInit: _onCheckRiveInit,
+                            ),
+                          ),
                       ],
                     ),
                   ),
