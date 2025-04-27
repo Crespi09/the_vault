@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:vault_app/app/theme.dart';
 
 class SigninView extends StatefulWidget {
-  const SigninView({super.key});
+  const SigninView({super.key, this.closeModal});
+
+  final Function? closeModal;
 
   @override
   State<SigninView> createState() => _SigninViewState();
@@ -12,7 +14,7 @@ class SigninView extends StatefulWidget {
 class _SigninViewState extends State<SigninView> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold (
+    return Scaffold(
       backgroundColor: Colors.transparent,
       body: SafeArea(
         child: Center(
@@ -27,8 +29,8 @@ class _SigninViewState extends State<SigninView> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
                     gradient: LinearGradient(
-                      colors: [Colors.white.withOpacity(0.8), Colors.white10], 
-                    )
+                      colors: [Colors.white.withOpacity(0.8), Colors.white10],
+                    ),
                   ),
                   child: Container(
                     padding: const EdgeInsets.all(29),
@@ -38,17 +40,16 @@ class _SigninViewState extends State<SigninView> {
                         BoxShadow(
                           color: RiveAppTheme.shadow.withOpacity(0.3),
                           offset: const Offset(0, 3),
-                          blurRadius: 5
+                          blurRadius: 5,
                         ),
                         BoxShadow(
                           color: RiveAppTheme.shadow.withOpacity(0.3),
                           offset: const Offset(0, 30),
-                          blurRadius: 30
-                        )
+                          blurRadius: 30,
+                        ),
                       ],
                       color: CupertinoColors.secondarySystemBackground,
-                      backgroundBlendMode: BlendMode.luminosity,  
-                
+                      backgroundBlendMode: BlendMode.luminosity,
                     ),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -64,7 +65,7 @@ class _SigninViewState extends State<SigninView> {
                           style: TextStyle(
                             fontFamily: 'Inter',
                             fontSize: 17,
-                            fontWeight: FontWeight.w600
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                         const SizedBox(height: 24),
@@ -75,15 +76,13 @@ class _SigninViewState extends State<SigninView> {
                             style: TextStyle(
                               color: CupertinoColors.secondaryLabel,
                               fontFamily: 'Inter',
-                              fontSize: 15
+                              fontSize: 15,
                             ),
                           ),
                         ),
                         const SizedBox(height: 8),
-                        TextField(
-                          decoration: authInputStyle('icon_email'),
-                        ),
-                        SizedBox(height: 24,),
+                        TextField(decoration: authInputStyle('icon_email')),
+                        SizedBox(height: 24),
                         Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
@@ -91,7 +90,7 @@ class _SigninViewState extends State<SigninView> {
                             style: TextStyle(
                               color: CupertinoColors.secondaryLabel,
                               fontFamily: 'Inter',
-                              fontSize: 15
+                              fontSize: 15,
                             ),
                           ),
                         ),
@@ -108,8 +107,8 @@ class _SigninViewState extends State<SigninView> {
                                 color: const Color(0xFFF77D8E).withOpacity(0.5),
                                 blurRadius: 20,
                                 offset: const Offset(0, 10),
-                              )
-                            ]
+                              ),
+                            ],
                           ),
                           child: CupertinoButton(
                             color: const Color(0xFFF77D8E),
@@ -123,7 +122,7 @@ class _SigninViewState extends State<SigninView> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: const [
                                 Icon(Icons.arrow_forward_rounded),
-                                SizedBox(width: 4,),
+                                SizedBox(width: 4),
                                 Text(
                                   "Sign In",
                                   style: TextStyle(
@@ -131,10 +130,10 @@ class _SigninViewState extends State<SigninView> {
                                     fontFamily: 'Inter',
                                     fontWeight: FontWeight.bold,
                                   ),
-                                )
+                                ),
                               ],
-                            ), 
-                            onPressed: () {}, 
+                            ),
+                            onPressed: () {},
                           ),
                         ),
                         Padding(
@@ -143,7 +142,9 @@ class _SigninViewState extends State<SigninView> {
                             children: [
                               const Expanded(child: Divider()),
                               Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 8),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                ),
                                 child: Text(
                                   "OR",
                                   style: TextStyle(
@@ -169,12 +170,17 @@ class _SigninViewState extends State<SigninView> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Image.asset('assets/samples/ui/rive_app/images/logo_email.png'),
-                            Image.asset('assets/samples/ui/rive_app/images/logo_apple.png'),
-                            Image.asset('assets/samples/ui/rive_app/images/logo_google.png'),
+                            Image.asset(
+                              'assets/samples/ui/rive_app/images/logo_email.png',
+                            ),
+                            Image.asset(
+                              'assets/samples/ui/rive_app/images/logo_apple.png',
+                            ),
+                            Image.asset(
+                              'assets/samples/ui/rive_app/images/logo_google.png',
+                            ),
                           ],
-                        )
-                
+                        ),
                       ],
                     ),
                   ),
@@ -198,29 +204,25 @@ class _SigninViewState extends State<SigninView> {
                           borderRadius: BorderRadius.circular(36 / 2),
                           boxShadow: [
                             BoxShadow(
-                              color : RiveAppTheme.shadow.withOpacity(0.3),
+                              color: RiveAppTheme.shadow.withOpacity(0.3),
                               blurRadius: 5,
                               offset: const Offset(0, 3),
-                            )
-                          ]
+                            ),
+                          ],
                         ),
-                        child: const Icon(
-                          Icons.close,
-                          color: Colors.black,
-                          
-                        ),
+                        child: const Icon(Icons.close, color: Colors.black),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        widget.closeModal!();
+                      },
                     ),
                   ),
                 ),
-
               ],
             ),
           ),
-        ) 
-      
-      ),  
+        ),
+      ),
     );
   }
 }
@@ -241,6 +243,5 @@ InputDecoration authInputStyle(String iconName) {
       padding: const EdgeInsets.only(left: 4),
       child: Image.asset('assets/samples/ui/rive_app/images/$iconName.png'),
     ),
-
   );
 }
