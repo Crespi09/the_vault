@@ -1,5 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
+import 'dart:isolate';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart' hide LinearGradient hide Image;
@@ -18,6 +20,10 @@ class _SigninViewState extends State<SigninView> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
+  late SMITrigger _successAnim;
+  late SMITrigger _errorAnim;
+  late SMITrigger _confettiAnim;
+
   // ignore: prefer_final_fields
   bool _isLoading = false;
 
@@ -35,6 +41,50 @@ class _SigninViewState extends State<SigninView> {
       artboard,
       "State Machine 1",
     );
+    artboard.addController(controller!);
+    _successAnim = controller.findInput<bool>("Check") as SMITrigger;
+    _errorAnim = controller.findInput<bool>("Error") as SMITrigger;
+  }
+
+  void _onConfettiRiveInit(Artboard artboard) {
+    final controller = StateMachineController.fromArtboard(
+      artboard,
+      "State Machine 1",
+    );
+    artboard.addController(controller!);
+    _confettiAnim = controller.findInput<bool>("Trigger explosion") as SMITrigger;
+  }
+
+  void login() {
+    setState(() {
+      _isLoading = true;
+    });
+
+    bool isEmailValid = _emailController.text.trim().isNotEmpty;
+    bool isPassValid = _passwordController.text.trim().isNotEmpty;
+    bool isValid = isEmailValid && isPassValid;
+
+    // TODO - da cambiare il future delayed
+    Future.delayed(const Duration(seconds: 1), () {
+      isValid ? _successAnim.fire() : _errorAnim.fire();
+    });
+
+    Future.delayed(const Duration(seconds: 3), () {
+      setState(() {
+        _isLoading = false;
+      });
+      if(isValid){
+        _confettiAnim.fire();
+      }
+    });
+
+    if(isValid){
+      Future.delayed(const Duration(seconds: 4), () {
+        widget.closeModal!();
+        _emailController.text = '';
+        _passwordController.text = '';
+      });
+    }
   }
 
   @override
@@ -163,7 +213,9 @@ class _SigninViewState extends State<SigninView> {
                                 ),
                               ],
                             ),
-                            onPressed: () {},
+                            onPressed: () {
+                              if(!_isLoading) login();
+                            },
                           ),
                         ),
                         Padding(
@@ -231,6 +283,19 @@ class _SigninViewState extends State<SigninView> {
                               onInit: _onCheckRiveInit,
                             ),
                           ),
+                        Positioned.fill(
+                          child: SizedBox(
+                            width: 500,
+                            height: 500,
+                            child: Transform.scale(
+                              scale: 3,
+                              child: RiveAnimation.asset(
+                                'assets/samples/ui/rive_app/rive/confetti.riv',
+                                onInit: _onConfettiRiveInit,
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
