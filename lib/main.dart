@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vault_app/app/home.dart';
 import 'package:vault_app/app/on_boarding/onboarding_view.dart';
 
 
@@ -15,7 +16,7 @@ class MainApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: OnboardingView(),
+      home: HomePage(),
     );
   }
 }
