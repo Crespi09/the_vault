@@ -1,7 +1,10 @@
+// ignore_for_file: sort_child_properties_last
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:rive/rive.dart';
+import 'package:rive/rive.dart' hide LinearGradient;
+import 'package:vault_app/app/models/tab_item.dart';
 import 'package:vault_app/app/theme.dart';
 
 class CustomTabBar extends StatefulWidget {
@@ -12,22 +15,24 @@ class CustomTabBar extends StatefulWidget {
 }
 
 class _CustomTabBarState extends State<CustomTabBar> {
+  final List<TabItem> _icons = TabItem.tabItemList;
+
   SMIBool? status;
 
-  void _onRiveIconInit(Artboard artboard) {
+  void _onRiveIconInit(Artboard artboard, index) {
     final controller = StateMachineController.fromArtboard(
       artboard,
-      "CHAT_Interactivity",
+      _icons[index].stateMachine,
     );
     artboard.addController(controller!);
 
-    status = controller.findInput<bool>("active") as SMIBool;
+    _icons[index].status = controller.findInput<bool>("active") as SMIBool;
   }
 
-  void onTabPress() {
-    status!.change(true);
+  void onTabPress(int index) {
+    _icons[index].status!.change(true);
     Future.delayed(const Duration(seconds: 1), () {
-      status!.change(false);
+      _icons[index].status!.change(false);
     });
   }
 
@@ -36,6 +41,15 @@ class _CustomTabBarState extends State<CustomTabBar> {
     return SafeArea(
       child: Container(
         margin: const EdgeInsets.fromLTRB(24, 0, 24, 8),
+        padding: const EdgeInsets.all(1),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Colors.white.withOpacity(0.5),
+              Colors.white.withOpacity(0),
+            ],
+          ),
+        ),
         child: Container(
           decoration: BoxDecoration(
             color: RiveAppTheme.background2.withOpacity(0.8),
@@ -47,19 +61,30 @@ class _CustomTabBarState extends State<CustomTabBar> {
               ),
             ],
           ),
-          child: CupertinoButton(
-            padding: const EdgeInsets.all(12),
-            child: SizedBox(
-              height: 36,
-              width: 36,
-              child: RiveAnimation.asset(
-                'assets/samples/ui/rive_app/rive/icons.riv',
-                stateMachines: ["CHAT_Interactivity"],
-                artboard: "CHAT",
-                onInit: _onRiveIconInit,
-              ),
-            ),
-            onPressed: onTabPress,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: List.generate(_icons.length, (index) {
+              TabItem icon = _icons[index];
+
+              return CupertinoButton(
+                padding: const EdgeInsets.all(12),
+                child: SizedBox(
+                  height: 36,
+                  width: 36,
+                  child: RiveAnimation.asset(
+                    'assets/samples/ui/rive_app/rive/icons.riv',
+                    stateMachines: [icon.stateMachine],
+                    artboard: icon.artboard,
+                    onInit: (artboard) {
+                      _onRiveIconInit(artboard, index);
+                    },
+                  ),
+                ),
+                onPressed: () {
+                  onTabPress(index);
+                },
+              );
+            }),
           ),
         ),
       ),
