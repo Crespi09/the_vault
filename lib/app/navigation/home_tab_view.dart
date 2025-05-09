@@ -21,7 +21,7 @@ class _HomeTabViewState extends State<HomeTabView> {
       backgroundColor: RiveAppTheme.background,
       body: SingleChildScrollView(
         padding: EdgeInsets.only(
-          top: MediaQuery.of(context).padding.top,
+          top: MediaQuery.of(context).padding.top + 60,
           bottom: MediaQuery.of(context).padding.bottom,
         ),
         child: Column(
