@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 import 'package:rive/rive.dart';
+import 'dart:math' as math;
 import 'package:vault_app/app/navigation/custom_tab_bar.dart';
 import 'package:vault_app/app/navigation/home_tab_view.dart';
 import 'package:vault_app/app/navigation/side_menu.dart';
@@ -34,7 +35,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     commonTabScene('User'),
   ];
 
-  final springDesc = const SpringDescription(mass: 0.1, stiffness: 40, damping: 5);
+  final springDesc = const SpringDescription(
+    mass: 0.1,
+    stiffness: 40,
+    damping: 5,
+  );
 
   void _onMenuIconInit(Artboard artboard) {
     final controller = StateMachineController.fromArtboard(
@@ -46,10 +51,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   void onMenuPress() {
-    if(_menuBtn.value){
+    if (_menuBtn.value) {
       final springAnim = SpringSimulation(springDesc, 0, 1, 0);
       _animationController?.animateWith(springAnim);
-    }else{
+    } else {
       _animationController?.reverse();
     }
     _menuBtn.change(!_menuBtn.value);
@@ -92,7 +97,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             builder: (context, child) {
               return Transform.translate(
                 offset: Offset(_sidebarAnim.value * 265, 0),
-                child: child!,
+                child: Transform(
+                  transform:
+                      Matrix4.identity()
+                        ..setEntry(3, 2, 0.001)
+                        ..rotateY((_sidebarAnim.value * 30) * math.pi / 180),
+                  child: child,
+                ),
               );
             },
             child: _tabBody,
