@@ -20,13 +20,14 @@ class _SideMenuState extends State<SideMenu> {
   String _selectedMenu = MenuItemModel.menuItems[0].title;
   bool _isDarkMode = false;
 
-
-  void onThemeRiveIconInit(artboard){
+  void onThemeRiveIconInit(artboard) {
     final controller = StateMachineController.fromArtboard(
-      artboard, _themeMenuIcons[0].riveIcon.stateMachine
+      artboard,
+      _themeMenuIcons[0].riveIcon.stateMachine,
     );
     artboard.addController(controller!);
-    _themeMenuIcons[0].riveIcon.status = controller.findInput<bool>('active') as SMIBool;
+    _themeMenuIcons[0].riveIcon.status =
+        controller.findInput<bool>('active') as SMIBool;
   }
 
   void onMenuPress(MenuItemModel menu) {
@@ -35,7 +36,7 @@ class _SideMenuState extends State<SideMenu> {
     });
   }
 
-  void onThemeToggle(value){
+  void onThemeToggle(value) {
     setState(() {
       _isDarkMode = value;
     });
@@ -47,7 +48,7 @@ class _SideMenuState extends State<SideMenu> {
     return Container(
       padding: EdgeInsets.only(
         top: MediaQuery.of(context).padding.top,
-        bottom: MediaQuery.of(context).padding.bottom
+        bottom: MediaQuery.of(context).padding.bottom - 60,
       ),
       constraints: const BoxConstraints(maxWidth: 288),
       decoration: BoxDecoration(
@@ -112,7 +113,7 @@ class _SideMenuState extends State<SideMenu> {
             child: Row(
               children: [
                 SizedBox(
-                   width: 32,
+                  width: 32,
                   height: 32,
                   child: Opacity(
                     opacity: 0.6,
@@ -137,7 +138,8 @@ class _SideMenuState extends State<SideMenu> {
                   ),
                 ),
                 CupertinoSwitch(value: _isDarkMode, onChanged: onThemeToggle),
-              ],),
+              ],
+            ),
           ),
         ],
       ),
