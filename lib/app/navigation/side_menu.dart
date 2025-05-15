@@ -5,6 +5,8 @@ import 'package:vault_app/app/components/menu_row.dart';
 import 'package:vault_app/app/models/menu_item.dart';
 import 'package:vault_app/app/theme.dart';
 
+import 'dart:math' show max;
+
 class SideMenu extends StatefulWidget {
   const SideMenu({super.key});
 
@@ -48,7 +50,10 @@ class _SideMenuState extends State<SideMenu> {
     return Container(
       padding: EdgeInsets.only(
         top: MediaQuery.of(context).padding.top,
-        bottom: MediaQuery.of(context).padding.bottom - 60,
+        bottom: max(
+          0,
+          MediaQuery.of(context).padding.bottom - 60,
+        ), // Ensure non-negative
       ),
       constraints: const BoxConstraints(maxWidth: 288),
       decoration: BoxDecoration(

@@ -162,26 +162,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             ),
           ),
 
-          Positioned(
-            top: MediaQuery.of(context).padding.top + 20,
-            right: 16,
-            child: Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(18),
-                boxShadow: [
-                  BoxShadow(
-                    color: RiveAppTheme.shadow.withOpacity(0.2),
-                    blurRadius: 5,
-                    offset: const Offset(0, 5),
-                  ),
-                ],
-              ),
-              child: const Icon(Icons.person_outline),
-            ),
-          ),
           RepaintBoundary(
             child: AnimatedBuilder(
               animation: _sidebarAnim,
