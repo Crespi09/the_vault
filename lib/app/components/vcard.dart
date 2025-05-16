@@ -15,6 +15,7 @@ class VCard extends StatefulWidget {
 
 class _VCardState extends State<VCard> {
   final avatars = [4, 5, 6];
+  GlobalKey key = GlobalKey();
 
   // serve per randomizzare gli avatar -> inutile
   @override
@@ -111,7 +112,42 @@ class _VCardState extends State<VCard> {
           Positioned(
             right: 0 - 10,
             top: -10,
-            child: Image.asset(widget.course.image),
+            // child: Image.asset(widget.course.image),
+            child: IconButton(
+              key: key,
+              icon: const Icon(
+                Icons.more_vert, // Icona con 3 puntini verticali
+                color: Colors.white,
+              ),
+              onPressed: () {
+                // Azione da eseguire quando il pulsante viene premuto
+                RenderBox box =
+                    key.currentContext?.findRenderObject() as RenderBox;
+                Offset btnPressed = box.localToGlobal(
+                  Offset.zero,
+                ); //this is global position
+
+                showMenu(
+                  context: context,
+                  position: RelativeRect.fromLTRB(
+                    btnPressed.dx,  // left
+                    btnPressed.dy + 40,  // top
+                    MediaQuery.of(context).size.width - (btnPressed.dx + 75), // right
+                    MediaQuery.of(context).size.height - (btnPressed.dy - 100), // bottom
+                  ),
+                  items: [
+                    PopupMenuItem(child: Text('Modifica'), value: 'edit'),
+                    PopupMenuItem(child: Text('Elimina'), value: 'delete'),
+                  ],
+                ).then((value) {
+                  // Gestisci il valore selezionato
+                  if (value != null) {
+                    print('Azione selezionata: $value');
+                    // Aggiungi qui la logica per gestire le diverse azioni
+                  }
+                });
+              },
+            ),
           ),
         ],
       ),

@@ -35,7 +35,7 @@ class _HomeTabViewState extends State<HomeTabView> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                     child: const Text(
                       "Folders",
                       style: TextStyle(fontSize: 34, fontFamily: "Poppins"),

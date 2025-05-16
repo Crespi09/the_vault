@@ -15,20 +15,20 @@ class MenuItemModel {
   static List<MenuItemModel> menuItems = [
     MenuItemModel(title: 'Home', riveIcon: TabItem(stateMachine: 'HOME_interactivity', artboard: 'HOME')),
     MenuItemModel(title: 'Files', riveIcon: TabItem(stateMachine: 'SEARCH_Interactivity', artboard: 'SEARCH')),
-    MenuItemModel(title: 'User', riveIcon: TabItem(stateMachine: 'STAR_Interactivity', artboard: 'LIKE/STAR')),
-    MenuItemModel(title: 'Bin', riveIcon: TabItem(stateMachine: 'CHAT_Interactivity', artboard: 'CHAT')),
-    MenuItemModel(title: 'Settings', riveIcon: TabItem(stateMachine: 'HOME_interactivity', artboard: 'HOME')),
+    MenuItemModel(title: 'Preferiti', riveIcon: TabItem(stateMachine: 'STAR_Interactivity', artboard: 'LIKE/STAR')),
+    // MenuItemModel(title: 'Bin', riveIcon: TabItem(stateMachine: 'TIMER_Interactivity', artboard: 'TIMER')),
+    // MenuItemModel(title: 'Settings', riveIcon: TabItem(stateMachine: 'SETTINGS_Interactivity', artboard: 'SETTINGS')),
   ];
 
 
   static List<MenuItemModel> menuItems2 = [
-    MenuItemModel(title: 'History', riveIcon: TabItem(stateMachine: 'TIMER_Interactivity', artboard: 'TIMER')),
-    MenuItemModel(title: 'Notification', riveIcon: TabItem(stateMachine: 'BELL_Interactivity', artboard: 'BELL')),
+    MenuItemModel(title: 'Bin', riveIcon: TabItem(stateMachine: 'TIMER_Interactivity', artboard: 'TIMER')),
+    MenuItemModel(title: 'Settings', riveIcon: TabItem(stateMachine: 'SETTINGS_Interactivity', artboard: 'SETTINGS')),
   ];
 
 
   static List<MenuItemModel> menuItems3 = [
-    MenuItemModel(title: 'Dark Mode', riveIcon: TabItem(stateMachine: 'SETTINGS_Interactivity', artboard: 'SETTINGS')),
+    MenuItemModel(title: 'Dark Mode', riveIcon: TabItem(stateMachine: 'RELOAD_Interactivity', artboard: 'REFRESH/RELOAD')),
   ];
 
 }

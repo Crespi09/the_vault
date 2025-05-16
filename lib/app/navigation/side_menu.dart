@@ -112,7 +112,53 @@ class _SideMenuState extends State<SideMenu> {
             menuIcons: _historyMenuIcons,
             onMenuPress: onMenuPress,
           ),
+          Padding(
+            padding: const EdgeInsets.only(
+              left: 24,
+              right: 24,
+              top: 169,
+              bottom: 8,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      "Storage",
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 17,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Spacer(),
+                    Text(
+                      "5gb / 10gb",
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 13,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 8),
+                LinearProgressIndicator(
+                  value: 0.4,
+                  backgroundColor: RiveAppTheme.background,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.lightBlue),
+                  borderRadius: BorderRadius.circular(5),
+                  minHeight: 13,
+                ),
+              ],
+            ),
+          ),
           const Spacer(),
+
+          // footer della sidebar - ( dark mode )
           Padding(
             padding: const EdgeInsets.all(20),
             child: Row(
