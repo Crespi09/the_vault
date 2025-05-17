@@ -77,61 +77,61 @@ class _HomeTabViewState extends State<HomeTabView> {
             ),
           ),
           // Search bar posizionata in alto a destra
-          Positioned(
-            top: MediaQuery.of(context).padding.top + 20,
-            right: 20,
-            child: Container(
-              width: 300,
-              height: 36,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(18),
-                boxShadow: [
-                  BoxShadow(
-                    color: RiveAppTheme.shadow.withOpacity(0.2),
-                    blurRadius: 5,
-                    offset: const Offset(0, 5),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 8,
-                      horizontal: 8,
-                    ),
-                    child: Icon(Icons.search),
-                  ),
-                  Expanded(
-                    child: TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Search...',
-                        border: InputBorder.none,
-                        hintStyle: TextStyle(color: Colors.grey[400]),
-                        isDense: true,
-                        contentPadding: EdgeInsets.zero,
-                      ),
-                      style: const TextStyle(fontSize: 14),
-                      onChanged: (value) {
-                        // Handle search input changes
-                      },
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.close, size: 16),
-                    onPressed: () {
-                      // Clear the search field
-                    },
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                    splashRadius: 16,
-                  ),
-                  const SizedBox(width: 8),
-                ],
-              ),
-            ),
-          ),
+          // Positioned(
+          //   top: MediaQuery.of(context).padding.top + 20,
+          //   right: 20,
+          //   child: Container(
+          //     width: 300,
+          //     height: 36,
+          //     decoration: BoxDecoration(
+          //       color: Colors.white,
+          //       borderRadius: BorderRadius.circular(18),
+          //       boxShadow: [
+          //         BoxShadow(
+          //           color: RiveAppTheme.shadow.withOpacity(0.2),
+          //           blurRadius: 5,
+          //           offset: const Offset(0, 5),
+          //         ),
+          //       ],
+          //     ),
+          //     child: Row(
+          //       children: [
+          //         Padding(
+          //           padding: const EdgeInsets.symmetric(
+          //             vertical: 8,
+          //             horizontal: 8,
+          //           ),
+          //           child: Icon(Icons.search),
+          //         ),
+          //         Expanded(
+          //           child: TextField(
+          //             decoration: InputDecoration(
+          //               hintText: 'Search...',
+          //               border: InputBorder.none,
+          //               hintStyle: TextStyle(color: Colors.grey[400]),
+          //               isDense: true,
+          //               contentPadding: EdgeInsets.zero,
+          //             ),
+          //             style: const TextStyle(fontSize: 14),
+          //             onChanged: (value) {
+          //               // Handle search input changes
+          //             },
+          //           ),
+          //         ),
+          //         IconButton(
+          //           icon: const Icon(Icons.close, size: 16),
+          //           onPressed: () {
+          //             // Clear the search field
+          //           },
+          //           padding: EdgeInsets.zero,
+          //           constraints: const BoxConstraints(),
+          //           splashRadius: 16,
+          //         ),
+          //         const SizedBox(width: 8),
+          //       ],
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );

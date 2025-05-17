@@ -130,19 +130,54 @@ class _VCardState extends State<VCard> {
                 showMenu(
                   context: context,
                   position: RelativeRect.fromLTRB(
-                    btnPressed.dx,  // left
-                    btnPressed.dy + 40,  // top
-                    MediaQuery.of(context).size.width - (btnPressed.dx + 75), // right
-                    MediaQuery.of(context).size.height - (btnPressed.dy - 100), // bottom
+                    btnPressed.dx, // left
+                    btnPressed.dy + 40, // top
+                    MediaQuery.of(context).size.width -
+                        (btnPressed.dx + 75), // right
+                    MediaQuery.of(context).size.height -
+                        (btnPressed.dy - 100), // bottom
                   ),
                   items: [
-                    PopupMenuItem(child: Text('Modifica'), value: 'edit'),
-                    PopupMenuItem(child: Text('Elimina'), value: 'delete'),
+                    PopupMenuItem(
+                      value: 'edit',
+                      child: Center(
+                        child: Text(
+                          'Edit',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontFamily: 'Poppins',
+                            color: Colors.black,
+                            // fontWeight: FontWeight.bold,
+                            // Altri attributi di stile che desideri
+                          ),
+                        ),
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: 'delete',
+                      child: Center(
+                        child: Text(
+                          'Delete',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontFamily: 'Poppins',
+                            color: Color.fromRGBO(179, 41, 41, 1),
+                            // fontWeight: FontWeight.bold,
+                            // Altri attributi di stile che desideri
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
+                  elevation: 8.0,
+                  color: Colors.white, // colore di sfondo del menu
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
                 ).then((value) {
                   // Gestisci il valore selezionato
                   if (value != null) {
-                    print('Azione selezionata: $value');
+                    // print('Azione selezionata: $value');
                     // Aggiungi qui la logica per gestire le diverse azioni
                   }
                 });

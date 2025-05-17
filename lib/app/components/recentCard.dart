@@ -8,6 +8,8 @@ class RecenteCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    GlobalKey key = GlobalKey();
+
     return Container(
       constraints: const BoxConstraints(maxHeight: 110),
       padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
@@ -44,9 +46,86 @@ class RecenteCard extends StatelessWidget {
           ),
           const Padding(
             padding: EdgeInsets.all(20),
-            child: VerticalDivider(thickness: 0.8, width: 0),
+            child: VerticalDivider(thickness: 2, width: 0),
           ),
-          Image.asset(section.image),
+
+          // Image.asset(section.image),
+          IconButton(
+            key: key,
+            icon: const Icon(
+              Icons.more_vert, // Icona con 3 puntini verticali
+              color: Colors.white,
+            ),
+            onPressed: () {
+              // Azione da eseguire quando il pulsante viene premuto
+              RenderBox box =
+                  key.currentContext?.findRenderObject() as RenderBox;
+              Offset btnPressed = box.localToGlobal(
+                Offset.zero,
+              ); //this is global position
+
+              showMenu(
+                context: context,
+                position: RelativeRect.fromLTRB(
+                  btnPressed.dx, // left
+                  btnPressed.dy + 40, // top
+                  MediaQuery.of(context).size.width -
+                      (btnPressed.dx + 75), // right
+                  MediaQuery.of(context).size.height -
+                      (btnPressed.dy - 100), // bottom
+                ),
+                items: [
+                  PopupMenuItem(
+                    value: 'open',
+                    child: Center(
+                      child: Text(
+                        'Open',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontFamily: 'Poppins',
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'move_to',
+                    child: Center(
+                      child: Text(
+                        'Move To',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontFamily: 'Poppins',
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'delete',
+                    child: Center(
+                      child: Text(
+                        'Delete',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontFamily: 'Poppins',
+                          color: Color.fromRGBO(179, 41, 41, 1),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+                elevation: 8.0,
+                color: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+              ).then((value) {
+                // Gestisci il valore selezionato
+                if (value != null) {}
+              });
+            },
+          ),
         ],
       ),
     );

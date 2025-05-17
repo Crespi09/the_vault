@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 import 'package:flutter/services.dart';
 import 'package:rive/rive.dart' hide LinearGradient;
+import 'package:vault_app/app/components/SearchBarComponents.dart';
 import 'dart:math' as math;
 import 'package:vault_app/app/navigation/custom_tab_bar.dart';
 import 'package:vault_app/app/navigation/home_tab_view.dart';
@@ -201,6 +202,39 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               ),
             ),
           ),
+
+          // Search bar posizionata in alto a destra
+          Positioned(
+            top: MediaQuery.of(context).padding.top + 20,
+            right: 20,
+            child: AnimatedBuilder(
+              animation: _sidebarAnim,
+              builder: (context, child) {
+                return Transform(
+                  alignment: Alignment.center,
+                  transform:
+                      Matrix4.identity()
+                        ..setEntry(
+                          3,
+                          1,
+                          0.0006,
+                        ) // Corrected from 1,2 to 3,2 for proper perspective
+                        ..rotateY(
+                          _sidebarAnim.value * math.pi / 4,
+                        ) // 30 degrees = π/6 radians
+                        ..rotateZ(_sidebarAnim.value * math.pi / -20.33)
+                        ..translate(
+                          _sidebarAnim.value * 240,
+                          _sidebarAnim.value * 80,
+                          0,
+                        ),
+                  child: child!,
+                );
+              },
+              child: SearchBarComponents(),
+            ),
+          ),
+
           // SafeArea(
           //   child: Container(
           //     decoration: BoxDecoration(
