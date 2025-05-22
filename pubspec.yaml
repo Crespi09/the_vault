@@ -19,6 +19,8 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - assets/uploads/
+    - assets/uploads/files/
     - assets/samples/animations/
     - assets/samples/ui/rive_app/
     - assets/samples/ui/rive_app/rive/

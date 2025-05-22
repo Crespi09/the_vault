@@ -5,21 +5,23 @@ import 'package:rive/rive.dart' hide LinearGradient;
 import 'package:vault_app/app/components/SearchBarComponents.dart';
 import 'dart:math' as math;
 import 'package:vault_app/app/navigation/custom_tab_bar.dart';
+import 'package:vault_app/app/navigation/folder_tab_view.dart';
 import 'package:vault_app/app/navigation/home_tab_view.dart';
 import 'package:vault_app/app/navigation/side_menu.dart';
+import 'package:vault_app/app/navigation/user_tab_view.dart';
 import 'package:vault_app/app/on_boarding/onboarding_view.dart';
 import 'package:vault_app/app/theme.dart';
 
 // TODO - da togliere, solo di test per le pagine
-Widget commonTabScene(String tabName) {
-  return Container(
-    alignment: Alignment.center,
-    child: Text(
-      tabName,
-      style: const TextStyle(fontSize: 28, color: Colors.white),
-    ),
-  );
-}
+// Widget commonTabScene(String tabName) {
+//   return Container(
+//     alignment: Alignment.center,
+//     child: Text(
+//       tabName,
+//       style: const TextStyle(fontSize: 28, color: Colors.white),
+//     ),
+//   );
+// }
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -37,10 +39,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Widget _tabBody = Container(color: RiveAppTheme.background);
   final List<Widget> _screens = [
     const HomeTabView(),
-    commonTabScene('Search'),
-    commonTabScene('Timer'),
-    commonTabScene('Bell'),
-    commonTabScene('User'),
+    const FolderTabView(),
+    const UserTabView(),
+    // commonTabScene('Search'),
+    // commonTabScene('Timer'),
+    // commonTabScene('Bell'),
+    // commonTabScene('User'),
   ];
 
   final springDesc = const SpringDescription(
