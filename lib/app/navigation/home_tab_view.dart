@@ -61,7 +61,7 @@ class _HomeTabViewState extends State<HomeTabView> {
                     padding: EdgeInsets.only(left: 20, right: 20, bottom: 20),
                     child: Text(
                       "Recent Files",
-                      style: TextStyle(fontSize: 20, fontFamily: 'Poppins'),
+                      style: TextStyle(fontSize: 22, fontFamily: 'Poppins'),
                     ),
                   ),
                   ...List.generate(
