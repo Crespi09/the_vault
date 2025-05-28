@@ -255,7 +255,7 @@ class _FolderTabViewState extends State<FolderTabView> {
                 height: 70,
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(30),
+                  borderRadius: BorderRadius.circular(35),
                   boxShadow: [
                     BoxShadow(
                       color: RiveAppTheme.background2.withOpacity(0.3),
