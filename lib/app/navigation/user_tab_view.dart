@@ -10,6 +10,8 @@ class UserTabView extends StatefulWidget {
 }
 
 class _UserTabViewState extends State<UserTabView> {
+  void onLogoutPressed() {}
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -33,9 +35,9 @@ class _UserTabViewState extends State<UserTabView> {
                 color: RiveAppTheme.background2,
                 child: Center(
                   child: Padding(
-                    padding: const EdgeInsets.only(top: 50.0),
+                    padding: const EdgeInsets.only(top: 20),
                     child: Text(
-                      "Utente 1",
+                      "Nome Utente",
                       style: TextStyle(
                         color: RiveAppTheme.background,
                         fontSize: 26,
@@ -83,13 +85,18 @@ class _UserTabViewState extends State<UserTabView> {
                           ),
                           child: Column(
                             children: [
-                              Text(
-                                "52",
-                                style: TextStyle(
-                                  color: RiveAppTheme.background2,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'Poppins',
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 3,
+                                ),
+                                child: Text(
+                                  "52",
+                                  style: TextStyle(
+                                    color: RiveAppTheme.background2,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'Poppins',
+                                  ),
                                 ),
                               ),
                               Icon(
@@ -131,13 +138,18 @@ class _UserTabViewState extends State<UserTabView> {
                           ),
                           child: Column(
                             children: [
-                              Text(
-                                "4",
-                                style: TextStyle(
-                                  color: RiveAppTheme.background2,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'Poppins',
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 3,
+                                ),
+                                child: Text(
+                                  "4",
+                                  style: TextStyle(
+                                    color: RiveAppTheme.background2,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'Poppins',
+                                  ),
                                 ),
                               ),
                               Icon(
@@ -146,6 +158,116 @@ class _UserTabViewState extends State<UserTabView> {
                                 color: RiveAppTheme.background2,
                               ),
                             ],
+                          ),
+                        ),
+                      ),
+
+                      Positioned(
+                        top: screenHeight * 0.38 - 100,
+                        // Centrare orizzontalmente il bottone
+                        left: 0,
+                        right: 0,
+                        child: Center(
+                          child: CupertinoButton(
+                            pressedOpacity: 1,
+                            onPressed: onLogoutPressed,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 30,
+                              vertical: 10,
+                            ),
+                            child: Container(
+                              width: 80,
+                              height: 80,
+                              decoration: BoxDecoration(
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: RiveAppTheme.background.withOpacity(
+                                      0.3,
+                                    ),
+                                    offset: const Offset(0, 3),
+                                    blurRadius: 5,
+                                  ),
+                                  BoxShadow(
+                                    color: RiveAppTheme.background.withOpacity(
+                                      0.3,
+                                    ),
+                                    offset: const Offset(0, 30),
+                                    blurRadius: 30,
+                                  ),
+                                ],
+                                color: Colors.white,
+                                backgroundBlendMode: BlendMode.luminosity,
+                                borderRadius: BorderRadius.circular(100),
+                                border: Border.all(
+                                  color: RiveAppTheme.background2,
+                                  width: 3,
+                                ),
+                              ),
+                              child: Icon(
+                                Icons.group_add,
+                                size: 37,
+                                color: RiveAppTheme.background2,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      // logout btn
+                      Positioned(
+                        top: screenHeight * 0.55 - 100,
+                        // Centrare orizzontalmente il bottone
+                        left: 0,
+                        right: 0,
+                        child: Center(
+                          child: CupertinoButton(
+                            pressedOpacity: 1,
+                            onPressed: onLogoutPressed,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 30,
+                              vertical: 10,
+                            ),
+                            child: Container(
+                              width: 70,
+                              height: 60,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(30),
+                                color: Colors.white,
+                                // Opzionale: aggiunta di un'ombra
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.1),
+                                    blurRadius: 5,
+                                    offset: Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 8,
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  // Text(
+                                  //   'LOGOUT',
+                                  //   style: const TextStyle(
+                                  //     color: Color.fromARGB(255, 185, 27, 27),
+                                  //     fontFamily: 'Inter',
+                                  //     fontWeight: FontWeight.w600,
+                                  //     fontSize: 17,
+                                  //   ),
+                                  // ),
+                                  // const SizedBox(width: 8),
+                                  Icon(
+                                    Icons.logout,
+                                    size: 25,
+                                    color: Color.fromARGB(255, 185, 27, 27),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -159,7 +281,7 @@ class _UserTabViewState extends State<UserTabView> {
           // user profile icon -
           Positioned(
             top: screenHeight * 0.37 - 100,
-            left: MediaQuery.of(context).size.width / 2 - 100,
+            left: MediaQuery.of(context).size.width / 4,
             child: Container(
               width: 210,
               height: 210,
