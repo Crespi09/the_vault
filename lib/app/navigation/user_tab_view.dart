@@ -43,6 +43,8 @@ class _UserTabViewState extends State<UserTabView> {
                         fontSize: 26,
                         fontWeight: FontWeight.bold,
                         fontFamily: 'Poppins',
+                        // decoration: TextDecoration.underline,
+                        // decorationColor: RiveAppTheme.background,
                       ),
                     ),
                   ),
@@ -58,26 +60,26 @@ class _UserTabViewState extends State<UserTabView> {
                     children: [
                       Positioned(
                         top: screenHeight * 0.27 - 100,
-                        left: MediaQuery.of(context).size.width * 0.40 - 100,
+                        left: MediaQuery.of(context).size.width * 0.10 - 100,
                         child: Container(
-                          width: 80,
-                          height: 80,
+                          width: 260,
+                          height: 260,
                           decoration: BoxDecoration(
-                            boxShadow: [
-                              BoxShadow(
-                                color: RiveAppTheme.background.withOpacity(0.3),
-                                offset: const Offset(0, 3),
-                                blurRadius: 5,
-                              ),
-                              BoxShadow(
-                                color: RiveAppTheme.background.withOpacity(0.3),
-                                offset: const Offset(0, 30),
-                                blurRadius: 30,
-                              ),
-                            ],
-                            color: Colors.white,
-                            backgroundBlendMode: BlendMode.luminosity,
-                            borderRadius: BorderRadius.circular(100),
+                            // boxShadow: [
+                            //   BoxShadow(
+                            //     color: RiveAppTheme.background.withOpacity(0.3),
+                            //     offset: const Offset(0, 3),
+                            //     blurRadius: 5,
+                            //   ),
+                            //   BoxShadow(
+                            //     color: RiveAppTheme.background.withOpacity(0.3),
+                            //     offset: const Offset(0, 30),
+                            //     blurRadius: 30,
+                            //   ),
+                            // ],
+                            color: const Color(0xFF7850F0).withOpacity(0.6),
+                            // backgroundBlendMode: BlendMode.luminosity
+                            borderRadius: BorderRadius.circular(130),
                             border: Border.all(
                               color: RiveAppTheme.background2,
                               width: 3,
@@ -92,7 +94,7 @@ class _UserTabViewState extends State<UserTabView> {
                                 child: Text(
                                   "52",
                                   style: TextStyle(
-                                    color: RiveAppTheme.background2,
+                                    color: RiveAppTheme.background,
                                     fontSize: 14,
                                     fontWeight: FontWeight.bold,
                                     fontFamily: 'Poppins',
@@ -101,8 +103,8 @@ class _UserTabViewState extends State<UserTabView> {
                               ),
                               Icon(
                                 Icons.description,
-                                size: 37,
-                                color: RiveAppTheme.background2,
+                                size: 60,
+                                color: RiveAppTheme.background,
                               ),
                             ],
                           ),
@@ -110,27 +112,27 @@ class _UserTabViewState extends State<UserTabView> {
                       ),
 
                       Positioned(
-                        top: screenHeight * 0.27 - 100,
+                        top: screenHeight * 0.20 - 100,
                         left: MediaQuery.of(context).size.width * 0.90 - 100,
                         child: Container(
-                          width: 80,
-                          height: 80,
+                          width: 260,
+                          height: 260,
                           decoration: BoxDecoration(
-                            boxShadow: [
-                              BoxShadow(
-                                color: RiveAppTheme.background.withOpacity(0.3),
-                                offset: const Offset(0, 3),
-                                blurRadius: 5,
-                              ),
-                              BoxShadow(
-                                color: RiveAppTheme.background.withOpacity(0.3),
-                                offset: const Offset(0, 30),
-                                blurRadius: 30,
-                              ),
-                            ],
-                            color: Colors.white,
-                            backgroundBlendMode: BlendMode.luminosity,
-                            borderRadius: BorderRadius.circular(100),
+                            // boxShadow: [
+                            //   BoxShadow(
+                            //     color: RiveAppTheme.background.withOpacity(0.3),
+                            //     offset: const Offset(0, 3),
+                            //     blurRadius: 5,
+                            //   ),
+                            //   BoxShadow(
+                            //     color: RiveAppTheme.background.withOpacity(0.3),
+                            //     offset: const Offset(0, 30),
+                            //     blurRadius: 30,
+                            //   ),
+                            // ],
+                            color: Color(0xFF005FE7).withOpacity(0.7),
+                            // backgroundBlendMode: BlendMode.luminosity,
+                            borderRadius: BorderRadius.circular(130),
                             border: Border.all(
                               color: RiveAppTheme.background2,
                               width: 3,
@@ -145,7 +147,7 @@ class _UserTabViewState extends State<UserTabView> {
                                 child: Text(
                                   "4",
                                   style: TextStyle(
-                                    color: RiveAppTheme.background2,
+                                    color: RiveAppTheme.background,
                                     fontSize: 14,
                                     fontWeight: FontWeight.bold,
                                     fontFamily: 'Poppins',
@@ -154,8 +156,8 @@ class _UserTabViewState extends State<UserTabView> {
                               ),
                               Icon(
                                 Icons.folder,
-                                size: 37,
-                                color: RiveAppTheme.background2,
+                                size: 60,
+                                color: RiveAppTheme.background,
                               ),
                             ],
                           ),
@@ -163,10 +165,8 @@ class _UserTabViewState extends State<UserTabView> {
                       ),
 
                       Positioned(
-                        top: screenHeight * 0.38 - 100,
-                        // Centrare orizzontalmente il bottone
-                        left: 0,
-                        right: 0,
+                        top: screenHeight * 0.52 - 100,
+                        left: MediaQuery.of(context).size.width * 0.65 - 100,
                         child: Center(
                           child: CupertinoButton(
                             pressedOpacity: 1,
@@ -177,7 +177,7 @@ class _UserTabViewState extends State<UserTabView> {
                             ),
                             child: Container(
                               width: 80,
-                              height: 80,
+                              height: 70,
                               decoration: BoxDecoration(
                                 boxShadow: [
                                   BoxShadow(
@@ -197,7 +197,7 @@ class _UserTabViewState extends State<UserTabView> {
                                 ],
                                 color: Colors.white,
                                 backgroundBlendMode: BlendMode.luminosity,
-                                borderRadius: BorderRadius.circular(100),
+                                borderRadius: BorderRadius.circular(90),
                                 border: Border.all(
                                   color: RiveAppTheme.background2,
                                   width: 3,
@@ -205,7 +205,7 @@ class _UserTabViewState extends State<UserTabView> {
                               ),
                               child: Icon(
                                 Icons.group_add,
-                                size: 37,
+                                size: 29,
                                 color: RiveAppTheme.background2,
                               ),
                             ),
@@ -215,10 +215,9 @@ class _UserTabViewState extends State<UserTabView> {
 
                       // logout btn
                       Positioned(
-                        top: screenHeight * 0.55 - 100,
-                        // Centrare orizzontalmente il bottone
-                        left: 0,
-                        right: 0,
+                        top: screenHeight * 0.52 - 100,
+                        left: MediaQuery.of(context).size.width * 0.90 - 100,
+
                         child: Center(
                           child: CupertinoButton(
                             pressedOpacity: 1,
@@ -228,10 +227,10 @@ class _UserTabViewState extends State<UserTabView> {
                               vertical: 10,
                             ),
                             child: Container(
-                              width: 70,
-                              height: 60,
+                              width: 80,
+                              height: 70,
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(30),
+                                borderRadius: BorderRadius.circular(90),
                                 color: Colors.white,
                                 // Opzionale: aggiunta di un'ombra
                                 boxShadow: [
@@ -241,6 +240,10 @@ class _UserTabViewState extends State<UserTabView> {
                                     offset: Offset(0, 2),
                                   ),
                                 ],
+                                border: Border.all(
+                                  color: Color.fromARGB(255, 185, 27, 27),
+                                  width: 3,
+                                ),
                               ),
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 20,
@@ -250,19 +253,9 @@ class _UserTabViewState extends State<UserTabView> {
                                 mainAxisSize: MainAxisSize.min,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  // Text(
-                                  //   'LOGOUT',
-                                  //   style: const TextStyle(
-                                  //     color: Color.fromARGB(255, 185, 27, 27),
-                                  //     fontFamily: 'Inter',
-                                  //     fontWeight: FontWeight.w600,
-                                  //     fontSize: 17,
-                                  //   ),
-                                  // ),
-                                  // const SizedBox(width: 8),
                                   Icon(
                                     Icons.logout,
-                                    size: 25,
+                                    size: 29,
                                     color: Color.fromARGB(255, 185, 27, 27),
                                   ),
                                 ],
