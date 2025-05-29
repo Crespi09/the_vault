@@ -30,7 +30,7 @@ class _UserTabViewState extends State<UserTabView> {
             children: [
               // First component - 35% of screen height
               Container(
-                height: screenHeight * 0.35,
+                height: screenHeight * 0.34,
                 width: double.infinity,
                 color: RiveAppTheme.background2,
                 child: Center(
@@ -40,7 +40,7 @@ class _UserTabViewState extends State<UserTabView> {
                       "Nome Utente",
                       style: TextStyle(
                         color: RiveAppTheme.background,
-                        fontSize: 26,
+                        fontSize: 28,
                         fontWeight: FontWeight.bold,
                         fontFamily: 'Poppins',
                         // decoration: TextDecoration.underline,
@@ -86,7 +86,14 @@ class _UserTabViewState extends State<UserTabView> {
                             ),
                           ),
                           child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
+                              Icon(
+                                Icons.description,
+                                size: 100,
+                                color: RiveAppTheme.background,
+                              ),
                               Padding(
                                 padding: const EdgeInsets.symmetric(
                                   vertical: 3,
@@ -95,16 +102,11 @@ class _UserTabViewState extends State<UserTabView> {
                                   "52",
                                   style: TextStyle(
                                     color: RiveAppTheme.background,
-                                    fontSize: 14,
+                                    fontSize: 20,
                                     fontWeight: FontWeight.bold,
                                     fontFamily: 'Poppins',
                                   ),
                                 ),
-                              ),
-                              Icon(
-                                Icons.description,
-                                size: 60,
-                                color: RiveAppTheme.background,
                               ),
                             ],
                           ),
@@ -112,34 +114,29 @@ class _UserTabViewState extends State<UserTabView> {
                       ),
 
                       Positioned(
-                        top: screenHeight * 0.20 - 100,
-                        left: MediaQuery.of(context).size.width * 0.90 - 100,
+                        top: screenHeight * 0.21 - 100,
+                        left: MediaQuery.of(context).size.width * 0.80 - 100,
                         child: Container(
-                          width: 260,
-                          height: 260,
+                          width: 240,
+                          height: 240,
                           decoration: BoxDecoration(
-                            // boxShadow: [
-                            //   BoxShadow(
-                            //     color: RiveAppTheme.background.withOpacity(0.3),
-                            //     offset: const Offset(0, 3),
-                            //     blurRadius: 5,
-                            //   ),
-                            //   BoxShadow(
-                            //     color: RiveAppTheme.background.withOpacity(0.3),
-                            //     offset: const Offset(0, 30),
-                            //     blurRadius: 30,
-                            //   ),
-                            // ],
                             color: Color(0xFF005FE7).withOpacity(0.7),
-                            // backgroundBlendMode: BlendMode.luminosity,
-                            borderRadius: BorderRadius.circular(130),
+                            borderRadius: BorderRadius.circular(120),
                             border: Border.all(
                               color: RiveAppTheme.background2,
                               width: 3,
                             ),
                           ),
                           child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+
                             children: [
+                              Icon(
+                                Icons.folder,
+                                size: 90,
+                                color: RiveAppTheme.background,
+                              ),
                               Padding(
                                 padding: const EdgeInsets.symmetric(
                                   vertical: 3,
@@ -148,24 +145,20 @@ class _UserTabViewState extends State<UserTabView> {
                                   "4",
                                   style: TextStyle(
                                     color: RiveAppTheme.background,
-                                    fontSize: 14,
+                                    fontSize: 20,
                                     fontWeight: FontWeight.bold,
                                     fontFamily: 'Poppins',
                                   ),
                                 ),
-                              ),
-                              Icon(
-                                Icons.folder,
-                                size: 60,
-                                color: RiveAppTheme.background,
                               ),
                             ],
                           ),
                         ),
                       ),
 
+                      // share file btn
                       Positioned(
-                        top: screenHeight * 0.52 - 100,
+                        top: screenHeight * 0.54 - 100,
                         left: MediaQuery.of(context).size.width * 0.65 - 100,
                         child: Center(
                           child: CupertinoButton(
@@ -215,7 +208,7 @@ class _UserTabViewState extends State<UserTabView> {
 
                       // logout btn
                       Positioned(
-                        top: screenHeight * 0.52 - 100,
+                        top: screenHeight * 0.54 - 100,
                         left: MediaQuery.of(context).size.width * 0.90 - 100,
 
                         child: Center(
@@ -273,7 +266,7 @@ class _UserTabViewState extends State<UserTabView> {
 
           // user profile icon -
           Positioned(
-            top: screenHeight * 0.37 - 100,
+            top: screenHeight * 0.35 - 100,
             left: MediaQuery.of(context).size.width / 4,
             child: Container(
               width: 210,
