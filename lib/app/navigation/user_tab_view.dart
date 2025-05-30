@@ -3,14 +3,22 @@ import 'package:flutter/material.dart';
 import 'package:vault_app/app/theme.dart';
 
 class UserTabView extends StatefulWidget {
-  const UserTabView({super.key});
+  const UserTabView({super.key, this.onLogin});
+
+  final Function(bool)? onLogin;
 
   @override
   State<UserTabView> createState() => _UserTabViewState();
 }
 
 class _UserTabViewState extends State<UserTabView> {
-  void onLogoutPressed() {}
+  void onLogoutPressed() {
+
+
+    if(widget.onLogin != null){
+      widget.onLogin!(false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,8 +70,8 @@ class _UserTabViewState extends State<UserTabView> {
                         top: screenHeight * 0.27 - 100,
                         left: MediaQuery.of(context).size.width * 0.10 - 100,
                         child: Container(
-                          width: 260,
-                          height: 260,
+                          width: 240,
+                          height: 240,
                           decoration: BoxDecoration(
                             // boxShadow: [
                             //   BoxShadow(
@@ -91,7 +99,7 @@ class _UserTabViewState extends State<UserTabView> {
                             children: [
                               Icon(
                                 Icons.description,
-                                size: 100,
+                                size: 80,
                                 color: RiveAppTheme.background,
                               ),
                               Padding(
@@ -117,8 +125,8 @@ class _UserTabViewState extends State<UserTabView> {
                         top: screenHeight * 0.21 - 100,
                         left: MediaQuery.of(context).size.width * 0.80 - 100,
                         child: Container(
-                          width: 240,
-                          height: 240,
+                          width: 220,
+                          height: 220,
                           decoration: BoxDecoration(
                             color: Color(0xFF005FE7).withOpacity(0.7),
                             borderRadius: BorderRadius.circular(120),
@@ -134,7 +142,7 @@ class _UserTabViewState extends State<UserTabView> {
                             children: [
                               Icon(
                                 Icons.folder,
-                                size: 90,
+                                size: 70,
                                 color: RiveAppTheme.background,
                               ),
                               Padding(

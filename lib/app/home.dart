@@ -10,6 +10,7 @@ import 'package:vault_app/app/navigation/home_tab_view.dart';
 import 'package:vault_app/app/navigation/side_menu.dart';
 import 'package:vault_app/app/navigation/user_tab_view.dart';
 import 'package:vault_app/app/on_boarding/onboarding_view.dart';
+import 'package:vault_app/app/on_boarding/signin_view.dart';
 import 'package:vault_app/app/theme.dart';
 
 // TODO - da togliere, solo di test per le pagine
@@ -37,21 +38,22 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   late Animation<double> _sidebarAnim;
   late SMIBool _menuBtn;
   Widget _tabBody = Container(color: RiveAppTheme.background);
-  final List<Widget> _screens = [
-    const HomeTabView(),
-    const FolderTabView(),
-    const UserTabView(),
-    // commonTabScene('Search'),
-    // commonTabScene('Timer'),
-    // commonTabScene('Bell'),
-    // commonTabScene('User'),
-  ];
+
+  late final List<Widget> _screens;
 
   final springDesc = const SpringDescription(
     mass: 0.1,
     stiffness: 40,
     damping: 5,
   );
+
+  bool _logged = false;
+
+  void updateLoggedStatus(bool status) {
+    setState(() {
+      _logged = status;
+    });
+  }
 
   void _onMenuIconInit(Artboard artboard) {
     final controller = StateMachineController.fromArtboard(
@@ -60,6 +62,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
     artboard.addController(controller!);
     _menuBtn = controller.findInput<bool>('isOpen') as SMIBool;
+    
   }
 
   void onMenuPress() {
@@ -79,6 +82,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   void initState() {
+    _screens = [
+      const HomeTabView(),
+      const FolderTabView(),
+      UserTabView(onLogin: updateLoggedStatus),
+    ];
+
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 200),
       upperBound: 1,
@@ -119,7 +128,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       extendBody: true,
       body: Stack(
         children: [
-          Positioned(child: Container(color: RiveAppTheme.background2)),
+          Positioned(
+            child: Container(
+              color:
+                  _logged ? RiveAppTheme.background2 : RiveAppTheme.background,
+            ),
+          ),
           RepaintBoundary(
             child: AnimatedBuilder(
               animation: _sidebarAnim,
@@ -163,81 +177,88 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   ),
                 );
               },
-              child: _tabBody,
+              child:
+                  _logged
+                      ? _tabBody
+                      : OnboardingView(onLogin: updateLoggedStatus),
             ),
           ),
 
-          RepaintBoundary(
-            child: AnimatedBuilder(
-              animation: _sidebarAnim,
-              builder: (context, child) {
-                return SafeArea(
-                  child: Row(
-                    children: [
-                      SizedBox(width: _sidebarAnim.value * 216),
-                      child!,
-                    ],
-                  ),
-                );
-              },
-              child: GestureDetector(
-                onTap: onMenuPress,
-                child: Container(
-                  width: 44,
-                  height: 44,
-                  margin: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(44 / 2),
-                    boxShadow: [
-                      BoxShadow(
-                        color: RiveAppTheme.shadow.withOpacity(0.2),
-                        blurRadius: 5,
-                        offset: const Offset(0, 5),
+          _logged
+              ? RepaintBoundary(
+                child: AnimatedBuilder(
+                  animation: _sidebarAnim,
+                  builder: (context, child) {
+                    return SafeArea(
+                      child: Row(
+                        children: [
+                          SizedBox(width: _sidebarAnim.value * 216),
+                          child!,
+                        ],
                       ),
-                    ],
-                  ),
-                  child: RiveAnimation.asset(
-                    'assets/samples/ui/rive_app/rive/menu_button.riv',
-                    stateMachines: const ['State Machine'],
-                    animations: ['open', 'close'],
-                    onInit: _onMenuIconInit,
+                    );
+                  },
+                  child: GestureDetector(
+                    onTap: onMenuPress,
+                    child: Container(
+                      width: 44,
+                      height: 44,
+                      margin: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(44 / 2),
+                        boxShadow: [
+                          BoxShadow(
+                            color: RiveAppTheme.shadow.withOpacity(0.2),
+                            blurRadius: 5,
+                            offset: const Offset(0, 5),
+                          ),
+                        ],
+                      ),
+                      child: RiveAnimation.asset(
+                        'assets/samples/ui/rive_app/rive/menu_button.riv',
+                        stateMachines: const ['State Machine'],
+                        animations: ['open', 'close'],
+                        onInit: _onMenuIconInit,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
-          ),
+              )
+              : SizedBox(),
 
           // Search bar posizionata in alto a destra
-          Positioned(
-            top: MediaQuery.of(context).padding.top + 20,
-            right: 20,
-            child: AnimatedBuilder(
-              animation: _sidebarAnim,
-              builder: (context, child) {
-                return Transform(
-                  alignment: Alignment.center,
-                  transform:
-                      Matrix4.identity()
-                        ..setEntry(
-                          3,
-                          1,
-                          0.0006,
-                        ) // Corrected from 1,2 to 3,2 for proper perspective
-                        ..rotateY(
-                          _sidebarAnim.value * math.pi / 4,
-                        ) // 30 degrees = π/6 radians
-                        ..rotateZ(_sidebarAnim.value * math.pi / -20.33)
-                        ..translate(
-                          _sidebarAnim.value * 240,
-                          _sidebarAnim.value * 80,
-                          0,
-                        ),
-                  child: child!,
-                );
-              },
-              child: SearchBarComponents(),
-            ),
-          ),
+          _logged
+              ? Positioned(
+                top: MediaQuery.of(context).padding.top + 20,
+                right: 20,
+                child: AnimatedBuilder(
+                  animation: _sidebarAnim,
+                  builder: (context, child) {
+                    return Transform(
+                      alignment: Alignment.center,
+                      transform:
+                          Matrix4.identity()
+                            ..setEntry(
+                              3,
+                              1,
+                              0.0006,
+                            ) // Corrected from 1,2 to 3,2 for proper perspective
+                            ..rotateY(
+                              _sidebarAnim.value * math.pi / 4,
+                            ) // 30 degrees = π/6 radians
+                            ..rotateZ(_sidebarAnim.value * math.pi / -20.33)
+                            ..translate(
+                              _sidebarAnim.value * 240,
+                              _sidebarAnim.value * 80,
+                              0,
+                            ),
+                      child: child!,
+                    );
+                  },
+                  child: SearchBarComponents(),
+                ),
+              )
+              : SizedBox(),
 
           // SafeArea(
           //   child: Container(
@@ -255,54 +276,59 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           //     child: OnboardingView(),
           //   ),
           // ),
-          IgnorePointer(
-            ignoring: true,
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: RepaintBoundary(
+          _logged
+              ? IgnorePointer(
+                ignoring: true,
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: RepaintBoundary(
+                    child: AnimatedBuilder(
+                      animation: _sidebarAnim,
+                      builder: (context, child) {
+                        return Container(
+                          height: 150,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                RiveAppTheme.background.withOpacity(0),
+                                RiveAppTheme.background.withOpacity(
+                                  1 - _sidebarAnim.value,
+                                ),
+                              ],
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              )
+              : SizedBox(),
+        ],
+      ),
+      bottomNavigationBar:
+          _logged
+              ? RepaintBoundary(
                 child: AnimatedBuilder(
                   animation: _sidebarAnim,
                   builder: (context, child) {
-                    return Container(
-                      height: 150,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            RiveAppTheme.background.withOpacity(0),
-                            RiveAppTheme.background.withOpacity(
-                              1 - _sidebarAnim.value,
-                            ),
-                          ],
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                        ),
-                      ),
+                    return Transform.translate(
+                      offset: Offset(0, _sidebarAnim.value * 300),
+                      child: child!,
                     );
                   },
+                  child: CustomTabBar(
+                    onTabChange: (tabIndex) {
+                      setState(() {
+                        _tabBody = _screens[tabIndex];
+                      });
+                    },
+                  ),
                 ),
-              ),
-            ),
-          ),
-        ],
-      ),
-      bottomNavigationBar: RepaintBoundary(
-        child: AnimatedBuilder(
-          animation: _sidebarAnim,
-          builder: (context, child) {
-            return Transform.translate(
-              offset: Offset(0, _sidebarAnim.value * 300),
-              child: child!,
-            );
-          },
-          child: CustomTabBar(
-            onTabChange: (tabIndex) {
-              setState(() {
-                _tabBody = _screens[tabIndex];
-              });
-            },
-          ),
-        ),
-      ),
+              )
+              : null,
     );
   }
 }

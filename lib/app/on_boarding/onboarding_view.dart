@@ -9,7 +9,9 @@ import 'package:vault_app/app/on_boarding/signin_view.dart';
 import 'package:vault_app/app/theme.dart';
 
 class OnboardingView extends StatefulWidget {
-  const OnboardingView({super.key});
+  const OnboardingView({super.key, this.onLogin});
+
+  final Function(bool)? onLogin;
 
   @override
   State<OnboardingView> createState() => _OnboardingViewState();
@@ -199,6 +201,7 @@ class _OnboardingViewState extends State<OnboardingView>
                         closeModal: () {
                           _signInAnimController?.reverse();
                         },
+                        onLogin: widget.onLogin,
                       ),
                     ),
                   ],

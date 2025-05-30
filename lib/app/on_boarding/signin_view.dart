@@ -8,9 +8,10 @@ import 'package:rive/rive.dart' hide LinearGradient hide Image;
 import 'package:vault_app/app/theme.dart';
 
 class SigninView extends StatefulWidget {
-  const SigninView({super.key, this.closeModal});
+  const SigninView({super.key, this.closeModal, this.onLogin});
 
   final Function? closeModal;
+  final Function(bool)? onLogin;
 
   @override
   State<SigninView> createState() => _SigninViewState();
@@ -52,7 +53,8 @@ class _SigninViewState extends State<SigninView> {
       "State Machine 1",
     );
     artboard.addController(controller!);
-    _confettiAnim = controller.findInput<bool>("Trigger explosion") as SMITrigger;
+    _confettiAnim =
+        controller.findInput<bool>("Trigger explosion") as SMITrigger;
   }
 
   void login() {
@@ -73,16 +75,24 @@ class _SigninViewState extends State<SigninView> {
       setState(() {
         _isLoading = false;
       });
-      if(isValid){
+      if (isValid) {
         _confettiAnim.fire();
       }
     });
 
-    if(isValid){
+    if (isValid) {
       Future.delayed(const Duration(seconds: 4), () {
         widget.closeModal!();
         _emailController.text = '';
         _passwordController.text = '';
+
+        if (widget.onLogin != null) {
+          try {
+            widget.onLogin!(true);
+          } catch (e) {
+            print('Errore nella chiamata a onLogin: $e');
+          }
+        }
       });
     }
   }
@@ -214,7 +224,7 @@ class _SigninViewState extends State<SigninView> {
                               ],
                             ),
                             onPressed: () {
-                              if(!_isLoading) login();
+                              if (!_isLoading) login();
                             },
                           ),
                         ),
@@ -301,6 +311,7 @@ class _SigninViewState extends State<SigninView> {
                   ),
                 ),
 
+                // bottone chiusura modal
                 Positioned(
                   bottom: 0,
                   left: 0,
