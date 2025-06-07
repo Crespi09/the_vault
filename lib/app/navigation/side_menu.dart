@@ -135,7 +135,7 @@ class _SideMenuState extends State<SideMenu> {
                     ),
                     Spacer(),
                     Text(
-                      "5gb / 10gb",
+                      "4gb / 10gb",
                       style: TextStyle(
                         fontFamily: 'Inter',
                         fontSize: 13,
