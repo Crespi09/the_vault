@@ -13,9 +13,7 @@ class UserTabView extends StatefulWidget {
 
 class _UserTabViewState extends State<UserTabView> {
   void onLogoutPressed() {
-
-
-    if(widget.onLogin != null){
+    if (widget.onLogin != null) {
       widget.onLogin!(false);
     }
   }
