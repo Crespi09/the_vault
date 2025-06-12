@@ -20,6 +20,10 @@ class _SearchbarState extends State<SearchBarComponents> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final searchBarWidth = screenWidth * 0.7; // 70% della larghezza dello schermo
+    final searchBarHeight = screenWidth * 0.09; // 9% della larghezza (per mantenere proporzioni)
+    
     return SearchBar(
       controller: _controller,
       padding: const MaterialStatePropertyAll<EdgeInsets>(
@@ -43,7 +47,12 @@ class _SearchbarState extends State<SearchBarComponents> {
       shape: MaterialStatePropertyAll<OutlinedBorder>(
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       ),
-      constraints: const BoxConstraints(maxHeight: 36, maxWidth: 300),
+      constraints: BoxConstraints(
+        maxHeight: searchBarHeight,
+        maxWidth: searchBarWidth,
+        minHeight: 36, // Altezza minima per dispositivi molto piccoli
+        minWidth: 200, // Larghezza minima
+      ),
     );
   }
 }

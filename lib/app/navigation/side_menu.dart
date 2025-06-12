@@ -47,13 +47,15 @@ class _SideMenuState extends State<SideMenu> {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Container(
       padding: EdgeInsets.only(
         top: MediaQuery.of(context).padding.top,
         bottom: max(
           0,
           MediaQuery.of(context).padding.bottom - 60,
-        ), // Ensure non-negative
+        ),
       ),
       constraints: const BoxConstraints(maxWidth: 288),
       decoration: BoxDecoration(
@@ -63,6 +65,7 @@ class _SideMenuState extends State<SideMenu> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // User info section
           Padding(
             padding: const EdgeInsets.all(16),
             child: Row(
@@ -77,7 +80,6 @@ class _SideMenuState extends State<SideMenu> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // TODO - cambiare il nome con il nome dell'utente
                     const Text(
                       'User1',
                       style: TextStyle(
@@ -100,65 +102,76 @@ class _SideMenuState extends State<SideMenu> {
               ],
             ),
           ),
-          MenuButtonSection(
-            title: 'BROWSE',
-            selectedMenu: _selectedMenu,
-            menuIcons: _browseMenuIcons,
-            onMenuPress: onMenuPress,
-          ),
-          MenuButtonSection(
-            title: 'HISTORY',
-            selectedMenu: _selectedMenu,
-            menuIcons: _historyMenuIcons,
-            onMenuPress: onMenuPress,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(
-              left: 24,
-              right: 24,
-              top: 169,
-              bottom: 8,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      "Storage",
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 17,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                      ),
+          
+          // Menu sections - wrapped in Expanded for flexible space
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  MenuButtonSection(
+                    title: 'BROWSE',
+                    selectedMenu: _selectedMenu,
+                    menuIcons: _browseMenuIcons,
+                    onMenuPress: onMenuPress,
+                  ),
+                  MenuButtonSection(
+                    title: 'HISTORY',
+                    selectedMenu: _selectedMenu,
+                    menuIcons: _historyMenuIcons,
+                    onMenuPress: onMenuPress,
+                  ),
+                  
+                  // Storage section
+                  Padding(
+                    padding: EdgeInsets.only(
+                      left: 24,
+                      right: 24,
+                      top: screenHeight * 0.03, // Ridotto da 0.05 a 0.03 per più spazio
+                      bottom: 16,
                     ),
-                    Spacer(),
-                    Text(
-                      "4gb / 10gb",
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 13,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                      ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              "Storage",
+                              style: TextStyle(
+                                fontFamily: 'Inter',
+                                fontSize: 17,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            Spacer(),
+                            Text(
+                              "4gb / 10gb",
+                              style: TextStyle(
+                                fontFamily: 'Inter',
+                                fontSize: 13,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 8),
+                        LinearProgressIndicator(
+                          value: 0.4,
+                          backgroundColor: RiveAppTheme.background,
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.lightBlue),
+                          borderRadius: BorderRadius.circular(5),
+                          minHeight: 13,
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                SizedBox(height: 8),
-                LinearProgressIndicator(
-                  value: 0.4,
-                  backgroundColor: RiveAppTheme.background,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.lightBlue),
-                  borderRadius: BorderRadius.circular(5),
-                  minHeight: 13,
-                ),
-              ],
+                  ),
+                ],
+              ),
             ),
           ),
-          const Spacer(),
 
-          // footer della sidebar - ( dark mode )
+          // Footer della sidebar - sempre fisso in basso
           Padding(
             padding: const EdgeInsets.all(20),
             child: Row(

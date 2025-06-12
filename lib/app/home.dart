@@ -229,8 +229,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           // Search bar posizionata in alto a destra
           _logged
               ? Positioned(
-                top: MediaQuery.of(context).padding.top + 20,
-                right: 20,
+                top: MediaQuery.of(context).padding.top + MediaQuery.of(context).size.height * 0.02, // 2% dell'altezza dello schermo
+                right: MediaQuery.of(context).size.width * 0.05, // 5% della larghezza dello schermo
                 child: AnimatedBuilder(
                   animation: _sidebarAnim,
                   builder: (context, child) {
@@ -242,14 +242,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                               3,
                               1,
                               0.0006,
-                            ) // Corrected from 1,2 to 3,2 for proper perspective
+                            )
                             ..rotateY(
                               _sidebarAnim.value * math.pi / 4,
-                            ) // 30 degrees = π/6 radians
+                            )
                             ..rotateZ(_sidebarAnim.value * math.pi / -20.33)
                             ..translate(
-                              _sidebarAnim.value * 240,
-                              _sidebarAnim.value * 80,
+                              _sidebarAnim.value * MediaQuery.of(context).size.width * 0.6, // 60% della larghezza
+                              _sidebarAnim.value * MediaQuery.of(context).size.height * 0.08, // 8% dell'altezza
                               0,
                             ),
                       child: child!,
