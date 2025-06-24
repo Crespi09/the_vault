@@ -6,6 +6,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart' hide LinearGradient hide Image;
 import 'package:vault_app/app/theme.dart';
+import 'package:dio/dio.dart';
+import 'package:provider/provider.dart';
+import 'package:vault_app/services/auth_service.dart';
 
 class SigninView extends StatefulWidget {
   const SigninView({super.key, this.closeModal, this.onLogin});
@@ -20,6 +23,7 @@ class SigninView extends StatefulWidget {
 class _SigninViewState extends State<SigninView> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final Dio _dio = Dio();
 
   late SMITrigger _successAnim;
   late SMITrigger _errorAnim;
@@ -57,43 +61,89 @@ class _SigninViewState extends State<SigninView> {
         controller.findInput<bool>("Trigger explosion") as SMITrigger;
   }
 
-  void login() {
+  void login() async {
     setState(() {
       _isLoading = true;
     });
 
-    bool isEmailValid = _emailController.text.trim().isNotEmpty;
-    bool isPassValid = _passwordController.text.trim().isNotEmpty;
-    bool isValid = isEmailValid && isPassValid;
+    String email = _emailController.text.trim();
+    String password = _passwordController.text.trim();
 
-    // TODO - da cambiare il future delayed
-    Future.delayed(const Duration(seconds: 1), () {
-      isValid ? _successAnim.fire() : _errorAnim.fire();
-    });
+    bool isEmailValid = email.isNotEmpty;
+    bool isPassValid = password.isNotEmpty;
 
-    Future.delayed(const Duration(seconds: 3), () {
+    if (!isEmailValid || !isPassValid) {
+      _errorAnim.fire();
       setState(() {
         _isLoading = false;
       });
-      if (isValid) {
-        _confettiAnim.fire();
-      }
-    });
+      return;
+    }
 
-    if (isValid) {
-      Future.delayed(const Duration(seconds: 4), () {
-        widget.closeModal!();
-        _emailController.text = '';
-        _passwordController.text = '';
+    try {
+      final response = await _dio.post(
+        'http://10.0.2.2:3333/auth/signin', // Per emulatore Android
+        data: {'username': email, 'password': password},
+      );
 
-        if (widget.onLogin != null) {
-          try {
-            widget.onLogin!(true);
-          } catch (e) {
-            print('Errore nella chiamata a onLogin: $e');
+      // Success case
+      if (response.statusCode == 200) {
+        debugPrint('Login successful!');
+
+        // Estrai i token dalla risposta
+        final responseData = response.data;
+        final accessToken = responseData['access_token'] as String;
+        final refreshToken = responseData['refresh_token'] as String;
+
+        // Salva i token usando il servizio
+        final authService = Provider.of<AuthService>(context, listen: false);
+        await authService.saveTokens(accessToken, refreshToken);
+
+        _successAnim.fire();
+
+        Future.delayed(const Duration(seconds: 2), () {
+          debugPrint('Stop loading dopo 2 secondi');
+          setState(() {
+            _isLoading = false;
+          });
+          _confettiAnim.fire();
+        });
+
+        Future.delayed(const Duration(seconds: 3), () {
+          debugPrint('Chiusura modal e callback');
+          widget.closeModal!();
+          _emailController.text = '';
+          _passwordController.text = '';
+
+          if (widget.onLogin != null) {
+            try {
+              widget.onLogin!(true);
+            } catch (e) {
+              debugPrint('Errore nella chiamata a onLogin: $e');
+            }
           }
-        }
+        });
+      } else {
+        // Gestisci altri status codes (401, 403, etc.)
+        debugPrint('Login fallito: Status code ${response.statusCode}');
+        _errorAnim.fire();
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      // Error case
+      debugPrint('Eccezione durante il login: $e');
+      _errorAnim.fire();
+      setState(() {
+        _isLoading = false;
       });
+
+      if (e is DioException) {
+        debugPrint('Errore di login: ${e.response?.statusCode} - ${e.message}');
+      } else {
+        debugPrint('Errore di login: $e');
+      }
     }
   }
 

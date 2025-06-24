@@ -7,8 +7,11 @@ environment:
   sdk: ^3.7.2
 
 dependencies:
+  dio: ^5.8.0+1
   flutter:
     sdk: flutter
+  flutter_secure_storage: ^9.2.4
+  provider: ^6.1.5
   rive : ^0.13.20
 
 dev_dependencies:
