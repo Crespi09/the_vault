@@ -82,7 +82,7 @@ class _SigninViewState extends State<SigninView> {
 
     try {
       final response = await _dio.post(
-        'http://100.84.178.101:3000/auth/signin', // Per emulatore Android
+        'http://100.84.178.101:3000/auth/signup',
         data: {'username': email, 'password': password},
       );
 
@@ -91,13 +91,13 @@ class _SigninViewState extends State<SigninView> {
         debugPrint('Login successful!');
 
         // Estrai i token dalla risposta
-        final responseData = response.data;
-        final accessToken = responseData['access_token'] as String;
-        final refreshToken = responseData['refresh_token'] as String;
+        // final responseData = response.data;
+        // final accessToken = responseData['access_token'] as String;
+        // final refreshToken = responseData['refresh_token'] as String;
 
-        // Salva i token usando il servizio
-        final authService = Provider.of<AuthService>(context, listen: false);
-        await authService.saveTokens(accessToken, refreshToken);
+        // // Salva i token usando il servizio
+        // final authService = Provider.of<AuthService>(context, listen: false);
+        // await authService.saveTokens(accessToken, refreshToken);
 
         _successAnim.fire();
 
