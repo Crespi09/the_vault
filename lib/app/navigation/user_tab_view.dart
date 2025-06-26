@@ -35,7 +35,7 @@ class _UserTabViewState extends State<UserTabView> {
       }
 
       final response = await _dio.get(
-        'http://10.0.2.2:3333/users/me', // Per emulatore Android
+        'http://100.84.178.101:3000/users/me', // Per emulatore Android
         options: Options(
           headers: {
             'Authorization': 'Bearer ${authService.accessToken}',

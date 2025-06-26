@@ -82,7 +82,7 @@ class _SigninViewState extends State<SigninView> {
 
     try {
       final response = await _dio.post(
-        'http://10.0.2.2:3333/auth/signin', // Per emulatore Android
+        'http://100.84.178.101:3000/auth/signin', // Per emulatore Android
         data: {'username': email, 'password': password},
       );
 
