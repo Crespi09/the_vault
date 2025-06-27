@@ -82,7 +82,7 @@ class _SigninViewState extends State<SigninView> {
 
     try {
       final response = await _dio.post(
-        'http://100.84.178.101:3000/auth/signup',
+        'http://10.0.2.2:3000/auth/signup',
         data: {'username': email, 'password': password},
       );
 

@@ -53,7 +53,7 @@ class _OnboardingViewState extends State<OnboardingView>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: const Color.fromARGB(255, 10, 27, 41),
       body: Stack(
         children: [
           ImageFiltered(
