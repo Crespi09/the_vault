@@ -359,17 +359,81 @@ class _FolderTabViewState extends State<FolderTabView> {
                 child: IconButton(
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
-                  icon: const Icon(
-                    Icons.add,
-                    color: RiveAppTheme.backgroundDark,
-                    size: 40,
+                  icon: AnimatedRotation(
+                    turns: _openBtnSection ? 0.125 : 0.0,
+                    duration: Duration(milliseconds: 300),
+                    child: const Icon(
+                      Icons.add,
+                      color: RiveAppTheme.backgroundDark,
+                      size: 40,
+                    ),
                   ),
                   onPressed: () {
-                    _openBtnSection = true;
+                    setState(() {
+                      _openBtnSection = !_openBtnSection;
+                    });
                   },
                 ),
               ),
             ),
+            // Overlay con i 3 bottoni
+            if (_openBtnSection) ...[
+              Positioned.fill(
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _openBtnSection = false;
+                    });
+                  },
+                  child: Container(color: Colors.black.withOpacity(0.3)),
+                ),
+              ),
+              AnimatedPositioned(
+                duration: Duration(milliseconds: 300),
+                curve: Curves.easeOutBack,
+                bottom: _isVisible ? 230 : 90,
+                right: 30,
+                child: Column(
+                  children: [
+                    _buildActionButton(
+                      icon: Icons.folder,
+                      label: 'Cartella',
+                      onTap: () {
+                        // Azione per creare cartella
+                        setState(() {
+                          _openBtnSection = false;
+                        });
+                        debugPrint('Crea cartella');
+                      },
+                    ),
+                    SizedBox(height: 15),
+                    _buildActionButton(
+                      icon: Icons.upload_file,
+                      label: 'Upload',
+                      onTap: () {
+                        // Azione per upload file
+                        setState(() {
+                          _openBtnSection = false;
+                        });
+                        debugPrint('Upload file');
+                      },
+                    ),
+                    SizedBox(height: 15),
+                    _buildActionButton(
+                      icon: Icons.camera_alt,
+                      label: 'Foto',
+                      onTap: () {
+                        // Azione per scattare foto
+                        setState(() {
+                          _openBtnSection = false;
+                        });
+                        debugPrint('Scatta foto');
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ],
         ),
       ),
@@ -452,6 +516,35 @@ class _FolderTabViewState extends State<FolderTabView> {
                   ),
                 ],
               ),
+    );
+  }
+
+  Widget _buildActionButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 60,
+        height: 60,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(30),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 10,
+              offset: Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [Icon(icon, color: RiveAppTheme.backgroundDark, size: 24)],
+        ),
+      ),
     );
   }
 }
