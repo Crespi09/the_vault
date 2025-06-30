@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
+import 'package:vault_app/app/components/create_folder_modal.dart';
 import 'package:vault_app/app/components/fileCard.dart';
 import 'package:vault_app/app/components/folderCard.dart';
 import 'package:vault_app/app/models/vault_item.dart';
@@ -29,6 +30,7 @@ class _FolderTabViewState extends State<FolderTabView> {
   late ScrollController _scrollController;
   bool _isVisible = true;
   bool _openBtnSection = false;
+  bool _createFolder = false;
 
   @override
   void initState() {
@@ -98,6 +100,65 @@ class _FolderTabViewState extends State<FolderTabView> {
         _errorMessage = 'Errore durante il caricamento: $e';
       });
       debugPrint('Errore durante il fetch degli items: $e');
+    }
+  }
+
+  Future<void> _addFolder(String name, String color, String? parentId) async {
+    try {
+      final authService = Provider.of<AuthService>(context, listen: false);
+
+      if (!authService.isAuthenticated) {
+        debugPrint('Utente non autenticato');
+        return;
+      }
+
+      // Prepara i dati della richiesta
+      final Map<String, dynamic> requestData = {'name': name, 'color': color};
+
+      // Aggiungi parentId solo se non è null e non è vuoto
+      if (parentId != null && parentId.isNotEmpty) {
+        requestData['parentId'] = parentId;
+      }
+
+      debugPrint('Dati richiesta: $requestData');
+
+      final response = await _dio.post(
+        'http://10.0.2.2:3000/item',
+        data: requestData,
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer ${authService.accessToken}',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      debugPrint('Risposta server: ${response.statusCode}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        _fetchItems();
+        debugPrint('Cartella creata con successo');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Cartella "$name" creata con successo!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      } else {
+        debugPrint('Errore nella creazione: ${response.statusCode}');
+      }
+    } catch (e) {
+      debugPrint('Errore durante creazione folder: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Errore nella creazione della cartella'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -403,6 +464,9 @@ class _FolderTabViewState extends State<FolderTabView> {
                         setState(() {
                           _openBtnSection = false;
                         });
+                        setState(() {
+                          _createFolder = true;
+                        });
                         debugPrint('Crea cartella');
                       },
                     ),
@@ -431,6 +495,36 @@ class _FolderTabViewState extends State<FolderTabView> {
                       },
                     ),
                   ],
+                ),
+              ),
+            ],
+            if (_createFolder) ...[
+              Positioned.fill(
+                child: Container(
+                  color: Colors.black.withOpacity(0.5),
+                  child: Center(
+                    child: CreateFolderModal(
+                      onCreateFolder: (name, color) {
+                        debugPrint('Creazione cartella: $name, Colore: $color');
+                        setState(() {
+                          _createFolder = false;
+                        });
+                        _addFolder(
+                          name,
+                          color.value
+                              .toRadixString(16)
+                              .padLeft(8, '0')
+                              .substring(2),
+                          null,
+                        );
+                      },
+                      onCancel: () {
+                        setState(() {
+                          _createFolder = false;
+                        });
+                      },
+                    ),
+                  ),
                 ),
               ),
             ],
