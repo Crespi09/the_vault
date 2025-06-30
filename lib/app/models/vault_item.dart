@@ -10,99 +10,51 @@ class VaultItem {
     this.image = "",
   });
 
-  UniqueKey? id = UniqueKey();
+  UniqueKey? id;
   String title, image;
   String subtitle;
   IconData icon;
   Color color;
 
-  static List<VaultItem> folders = [
-    VaultItem(
-      title: "Folder Kirbi",
-      subtitle: "Modificato il 09/02/2024",
+  // Factory per creare VaultItem da una mappa JSON
+  factory VaultItem.fromFolderJson(Map<String, dynamic> json) {
+    return VaultItem(
+      // id: json['id'],
+      title: json['name'] ?? '',
+      subtitle: _formattedData(json['createdAt']),
       icon: Icons.folder,
-      color: const Color(0xFF7850F0),
-      image: 'assets/uploads/files/kirbi.png',
-    ),
-    VaultItem(
-      title: "Folder Previ",
-      subtitle: "Modificato il 18/10/2024",
-      icon: Icons.folder,
-      color: const Color(0xFF6792FF),
-      image: 'assets/uploads/files/previ.png',
-    ),
-    VaultItem(
-      title: "Folder Robot",
-      subtitle: "Modificato il 08/05/2025",
-      icon: Icons.folder,
-      color: const Color(0xFF005FE7),
-      image: 'assets/uploads/files/robot.png',
-    ),
-    VaultItem(
-      title: "Folder Slurp",
-      subtitle: "Modificato il 15/06/2024",
-      icon: Icons.folder,
-      color: const Color(0xFFBBA6FF),
-      image: 'assets/uploads/files/slurp.png',
-    ),
-    VaultItem(
-      title: "Folder Kirbi",
-      subtitle: "Modificato il 09/02/2024",
-      icon: Icons.folder,
-      color: const Color(0xFF7850F0),
-      image: 'assets/uploads/files/kirbi.png',
-    ),
-    VaultItem(
-      title: "Folder Previ",
-      subtitle: "Modificato il 18/10/2024",
-      icon: Icons.folder,
-      color: const Color(0xFF6792FF),
-      image: 'assets/uploads/files/previ.png',
-    ),
-    VaultItem(
-      title: "Folder Robot",
-      subtitle: "Modificato il 08/05/2025",
-      icon: Icons.folder,
-      color: const Color(0xFF005FE7),
-      image: 'assets/uploads/files/robot.png',
-    ),
-    VaultItem(
-      title: "Folder Slurp",
-      subtitle: "Modificato il 15/06/2024",
-      icon: Icons.folder,
-      color: const Color(0xFFBBA6FF),
-      image: 'assets/uploads/files/slurp.png',
-    ),
-  ];
+      color: _hexToColor(json['color'] ?? '#000000'),
+      image: '',
+    );
+  }
 
-  static List<VaultItem> files = [
-    VaultItem(
-      title: "Foto Kirbi",
-      subtitle: "Modificato il 09/02/2024",
+  factory VaultItem.fromFileJson(Map<String, dynamic> json) {
+    return VaultItem(
+      // id: json['itemId'],
+      title: json['fileName'] ?? '',
+      subtitle: _formattedData(json['createdAt']),
       icon: Icons.description,
       color: const Color(0xFF7850F0),
-      image: 'assets/uploads/files/kirbi.png',
-    ),
-    VaultItem(
-      title: "Foto Previ",
-      subtitle: "Modificato il 18/10/2024",
-      icon: Icons.description,
-      color: const Color(0xFF6792FF),
-      image: 'assets/uploads/files/previ.png',
-    ),
-    VaultItem(
-      title: "Foto Robot",
-      subtitle: "Modificato il 08/05/2025",
-      icon: Icons.description,
-      color: const Color(0xFF005FE7),
-      image: 'assets/uploads/files/robot.png',
-    ),
-    VaultItem(
-      title: "Foto Slurp",
-      subtitle: "Modificato il 15/06/2024",
-      icon: Icons.description,
-      color: const Color(0xFFBBA6FF),
-      image: 'assets/uploads/files/slurp.png',
-    ),
-  ];
+      image: json['path'] ?? '',
+    );
+  }
+
+  // Utility per convertire hex in Color
+  static Color _hexToColor(String hex) {
+    hex = hex.replaceAll('#', '');
+    if (hex.length == 6) hex = 'FF' + hex;
+    return Color(int.parse(hex, radix: 16));
+  }
+
+  static String _formattedData(String date) {
+    if (date.isEmpty) {
+      return '';
+    }
+
+    int tIndex = date.indexOf('T');
+    if (tIndex != -1) {
+      return date.substring(0, tIndex);
+    }
+    return date;
+  }
 }

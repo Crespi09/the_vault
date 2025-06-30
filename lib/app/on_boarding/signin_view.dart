@@ -62,6 +62,9 @@ class _SigninViewState extends State<SigninView> {
   }
 
   void login() async {
+    // Aggiungi un piccolo delay per assicurarti che i controller Rive siano inizializzati
+    await Future.delayed(const Duration(milliseconds: 100));
+
     setState(() {
       _isLoading = true;
     });
@@ -74,75 +77,115 @@ class _SigninViewState extends State<SigninView> {
 
     if (!isEmailValid || !isPassValid) {
       _errorAnim.fire();
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
       return;
     }
 
     try {
+      // Configura Dio per non lanciare eccezioni sui codici di stato 4xx
       final response = await _dio.post(
-        'http://10.0.2.2:3000/auth/signup',
+        'http://10.0.2.2:3000/auth/signin',
         data: {'username': email, 'password': password},
+        options: Options(
+          validateStatus: (status) {
+            // Accetta tutti i codici di stato senza lanciare eccezioni
+            return status != null && status < 500;
+          },
+        ),
       );
 
-      // Success case
       if (response.statusCode == 200) {
         debugPrint('Login successful!');
 
-        // Estrai i token dalla risposta
-        // final responseData = response.data;
-        // final accessToken = responseData['access_token'] as String;
-        // final refreshToken = responseData['refresh_token'] as String;
+        final responseData = response.data;
+        final accessToken = responseData['access_token'] as String;
+        final refreshToken = responseData['refresh_token'] as String;
 
-        // // Salva i token usando il servizio
-        // final authService = Provider.of<AuthService>(context, listen: false);
-        // await authService.saveTokens(accessToken, refreshToken);
+        final authService = Provider.of<AuthService>(context, listen: false);
+        await authService.saveTokens(accessToken, refreshToken);
 
         _successAnim.fire();
 
         Future.delayed(const Duration(seconds: 2), () {
           debugPrint('Stop loading dopo 2 secondi');
-          setState(() {
-            _isLoading = false;
-          });
-          _confettiAnim.fire();
+          if (mounted) {
+            setState(() {
+              _isLoading = false;
+            });
+            _confettiAnim.fire();
+          }
         });
 
         Future.delayed(const Duration(seconds: 3), () {
           debugPrint('Chiusura modal e callback');
-          widget.closeModal!();
-          _emailController.text = '';
-          _passwordController.text = '';
+          if (mounted) {
+            widget.closeModal!();
+            _emailController.text = '';
+            _passwordController.text = '';
 
-          if (widget.onLogin != null) {
-            try {
-              widget.onLogin!(true);
-            } catch (e) {
-              debugPrint('Errore nella chiamata a onLogin: $e');
+            if (widget.onLogin != null) {
+              try {
+                widget.onLogin!(true);
+              } catch (e) {
+                debugPrint('Errore nella chiamata a onLogin: $e');
+              }
             }
           }
         });
+      } else if (response.statusCode == 403) {
+        debugPrint('Credenziali non valide: accesso negato');
+        _errorAnim.fire();
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+        // Mostra messaggio di errore all'utente
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Credenziali non valide. Riprova.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } else if (response.statusCode == 401) {
+        debugPrint('Non autorizzato: credenziali mancanti o scadute');
+        _errorAnim.fire();
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
       } else {
-        // Gestisci altri status codes (401, 403, etc.)
         debugPrint('Login fallito: Status code ${response.statusCode}');
         _errorAnim.fire();
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      }
+    } catch (e) {
+      debugPrint('Eccezione durante il login: $e');
+      _errorAnim.fire();
+      if (mounted) {
         setState(() {
           _isLoading = false;
         });
       }
-    } catch (e) {
-      // Error case
-      debugPrint('Eccezione durante il login: $e');
-      _errorAnim.fire();
-      setState(() {
-        _isLoading = false;
-      });
 
+      // Gestisci solo errori di rete o server (5xx)
       if (e is DioException) {
-        debugPrint('Errore di login: ${e.response?.statusCode} - ${e.message}');
+        if (e.response?.statusCode != null && e.response!.statusCode! >= 500) {
+          debugPrint('Errore del server: ${e.response?.statusCode}');
+        } else {
+          debugPrint('Errore di rete: ${e.message}');
+        }
       } else {
-        debugPrint('Errore di login: $e');
+        debugPrint('Errore sconosciuto: $e');
       }
     }
   }

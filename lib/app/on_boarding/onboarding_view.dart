@@ -53,7 +53,7 @@ class _OnboardingViewState extends State<OnboardingView>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 10, 27, 41),
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       body: Stack(
         children: [
           ImageFiltered(
@@ -72,7 +72,7 @@ class _OnboardingViewState extends State<OnboardingView>
             ),
           ),
           ImageFiltered(
-            imageFilter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+            imageFilter: ImageFilter.blur(sigmaX: 60, sigmaY: 60),
             child: const rive.RiveAnimation.asset(
               'assets/samples/ui/rive_app/rive/shapes.riv',
             ),
@@ -199,7 +199,9 @@ class _OnboardingViewState extends State<OnboardingView>
                       ),
                       child: SigninView(
                         closeModal: () {
-                          _signInAnimController?.reverse();
+                          if (mounted) {
+                            _signInAnimController?.reverse();
+                          }
                         },
                         onLogin: widget.onLogin,
                       ),

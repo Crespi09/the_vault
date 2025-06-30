@@ -17,12 +17,14 @@ class UserTabView extends StatefulWidget {
 class _UserTabViewState extends State<UserTabView> {
   final Dio _dio = Dio();
   Map<String, dynamic>? _userData;
+  Map<String, dynamic>? _stats;
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
     _fetchUserData();
+    _getItemsStats();
   }
 
   Future<void> _fetchUserData() async {
@@ -34,8 +36,11 @@ class _UserTabViewState extends State<UserTabView> {
         return;
       }
 
+      // android studio ip : 10.0.2.2
+      // raspberry ip : 100.84.178.101
+
       final response = await _dio.get(
-        'http://100.84.178.101:3000/users/me', // Per emulatore Android
+        'http://10.0.2.2:3000/users/me',
         options: Options(
           headers: {
             'Authorization': 'Bearer ${authService.accessToken}',
@@ -60,6 +65,59 @@ class _UserTabViewState extends State<UserTabView> {
       }
     } catch (e) {
       debugPrint('Eccezione nel caricamento dati utente: $e');
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (e is DioException && e.response?.statusCode == 401) {
+        // Token scaduto, fai logout
+        final authService = Provider.of<AuthService>(context, listen: false);
+        await authService.logout();
+        if (widget.onLogin != null) {
+          widget.onLogin!(false);
+        }
+      }
+    }
+  }
+
+  Future<void> _getItemsStats() async {
+    try {
+      final authService = Provider.of<AuthService>(context, listen: false);
+
+      if (!authService.isAuthenticated) {
+        debugPrint('Utente non autenticato');
+        return;
+      }
+
+      // android studio ip : 10.0.2.2
+      // raspberry ip : 100.84.178.101
+
+      final response = await _dio.get(
+        'http://10.0.2.2:3000/users/items-stats',
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer ${authService.accessToken}',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        setState(() {
+          _stats = response.data;
+          _isLoading = false;
+        });
+        debugPrint('Stats utente caricati: ${response.data}');
+      } else {
+        debugPrint(
+          'Errore nel caricamento stats utente: ${response.statusCode}',
+        );
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      debugPrint('Eccezione nel caricamento stats utente: $e');
       setState(() {
         _isLoading = false;
       });
@@ -176,7 +234,7 @@ class _UserTabViewState extends State<UserTabView> {
                                           vertical: 3,
                                         ),
                                         child: Text(
-                                          "52",
+                                          (_stats?['nFiles'] ?? 0).toString(),
                                           style: TextStyle(
                                             color: RiveAppTheme.background,
                                             fontSize: 20,
@@ -222,7 +280,7 @@ class _UserTabViewState extends State<UserTabView> {
                                           vertical: 3,
                                         ),
                                         child: Text(
-                                          "4",
+                                          (_stats?['nFolder'] ?? 0).toString(),
                                           style: TextStyle(
                                             color: RiveAppTheme.background,
                                             fontSize: 20,
