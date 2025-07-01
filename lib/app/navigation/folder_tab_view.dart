@@ -171,17 +171,106 @@ class _FolderTabViewState extends State<FolderTabView> {
     }
   }
 
-  // Aggiungi questo metodo per l'upload dei file
-  Future<void> _uploadFile({String? parentId}) async {
+  // Rimuovi il metodo _uploadFile e sostituiscilo con due metodi separati
+  Future<void> _uploadFromGallery({String? parentId}) async {
     try {
-      // Mostra dialog per scegliere la sorgente
-      final ImageSource? source = await _showImageSourceDialog();
-      if (source == null) return;
+      // Usa il picker generico che supporta sia immagini che video
+      final List<XFile> pickedFiles = await _picker.pickMultipleMedia();
 
-      // Seleziona il file
-      final XFile? pickedFile = await _picker.pickImage(source: source);
+      if (pickedFiles.isEmpty) return;
+
+      // Per ora prendi solo il primo file selezionato
+      final XFile pickedFile = pickedFiles.first;
+
+      // Determina il tipo di file dal MIME type
+      final mimeType = lookupMimeType(pickedFile.path) ?? '';
+
+      if (mimeType.startsWith('image/')) {
+        debugPrint('File selezionato: Immagine');
+        await _performUpload(pickedFile, parentId);
+      } else if (mimeType.startsWith('video/')) {
+        debugPrint('File selezionato: Video');
+        await _performUpload(pickedFile, parentId);
+      } else {
+        // Gestisci altri tipi di file se necessario
+        debugPrint('Tipo di file non supportato: $mimeType');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Tipo di file non supportato'),
+              backgroundColor: Colors.orange,
+            ),
+          );
+        }
+        return;
+      }
+    } catch (e) {
+      debugPrint('Errore durante l\'upload dalla galleria: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Errore nel caricamento del file: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _uploadFromCamera({String? parentId}) async {
+    try {
+      // Prima chiedi all'utente se vuole scattare una foto o registrare un video
+      final String? mediaType = await showDialog<String>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Seleziona tipo di ripresa'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  leading: Icon(Icons.camera_alt),
+                  title: Text('Foto'),
+                  onTap: () => Navigator.of(context).pop('image'),
+                ),
+                ListTile(
+                  leading: Icon(Icons.videocam),
+                  title: Text('Video'),
+                  onTap: () => Navigator.of(context).pop('video'),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+
+      if (mediaType == null) return;
+
+      XFile? pickedFile;
+      if (mediaType == 'image') {
+        pickedFile = await _picker.pickImage(source: ImageSource.camera);
+      } else {
+        pickedFile = await _picker.pickVideo(source: ImageSource.camera);
+      }
+
       if (pickedFile == null) return;
 
+      await _performUpload(pickedFile, parentId);
+    } catch (e) {
+      debugPrint('Errore durante la ripresa: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Errore nella ripresa: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _performUpload(XFile pickedFile, String? parentId) async {
+    try {
       // Mostra loading
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -267,44 +356,8 @@ class _FolderTabViewState extends State<FolderTabView> {
       if (mounted) {
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
       }
-
-      debugPrint('Errore durante l\'upload del file: $e');
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Errore nel caricamento del file: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+      rethrow;
     }
-  }
-
-  Future<ImageSource?> _showImageSourceDialog() async {
-    return showDialog<ImageSource>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Seleziona sorgente'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                leading: const Icon(Icons.photo_library),
-                title: const Text('Galleria'),
-                onTap: () => Navigator.of(context).pop(ImageSource.gallery),
-              ),
-              ListTile(
-                leading: const Icon(Icons.camera_alt),
-                title: const Text('Fotocamera'),
-                onTap: () => Navigator.of(context).pop(ImageSource.camera),
-              ),
-            ],
-          ),
-        );
-      },
-    );
   }
 
   @override
@@ -516,29 +569,33 @@ class _FolderTabViewState extends State<FolderTabView> {
                         ),
                       ],
                     ),
-                    child: AnimatedSwitcher(
-                      duration: Duration(milliseconds: 300),
-                      transitionBuilder: (
-                        Widget child,
-                        Animation<double> animation,
-                      ) {
-                        return FadeTransition(
-                          opacity: animation,
-                          child: SlideTransition(
-                            position: Tween<Offset>(
-                              begin: Offset(0.3, 0),
-                              end: Offset.zero,
-                            ).animate(
-                              CurvedAnimation(
-                                parent: animation,
-                                curve: Curves.easeOutCubic,
+                    // Aggiungi ClipRRect per tagliare il contenuto che esce dal bordo
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(30),
+                      child: AnimatedSwitcher(
+                        duration: Duration(milliseconds: 300),
+                        transitionBuilder: (
+                          Widget child,
+                          Animation<double> animation,
+                        ) {
+                          return FadeTransition(
+                            opacity: animation,
+                            child: SlideTransition(
+                              position: Tween<Offset>(
+                                begin: Offset(0.3, 0),
+                                end: Offset.zero,
+                              ).animate(
+                                CurvedAnimation(
+                                  parent: animation,
+                                  curve: Curves.easeOutCubic,
+                                ),
                               ),
+                              child: child,
                             ),
-                            child: child,
-                          ),
-                        );
-                      },
-                      child: _buildContent(),
+                          );
+                        },
+                        child: _buildContent(),
+                      ),
                     ),
                   ),
                 ),
@@ -617,28 +674,30 @@ class _FolderTabViewState extends State<FolderTabView> {
                     ),
                     SizedBox(height: 15),
                     _buildActionButton(
-                      icon: Icons.upload_file,
-                      label: 'Upload',
+                      icon:
+                          Icons
+                              .perm_media, // Icona che rappresenta media generici
+                      label: 'Media',
                       onTap: () {
-                        // Azione per upload file
+                        // Apre direttamente la galleria
                         setState(() {
                           _openBtnSection = false;
                         });
-                        _uploadFile();
-                        debugPrint('Upload file');
+                        _uploadFromGallery();
+                        debugPrint('Upload media dalla galleria');
                       },
                     ),
                     SizedBox(height: 15),
                     _buildActionButton(
                       icon: Icons.camera_alt,
-                      label: 'Foto',
+                      label: 'Camera',
                       onTap: () {
-                        // Azione per scattare foto
+                        // Apre direttamente la fotocamera
                         setState(() {
                           _openBtnSection = false;
                         });
-                        _uploadFile();
-                        debugPrint('Scatta foto');
+                        _uploadFromCamera();
+                        debugPrint('Apri fotocamera');
                       },
                     ),
                   ],
@@ -683,7 +742,7 @@ class _FolderTabViewState extends State<FolderTabView> {
 
   Widget _buildContent() {
     return Container(
-      key: ValueKey(_myVaultBtn), // Chiave per AnimatedSwitcher
+      key: ValueKey(_myVaultBtn),
       child:
           _isLoading
               ? const Center(child: CircularProgressIndicator())
@@ -755,6 +814,7 @@ class _FolderTabViewState extends State<FolderTabView> {
                       childCount: _files.length,
                     ),
                   ),
+                  SliverPadding(padding: EdgeInsets.only(bottom: 100)),
                 ],
               ),
     );

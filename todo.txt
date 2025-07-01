@@ -1,8 +1,8 @@
 TODO -
 
             FILE
-    - @ upload file 
-    - @ apertura fotocamera con upload file
+    + @ upload file 
+    + @ apertura fotocamera con upload file
     @ apertura file
 
 

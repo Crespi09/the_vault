@@ -69,8 +69,11 @@ class _SigninViewState extends State<SigninView> {
       _isLoading = true;
     });
 
-    String email = _emailController.text.trim();
-    String password = _passwordController.text.trim();
+    // String email = _emailController.text.trim();
+    // String password = _passwordController.text.trim();
+
+    String email = 'pierino';
+    String password = 'password';
 
     bool isEmailValid = email.isNotEmpty;
     bool isPassValid = password.isNotEmpty;
@@ -112,32 +115,26 @@ class _SigninViewState extends State<SigninView> {
 
         _successAnim.fire();
 
-        Future.delayed(const Duration(seconds: 2), () {
-          debugPrint('Stop loading dopo 2 secondi');
-          if (mounted) {
-            setState(() {
-              _isLoading = false;
-            });
-            _confettiAnim.fire();
-          }
-        });
+        await Future.delayed(const Duration(seconds: 2));
 
-        Future.delayed(const Duration(seconds: 3), () {
-          debugPrint('Chiusura modal e callback');
-          if (mounted) {
-            widget.closeModal!();
-            _emailController.text = '';
-            _passwordController.text = '';
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+          _confettiAnim.fire();
 
-            if (widget.onLogin != null) {
-              try {
-                widget.onLogin!(true);
-              } catch (e) {
-                debugPrint('Errore nella chiamata a onLogin: $e');
-              }
-            }
+          // Clear dei campi
+          _emailController.text = '';
+          _passwordController.text = '';
+
+          // Chiudi il modal immediatamente
+          widget.closeModal!();
+
+          // Chiama onLogin dopo la chiusura del modal
+          if (widget.onLogin != null) {
+            widget.onLogin!(true);
           }
-        });
+        }
       } else if (response.statusCode == 403) {
         debugPrint('Credenziali non valide: accesso negato');
         _errorAnim.fire();
