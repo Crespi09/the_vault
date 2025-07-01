@@ -17,14 +17,17 @@ class FolderTabView extends StatefulWidget {
   const FolderTabView({super.key});
 
   @override
-  State<FolderTabView> createState() => _FolderTabViewState();
+  State<FolderTabView> createState() => FolderTabViewState();
 }
 
-class _FolderTabViewState extends State<FolderTabView> {
+class FolderTabViewState extends State<FolderTabView> {
   List<VaultItem> _folders = [];
   List<VaultItem> _files = [];
+  List<VaultItem> _filteredFolders = [];
+  List<VaultItem> _filteredFiles = [];
   bool _isLoading = true;
   String? _errorMessage;
+  String _searchQuery = '';
 
   final Dio _dio = Dio();
   final ImagePicker _picker = ImagePicker();
@@ -35,11 +38,6 @@ class _FolderTabViewState extends State<FolderTabView> {
   bool _isVisible = true;
   bool _openBtnSection = false;
   bool _createFolder = false;
-  bool _addFile = false;
-  bool _openWebcam = false;
-
-  // camera
-  // final CameraController? cameraController = controller;
 
   @override
   void initState() {
@@ -99,8 +97,15 @@ class _FolderTabViewState extends State<FolderTabView> {
       setState(() {
         _folders = folders;
         _files = files;
+        _filteredFolders = folders;
+        _filteredFiles = files;
         _isLoading = false;
       });
+
+      // Applica il filtro se c'è una query di ricerca attiva
+      if (_searchQuery.isNotEmpty) {
+        _filterItems(_searchQuery);
+      }
 
       debugPrint('Items ottenuti: $responseData');
     } catch (e) {
@@ -110,6 +115,36 @@ class _FolderTabViewState extends State<FolderTabView> {
       });
       debugPrint('Errore durante il fetch degli items: $e');
     }
+  }
+
+  void _filterItems(String query) {
+    setState(() {
+      _searchQuery = query;
+
+      if (query.isEmpty) {
+        _filteredFolders = _folders;
+        _filteredFiles = _files;
+      } else {
+        final lowerQuery = query.toLowerCase();
+
+        _filteredFolders =
+            _folders.where((folder) {
+              return folder.title.toLowerCase().contains(lowerQuery) ||
+                  folder.subtitle.toLowerCase().contains(lowerQuery);
+            }).toList();
+
+        _filteredFiles =
+            _files.where((file) {
+              return file.title.toLowerCase().contains(lowerQuery) ||
+                  file.subtitle.toLowerCase().contains(lowerQuery);
+            }).toList();
+      }
+    });
+  }
+
+  // Metodo pubblico per essere chiamato dall'esterno
+  void performSearch(String query) {
+    _filterItems(query);
   }
 
   Future<void> _addFolder(String name, String color, String? parentId) async {
@@ -406,153 +441,187 @@ class _FolderTabViewState extends State<FolderTabView> {
           children: [
             Column(
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: CupertinoButton(
+                // Mostra i risultati di ricerca se c'è una query attiva
+                if (_searchQuery.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 10,
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.search, color: Colors.grey[600]),
+                        SizedBox(width: 8),
+                        Text(
+                          'Risultati per: "$_searchQuery"',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey[700],
+                          ),
+                        ),
+                        Spacer(),
+                        IconButton(
+                          icon: Icon(Icons.close, color: Colors.grey[600]),
+                          onPressed: () {
+                            _filterItems('');
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+
+                // Tab buttons esistenti (solo se non c'è ricerca attiva)
+                if (_searchQuery.isEmpty) ...[
+                  Row(
+                    children: [
+                      Expanded(
+                        child: CupertinoButton(
+                          padding: const EdgeInsets.only(
+                            left: 12,
+                            right: 0,
+                            top: 12,
+                            bottom: 12,
+                          ),
+                          pressedOpacity: 0.7,
+                          onPressed: () => onBtnPressed(true),
+                          child: AnimatedContainer(
+                            duration: Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                            padding: EdgeInsets.symmetric(
+                              vertical: 8,
+                              horizontal: 12,
+                            ),
+                            decoration: BoxDecoration(
+                              color:
+                                  _myVaultBtn
+                                      ? Colors.blue.withOpacity(0.2)
+                                      : Colors.transparent,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              children: [
+                                AnimatedScale(
+                                  duration: Duration(milliseconds: 200),
+                                  scale: _myVaultBtn ? 1.1 : 1.0,
+                                  child: SizedBox(
+                                    width: 32,
+                                    height: 32,
+                                    child: Icon(
+                                      Icons.folder,
+                                      color:
+                                          _myVaultBtn
+                                              ? Colors.blue
+                                              : Colors.white.withOpacity(0.6),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 14),
+                                Flexible(
+                                  child: AnimatedDefaultTextStyle(
+                                    duration: Duration(milliseconds: 200),
+                                    style: TextStyle(
+                                      color:
+                                          _myVaultBtn
+                                              ? Colors.blue
+                                              : Colors.white,
+                                      fontFamily: 'Inter',
+                                      fontWeight:
+                                          _myVaultBtn
+                                              ? FontWeight.w700
+                                              : FontWeight.w600,
+                                      fontSize: 17,
+                                    ),
+                                    child: Text('My Vault'),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      Padding(
                         padding: const EdgeInsets.only(
                           left: 12,
                           right: 0,
                           top: 12,
                           bottom: 12,
                         ),
-                        pressedOpacity: 0.7,
-                        onPressed: () => onBtnPressed(true),
-                        child: AnimatedContainer(
-                          duration: Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                          padding: EdgeInsets.symmetric(
-                            vertical: 8,
-                            horizontal: 12,
+                        child: Container(
+                          height: 50,
+                          child: VerticalDivider(
+                            thickness: 2,
+                            width: 1,
+                            indent: 10,
+                            endIndent: 10,
                           ),
-                          decoration: BoxDecoration(
-                            color:
-                                _myVaultBtn
-                                    ? Colors.blue.withOpacity(0.2)
-                                    : Colors.transparent,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Row(
-                            children: [
-                              AnimatedScale(
-                                duration: Duration(milliseconds: 200),
-                                scale: _myVaultBtn ? 1.1 : 1.0,
-                                child: SizedBox(
-                                  width: 32,
-                                  height: 32,
-                                  child: Icon(
-                                    Icons.folder,
-                                    color:
-                                        _myVaultBtn
-                                            ? Colors.blue
-                                            : Colors.white.withOpacity(0.6),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 14),
-                              Flexible(
-                                child: AnimatedDefaultTextStyle(
+                        ),
+                      ),
+                      Expanded(
+                        child: CupertinoButton(
+                          padding: const EdgeInsets.all(12),
+                          pressedOpacity: 0.7,
+                          onPressed: () => onBtnPressed(false),
+                          child: AnimatedContainer(
+                            duration: Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                            padding: EdgeInsets.symmetric(
+                              vertical: 8,
+                              horizontal: 12,
+                            ),
+                            decoration: BoxDecoration(
+                              color:
+                                  !_myVaultBtn
+                                      ? Colors.blue.withOpacity(0.2)
+                                      : Colors.transparent,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              children: [
+                                AnimatedScale(
                                   duration: Duration(milliseconds: 200),
-                                  style: TextStyle(
-                                    color:
-                                        _myVaultBtn
-                                            ? Colors.blue
-                                            : Colors.white,
-                                    fontFamily: 'Inter',
-                                    fontWeight:
-                                        _myVaultBtn
-                                            ? FontWeight.w700
-                                            : FontWeight.w600,
-                                    fontSize: 17,
+                                  scale: !_myVaultBtn ? 1.1 : 1.0,
+                                  child: SizedBox(
+                                    width: 32,
+                                    height: 32,
+                                    child: Icon(
+                                      Icons.share,
+                                      color:
+                                          !_myVaultBtn
+                                              ? Colors.blue
+                                              : Colors.white.withOpacity(0.6),
+                                    ),
                                   ),
-                                  child: Text('My Vault'),
                                 ),
-                              ),
-                            ],
+                                const SizedBox(width: 14),
+                                Flexible(
+                                  child: AnimatedDefaultTextStyle(
+                                    duration: Duration(milliseconds: 200),
+                                    style: TextStyle(
+                                      color:
+                                          !_myVaultBtn
+                                              ? Colors.blue
+                                              : Colors.white,
+                                      fontFamily: 'Inter',
+                                      fontWeight:
+                                          !_myVaultBtn
+                                              ? FontWeight.w700
+                                              : FontWeight.w600,
+                                      fontSize: 17,
+                                    ),
+                                    child: Text('Shared'),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        left: 12,
-                        right: 0,
-                        top: 12,
-                        bottom: 12,
-                      ),
-                      child: Container(
-                        height: 50,
-                        child: VerticalDivider(
-                          thickness: 2,
-                          width: 1,
-                          indent: 10,
-                          endIndent: 10,
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: CupertinoButton(
-                        padding: const EdgeInsets.all(12),
-                        pressedOpacity: 0.7,
-                        onPressed: () => onBtnPressed(false),
-                        child: AnimatedContainer(
-                          duration: Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                          padding: EdgeInsets.symmetric(
-                            vertical: 8,
-                            horizontal: 12,
-                          ),
-                          decoration: BoxDecoration(
-                            color:
-                                !_myVaultBtn
-                                    ? Colors.blue.withOpacity(0.2)
-                                    : Colors.transparent,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Row(
-                            children: [
-                              AnimatedScale(
-                                duration: Duration(milliseconds: 200),
-                                scale: !_myVaultBtn ? 1.1 : 1.0,
-                                child: SizedBox(
-                                  width: 32,
-                                  height: 32,
-                                  child: Icon(
-                                    Icons.share,
-                                    color:
-                                        !_myVaultBtn
-                                            ? Colors.blue
-                                            : Colors.white.withOpacity(0.6),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 14),
-                              Flexible(
-                                child: AnimatedDefaultTextStyle(
-                                  duration: Duration(milliseconds: 200),
-                                  style: TextStyle(
-                                    color:
-                                        !_myVaultBtn
-                                            ? Colors.blue
-                                            : Colors.white,
-                                    fontFamily: 'Inter',
-                                    fontWeight:
-                                        !_myVaultBtn
-                                            ? FontWeight.w700
-                                            : FontWeight.w600,
-                                    fontSize: 17,
-                                  ),
-                                  child: Text('Shared'),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 15),
+                    ],
+                  ),
+                  SizedBox(height: 15),
+                ],
+
                 Expanded(
                   child: AnimatedContainer(
                     duration: Duration(milliseconds: 400),
@@ -569,7 +638,6 @@ class _FolderTabViewState extends State<FolderTabView> {
                         ),
                       ],
                     ),
-                    // Aggiungi ClipRRect per tagliare il contenuto che esce dal bordo
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(30),
                       child: AnimatedSwitcher(
@@ -601,6 +669,7 @@ class _FolderTabViewState extends State<FolderTabView> {
                 ),
               ],
             ),
+
             AnimatedPositioned(
               duration: Duration(milliseconds: 550),
               curve: Curves.easeInOut,
@@ -742,7 +811,7 @@ class _FolderTabViewState extends State<FolderTabView> {
 
   Widget _buildContent() {
     return Container(
-      key: ValueKey(_myVaultBtn),
+      key: ValueKey('${_myVaultBtn}_${_searchQuery}'),
       child:
           _isLoading
               ? const Center(child: CircularProgressIndicator())
@@ -764,59 +833,85 @@ class _FolderTabViewState extends State<FolderTabView> {
                   ],
                 ),
               )
-              : CustomScrollView(
-                controller: _scrollController,
-                slivers: [
-                  SliverPadding(
-                    padding: const EdgeInsets.only(top: 15),
-                    sliver: SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
-                        child: Text(
-                          "Cartelle",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) => Padding(
-                        key: _folders[index].id,
-                        padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
-                        child: FolderCard(section: _folders[index]),
-                      ),
-                      childCount: _folders.length,
-                    ),
-                  ),
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-                      child: Text(
-                        "File",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                  SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) => Padding(
-                        key: _files[index].id,
-                        padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
-                        child: FileCard(section: _files[index]),
-                      ),
-                      childCount: _files.length,
-                    ),
-                  ),
-                  SliverPadding(padding: EdgeInsets.only(bottom: 100)),
-                ],
+              : _buildItemsList(),
+    );
+  }
+
+  Widget _buildItemsList() {
+    // Verifica se non ci sono risultati
+    if (_filteredFolders.isEmpty && _filteredFiles.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.search_off, size: 64, color: Colors.grey[400]),
+            SizedBox(height: 16),
+            Text(
+              _searchQuery.isNotEmpty
+                  ? 'Nessun risultato trovato per "$_searchQuery"'
+                  : 'Nessun elemento disponibile',
+              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      );
+    }
+
+    return CustomScrollView(
+      controller: _scrollController,
+      slivers: [
+        // Sezione Cartelle
+        if (_filteredFolders.isNotEmpty) ...[
+          SliverPadding(
+            padding: const EdgeInsets.only(top: 15),
+            sliver: SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
+                child: Text(
+                  "Cartelle (${_filteredFolders.length})",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
               ),
+            ),
+          ),
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) => Padding(
+                key: _filteredFolders[index].id,
+                padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+                child: FolderCard(section: _filteredFolders[index]),
+              ),
+              childCount: _filteredFolders.length,
+            ),
+          ),
+        ],
+
+        // Sezione File
+        if (_filteredFiles.isNotEmpty) ...[
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+              child: Text(
+                "File (${_filteredFiles.length})",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) => Padding(
+                key: _filteredFiles[index].id,
+                padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+                child: FileCard(section: _filteredFiles[index]),
+              ),
+              childCount: _filteredFiles.length,
+            ),
+          ),
+        ],
+
+        SliverPadding(padding: EdgeInsets.only(bottom: 100)),
+      ],
     );
   }
 

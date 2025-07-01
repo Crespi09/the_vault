@@ -13,17 +13,6 @@ import 'package:vault_app/app/on_boarding/onboarding_view.dart';
 import 'package:vault_app/app/on_boarding/signin_view.dart';
 import 'package:vault_app/app/theme.dart';
 
-// TODO - da togliere, solo di test per le pagine
-// Widget commonTabScene(String tabName) {
-//   return Container(
-//     alignment: Alignment.center,
-//     child: Text(
-//       tabName,
-//       style: const TextStyle(fontSize: 28, color: Colors.white),
-//     ),
-//   );
-// }
-
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -33,13 +22,18 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   late AnimationController? _animationController;
-  // late AnimationController? _onBoardingAnimController;
-  // late Animation<double> _onBoardingAnim;
   late Animation<double> _sidebarAnim;
   late SMIBool _menuBtn;
   Widget _tabBody = Container(color: RiveAppTheme.background);
 
   late final List<Widget> _screens;
+
+  // Aggiungi una chiave globale per la FolderTabView
+  final GlobalKey<FolderTabViewState> _folderTabKey =
+      GlobalKey<FolderTabViewState>();
+
+  // Aggiungi una variabile per tracciare il tab corrente
+  int _currentTabIndex = 0;
 
   final springDesc = const SpringDescription(
     mass: 0.1,
@@ -62,7 +56,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
     artboard.addController(controller!);
     _menuBtn = controller.findInput<bool>('isOpen') as SMIBool;
-    
   }
 
   void onMenuPress() {
@@ -74,17 +67,36 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     }
     _menuBtn.change(!_menuBtn.value);
 
-    // serve per cambiare il colore della barra sopra del telefono
     SystemChrome.setSystemUIOverlayStyle(
       _menuBtn.value ? SystemUiOverlayStyle.dark : SystemUiOverlayStyle.light,
     );
   }
 
+  // Aggiungi questo metodo per gestire la ricerca
+  void _handleSearch(String query) {
+    // Se non siamo già nel tab delle cartelle (indice 1), cambia tab
+    if (_currentTabIndex != 1) {
+      setState(() {
+        _currentTabIndex = 1;
+        _tabBody = _screens[1];
+      });
+
+      // Aspetta un frame per assicurarsi che il widget sia costruito
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _folderTabKey.currentState?.performSearch(query);
+      });
+    } else {
+      // Se siamo già nel tab delle cartelle, esegui direttamente la ricerca
+      _folderTabKey.currentState?.performSearch(query);
+    }
+  }
+
   @override
   void initState() {
+    // Usa la chiave globale per la FolderTabView
     _screens = [
       const HomeTabView(),
-      const FolderTabView(),
+      FolderTabView(key: _folderTabKey),
       UserTabView(onLogin: updateLoggedStatus),
     ];
 
@@ -94,22 +106,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       vsync: this,
     );
 
-    // _onBoardingAnimController = AnimationController(
-    //   duration: const Duration(milliseconds: 350),
-    //   upperBound: 1,
-    //   vsync: this,
-    // );
-
     _sidebarAnim = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(
-        parent: _animationController!,
-        curve: Curves.linear, // tante animazioni
-      ),
+      CurvedAnimation(parent: _animationController!, curve: Curves.linear),
     );
-
-    // _onBoardingAnim = Tween<double>(begin: 0, end: 1).animate(
-    //   CurvedAnimation(parent: _onBoardingAnimController!, curve: Curves.linear),
-    // );
 
     _tabBody = _screens.first;
     super.initState();
@@ -118,7 +117,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   void dispose() {
     _animationController?.dispose();
-    // _onBoardingAnimController?.dispose();
     super.dispose();
   }
 
@@ -226,11 +224,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               )
               : SizedBox(),
 
-          // Search bar posizionata in alto a destra
+          // Search bar modificata per gestire la ricerca
           _logged
               ? Positioned(
-                top: MediaQuery.of(context).padding.top + MediaQuery.of(context).size.height * 0.02, // 2% dell'altezza dello schermo
-                right: MediaQuery.of(context).size.width * 0.05, // 5% della larghezza dello schermo
+                top:
+                    MediaQuery.of(context).padding.top +
+                    MediaQuery.of(context).size.height * 0.02,
+                right: MediaQuery.of(context).size.width * 0.05,
                 child: AnimatedBuilder(
                   animation: _sidebarAnim,
                   builder: (context, child) {
@@ -238,44 +238,38 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       alignment: Alignment.center,
                       transform:
                           Matrix4.identity()
-                            ..setEntry(
-                              3,
-                              1,
-                              0.0006,
-                            )
-                            ..rotateY(
-                              _sidebarAnim.value * math.pi / 4,
-                            )
+                            ..setEntry(3, 1, 0.0006)
+                            ..rotateY(_sidebarAnim.value * math.pi / 4)
                             ..rotateZ(_sidebarAnim.value * math.pi / -20.33)
                             ..translate(
-                              _sidebarAnim.value * MediaQuery.of(context).size.width * 0.6, // 60% della larghezza
-                              _sidebarAnim.value * MediaQuery.of(context).size.height * 0.08, // 8% dell'altezza
+                              _sidebarAnim.value *
+                                  MediaQuery.of(context).size.width *
+                                  0.6,
+                              _sidebarAnim.value *
+                                  MediaQuery.of(context).size.height *
+                                  0.08,
                               0,
                             ),
                       child: child!,
                     );
                   },
-                  child: SearchBarComponents(),
+                  child: SearchBarComponents(
+                    onSearch: _handleSearch,
+                    onSearchPressed: () {
+                      // Opzionale: gestisci il tap sulla search bar
+                      // Ad esempio, potresti voler navigare al tab delle cartelle
+                      if (_currentTabIndex != 1) {
+                        setState(() {
+                          _currentTabIndex = 1;
+                          _tabBody = _screens[1];
+                        });
+                      }
+                    },
+                  ),
                 ),
               )
               : SizedBox(),
 
-          // SafeArea(
-          //   child: Container(
-          //     decoration: BoxDecoration(
-          //       color: Colors.white,
-          //       borderRadius: BorderRadius.circular(30),
-          //       boxShadow: [
-          //         BoxShadow(
-          //           color: Colors.black.withOpacity(0.5),
-          //           blurRadius: 40,
-          //           offset: const Offset(0, 40),
-          //         ),
-          //       ],
-          //     ),
-          //     child: OnboardingView(),
-          //   ),
-          // ),
           _logged
               ? IgnorePointer(
                 ignoring: true,
@@ -322,6 +316,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   child: CustomTabBar(
                     onTabChange: (tabIndex) {
                       setState(() {
+                        _currentTabIndex = tabIndex;
                         _tabBody = _screens[tabIndex];
                       });
                     },
