@@ -38,9 +38,6 @@ class VaultItem {
   }
 
   factory VaultItem.fromFileJson(Map<String, dynamic> json) {
-    debugPrint('AGGIUNTO FILE');
-    debugPrint(json['fileName']);
-
     String name = json['fileName'] ?? '';
 
     if (name.length > 12) {

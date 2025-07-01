@@ -66,7 +66,17 @@ class AuthStateWrapper extends StatelessWidget {
           'AuthState changed: isAuthenticated=${authService.isAuthenticated}',
         );
 
-        return authService.isAuthenticated ? HomePage() : OnboardingView();
+        return authService.isAuthenticated
+            ? HomePage()
+            : OnboardingView(
+                onLogin: (success) {
+                  if (success) {
+                    // Forza il rebuild del Consumer
+                    // L'AuthService dovrebbe già aver aggiornato isAuthenticated
+                    debugPrint('Login callback chiamato con successo');
+                  }
+                },
+              );
       },
     );
   }

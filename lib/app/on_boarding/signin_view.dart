@@ -98,6 +98,8 @@ class _SigninViewState extends State<SigninView> {
         ),
       );
 
+      debugPrint('STATUS CODE: ');
+      debugPrint((response.statusCode).toString());
       if (response.statusCode == 200 || response.statusCode == 201) {
         debugPrint('Login successful!');
 
