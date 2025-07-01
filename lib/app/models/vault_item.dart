@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class VaultItem {
   VaultItem({
     this.id,
+    this.itemId,
     this.title = "",
     this.subtitle = "",
     this.icon = Icons.folder,
@@ -11,6 +12,7 @@ class VaultItem {
   });
 
   UniqueKey? id;
+  int? itemId;
   String title, image;
   String subtitle;
   IconData icon;
@@ -18,9 +20,16 @@ class VaultItem {
 
   // Factory per creare VaultItem da una mappa JSON
   factory VaultItem.fromFolderJson(Map<String, dynamic> json) {
+    String name = json['name'] ?? '';
+
+    if (name.length > 12) {
+      name = '${name.substring(0, 12)}...';
+    }
+
     return VaultItem(
       // id: json['id'],
-      title: json['name'] ?? '',
+      itemId: json['id'],
+      title: name,
       subtitle: _formattedData(json['createdAt']),
       icon: Icons.folder,
       color: _hexToColor(json['color'] ?? '#000000'),
@@ -29,9 +38,19 @@ class VaultItem {
   }
 
   factory VaultItem.fromFileJson(Map<String, dynamic> json) {
+    debugPrint('AGGIUNTO FILE');
+    debugPrint(json['fileName']);
+
+    String name = json['fileName'] ?? '';
+
+    if (name.length > 12) {
+      name = '${name.substring(0, 12)}...';
+    }
+
     return VaultItem(
       // id: json['itemId'],
-      title: json['fileName'] ?? '',
+      itemId: json['itemId'],
+      title: name,
       subtitle: _formattedData(json['createdAt']),
       icon: Icons.description,
       color: const Color(0xFF7850F0),

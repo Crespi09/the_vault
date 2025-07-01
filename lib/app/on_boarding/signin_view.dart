@@ -98,7 +98,7 @@ class _SigninViewState extends State<SigninView> {
         ),
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         debugPrint('Login successful!');
 
         final responseData = response.data;

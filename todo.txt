@@ -1,0 +1,33 @@
+TODO -
+
+            FILE
+    @ upload file 
+    @ apertura fotocamera con upload file
+    @ apertura file
+
+
+            FOLDER
+    @ apertura folder
+    @ collegare api delete folder
+    @ collegare api edit folder
+
+
+            MENU
+    @ gestire cestino
+    @ gestire preferiti
+    @ gestire file recenti
+    @ gestire folder recenti
+    
+    
+            SIDEBAR
+    @ aggiungere collegamento alle pagine
+
+
+            PROFILO
+    @ aggiungere modal condivisione file
+
+
+            ERRORI
+    @ sistemare doppio login per accedere
+    @ sistemare tailscale
+    @ sistemare doppio click su simbolo sidebar

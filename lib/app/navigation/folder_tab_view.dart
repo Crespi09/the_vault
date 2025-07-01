@@ -2,7 +2,10 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:mime/mime.dart';
 import 'package:provider/provider.dart';
+import 'dart:io';
 import 'package:vault_app/app/components/create_folder_modal.dart';
 import 'package:vault_app/app/components/fileCard.dart';
 import 'package:vault_app/app/components/folderCard.dart';
@@ -24,6 +27,7 @@ class _FolderTabViewState extends State<FolderTabView> {
   String? _errorMessage;
 
   final Dio _dio = Dio();
+  final ImagePicker _picker = ImagePicker();
 
   //btn
   bool _myVaultBtn = true;
@@ -31,6 +35,11 @@ class _FolderTabViewState extends State<FolderTabView> {
   bool _isVisible = true;
   bool _openBtnSection = false;
   bool _createFolder = false;
+  bool _addFile = false;
+  bool _openWebcam = false;
+
+  // camera
+  // final CameraController? cameraController = controller;
 
   @override
   void initState() {
@@ -160,6 +169,142 @@ class _FolderTabViewState extends State<FolderTabView> {
         );
       }
     }
+  }
+
+  // Aggiungi questo metodo per l'upload dei file
+  Future<void> _uploadFile({String? parentId}) async {
+    try {
+      // Mostra dialog per scegliere la sorgente
+      final ImageSource? source = await _showImageSourceDialog();
+      if (source == null) return;
+
+      // Seleziona il file
+      final XFile? pickedFile = await _picker.pickImage(source: source);
+      if (pickedFile == null) return;
+
+      // Mostra loading
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Row(
+              children: [
+                CircularProgressIndicator(strokeWidth: 2),
+                SizedBox(width: 16),
+                Text('Caricamento file in corso...'),
+              ],
+            ),
+            duration: Duration(seconds: 30),
+          ),
+        );
+      }
+
+      final authService = Provider.of<AuthService>(context, listen: false);
+      if (!authService.isAuthenticated) {
+        debugPrint('Utente non autenticato');
+        return;
+      }
+
+      // Prepara FormData
+      final formData = FormData();
+
+      // Aggiungi il file
+      final file = File(pickedFile.path);
+      final mimeType =
+          lookupMimeType(pickedFile.path) ?? 'application/octet-stream';
+
+      formData.files.add(
+        MapEntry(
+          'file',
+          await MultipartFile.fromFile(
+            file.path,
+            filename: pickedFile.name,
+            contentType: DioMediaType.parse(mimeType),
+          ),
+        ),
+      );
+
+      // Aggiungi parentId se specificato
+      if (parentId != null && parentId.isNotEmpty) {
+        formData.fields.add(MapEntry('parentId', parentId));
+      }
+
+      // Effettua l'upload
+      final response = await _dio.post(
+        'http://10.0.2.2:3000/file',
+        data: formData,
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer ${authService.accessToken}',
+            'Content-Type': 'multipart/form-data',
+          },
+        ),
+      );
+
+      // Nascondi loading
+      if (mounted) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      }
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        debugPrint('File caricato con successo: ${response.data}');
+
+        // Ricarica i dati
+        _fetchItems();
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('File "${pickedFile.name}" caricato con successo!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      } else {
+        throw Exception('Errore nel caricamento: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Nascondi loading in caso di errore
+      if (mounted) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      }
+
+      debugPrint('Errore durante l\'upload del file: $e');
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Errore nel caricamento del file: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<ImageSource?> _showImageSourceDialog() async {
+    return showDialog<ImageSource>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Seleziona sorgente'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Galleria'),
+                onTap: () => Navigator.of(context).pop(ImageSource.gallery),
+              ),
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('Fotocamera'),
+                onTap: () => Navigator.of(context).pop(ImageSource.camera),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -479,6 +624,7 @@ class _FolderTabViewState extends State<FolderTabView> {
                         setState(() {
                           _openBtnSection = false;
                         });
+                        _uploadFile();
                         debugPrint('Upload file');
                       },
                     ),
@@ -491,6 +637,7 @@ class _FolderTabViewState extends State<FolderTabView> {
                         setState(() {
                           _openBtnSection = false;
                         });
+                        _uploadFile();
                         debugPrint('Scatta foto');
                       },
                     ),
