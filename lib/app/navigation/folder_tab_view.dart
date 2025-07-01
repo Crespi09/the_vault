@@ -880,7 +880,10 @@ class FolderTabViewState extends State<FolderTabView> {
               (context, index) => Padding(
                 key: _filteredFolders[index].id,
                 padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
-                child: FolderCard(section: _filteredFolders[index]),
+                child: FolderCard(
+                  section: _filteredFolders[index],
+                  onDeleted: _fetchItems,
+                ),
               ),
               childCount: _filteredFolders.length,
             ),
@@ -903,7 +906,10 @@ class FolderTabViewState extends State<FolderTabView> {
               (context, index) => Padding(
                 key: _filteredFiles[index].id,
                 padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
-                child: FileCard(section: _filteredFiles[index]),
+                child: FileCard(
+                  section: _filteredFiles[index],
+                  onDeleted: _fetchItems,
+                ),
               ),
               childCount: _filteredFiles.length,
             ),

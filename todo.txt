@@ -4,11 +4,12 @@ TODO -
     + @ upload file 
     + @ apertura fotocamera con upload file
     @ apertura file
-    @ searchbar
+    + @ searchbar
+    + @ delete file
 
             FOLDER
     @ apertura folder
-    @ collegare api delete folder
+    + @ collegare api delete folder
     @ collegare api edit folder
 
 

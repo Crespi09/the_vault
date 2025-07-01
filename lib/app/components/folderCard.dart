@@ -1,15 +1,42 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:vault_app/app/models/courses.dart';
 import 'package:vault_app/app/models/vault_item.dart';
+import 'package:vault_app/services/auth_service.dart';
 
 class FolderCard extends StatelessWidget {
-  const FolderCard({super.key, required this.section});
+  const FolderCard({super.key, required this.section, this.onDeleted});
 
   final VaultItem section;
+  final VoidCallback? onDeleted;
 
   @override
   Widget build(BuildContext context) {
     GlobalKey key = GlobalKey();
+    final Dio _dio = Dio();
+    String? _errorMessage;
+
+    void deleteFile() async {
+      try {
+        final authService = Provider.of<AuthService>(context, listen: false);
+
+        final response = await _dio.delete(
+          'http://10.0.2.2:3000/item/${section.itemId}',
+          options: Options(
+            headers: {'Authorization': 'Bearer ${authService.accessToken}'},
+          ),
+        );
+
+        if (response.statusCode == 200 || response.statusCode == 204) {
+          if (onDeleted != null) {
+            onDeleted!();
+          }
+        }
+      } catch (e) {
+        _errorMessage = 'Errore eliminazione File';
+      }
+    }
 
     return Container(
       constraints: const BoxConstraints(maxHeight: 70),
@@ -114,7 +141,14 @@ class FolderCard extends StatelessWidget {
                 ),
               ).then((value) {
                 // Gestisci il valore selezionato
-                if (value != null) {}
+                if (value != null) {
+                  switch (value) {
+                    case 'delete':
+                      deleteFile();
+                      break;
+                    default:
+                  }
+                }
               });
             },
           ),

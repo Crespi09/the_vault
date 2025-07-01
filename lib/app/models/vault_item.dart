@@ -4,6 +4,7 @@ class VaultItem {
   VaultItem({
     this.id,
     this.itemId,
+    this.fileId,
     this.title = "",
     this.subtitle = "",
     this.icon = Icons.folder,
@@ -13,6 +14,7 @@ class VaultItem {
 
   UniqueKey? id;
   int? itemId;
+  int? fileId;
   String title, image;
   String subtitle;
   IconData icon;
@@ -46,6 +48,7 @@ class VaultItem {
 
     return VaultItem(
       // id: json['itemId'],
+      fileId: json['id'],
       itemId: json['itemId'],
       title: name,
       subtitle: _formattedData(json['createdAt']),
