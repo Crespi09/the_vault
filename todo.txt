@@ -3,9 +3,9 @@ TODO -
             FILE
     + @ upload file 
     + @ apertura fotocamera con upload file
-    @ apertura file
-    + @ searchbar
+    + @ apertura file
     + @ delete file
+    @ edit nome file
 
             FOLDER
     @ apertura folder
@@ -18,8 +18,10 @@ TODO -
     @ gestire preferiti
     @ gestire file recenti
     @ gestire folder recenti
-    
-    
+            
+            SEARCHBAR
+    + @ searchbar
+
             SIDEBAR
     @ aggiungere collegamento alle pagine
 
