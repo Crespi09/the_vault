@@ -8,6 +8,7 @@ import 'package:rive/rive.dart' hide LinearGradient hide Image;
 import 'package:vault_app/app/theme.dart';
 import 'package:dio/dio.dart';
 import 'package:provider/provider.dart';
+import 'package:vault_app/env.dart';
 import 'package:vault_app/services/auth_service.dart';
 
 class SigninView extends StatefulWidget {
@@ -91,7 +92,7 @@ class _SigninViewState extends State<SigninView> {
     try {
       // Configura Dio per non lanciare eccezioni sui codici di stato 4xx
       final response = await _dio.post(
-        'http://10.0.2.2:3000/auth/signin',
+        '${Env.apiBaseUrl}auth/signin',
         data: {'username': email, 'password': password},
         options: Options(
           validateStatus: (status) {

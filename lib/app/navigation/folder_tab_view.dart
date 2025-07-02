@@ -2,11 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:mime/mime.dart';
 import 'package:provider/provider.dart';
-import 'dart:io';
-import 'package:vault_app/app/components/create_folder_modal.dart';
+import 'package:vault_app/app/components/add_item_button.dart';
 import 'package:vault_app/app/components/fileCard.dart';
 import 'package:vault_app/app/components/folderCard.dart';
 import 'package:vault_app/app/models/vault_item.dart';
@@ -30,14 +27,11 @@ class FolderTabViewState extends State<FolderTabView> {
   String _searchQuery = '';
 
   final Dio _dio = Dio();
-  final ImagePicker _picker = ImagePicker();
 
   //btn
   bool _myVaultBtn = true;
   late ScrollController _scrollController;
   bool _isVisible = true;
-  bool _openBtnSection = false;
-  bool _createFolder = false;
 
   @override
   void initState() {
@@ -61,11 +55,9 @@ class FolderTabViewState extends State<FolderTabView> {
         return;
       }
 
-      // Scegli l'URL in base alla selezione del tab
-      String apiUrl =
-          _myVaultBtn
-              ? 'http://10.0.2.2:3000/item/all?limit=50&offset=0'
-              : 'http://10.0.2.2:3000/shared/all?limit=5&offset=0';
+      String apiUrl = _myVaultBtn
+          ? 'http://10.0.2.2:3000/item/all?limit=50&offset=0'
+          : 'http://10.0.2.2:3000/shared/all?limit=5&offset=0';
 
       final response = await _dio.get(
         apiUrl,
@@ -102,7 +94,6 @@ class FolderTabViewState extends State<FolderTabView> {
         _isLoading = false;
       });
 
-      // Applica il filtro se c'è una query di ricerca attiva
       if (_searchQuery.isNotEmpty) {
         _filterItems(_searchQuery);
       }
@@ -127,272 +118,21 @@ class FolderTabViewState extends State<FolderTabView> {
       } else {
         final lowerQuery = query.toLowerCase();
 
-        _filteredFolders =
-            _folders.where((folder) {
-              return folder.title.toLowerCase().contains(lowerQuery) ||
-                  folder.subtitle.toLowerCase().contains(lowerQuery);
-            }).toList();
+        _filteredFolders = _folders.where((folder) {
+          return folder.title.toLowerCase().contains(lowerQuery) ||
+              folder.subtitle.toLowerCase().contains(lowerQuery);
+        }).toList();
 
-        _filteredFiles =
-            _files.where((file) {
-              return file.title.toLowerCase().contains(lowerQuery) ||
-                  file.subtitle.toLowerCase().contains(lowerQuery);
-            }).toList();
+        _filteredFiles = _files.where((file) {
+          return file.title.toLowerCase().contains(lowerQuery) ||
+              file.subtitle.toLowerCase().contains(lowerQuery);
+        }).toList();
       }
     });
   }
 
-  // Metodo pubblico per essere chiamato dall'esterno
   void performSearch(String query) {
     _filterItems(query);
-  }
-
-  Future<void> _addFolder(String name, String color, String? parentId) async {
-    try {
-      final authService = Provider.of<AuthService>(context, listen: false);
-
-      if (!authService.isAuthenticated) {
-        debugPrint('Utente non autenticato');
-        return;
-      }
-
-      // Prepara i dati della richiesta
-      final Map<String, dynamic> requestData = {'name': name, 'color': color};
-
-      // Aggiungi parentId solo se non è null e non è vuoto
-      if (parentId != null && parentId.isNotEmpty) {
-        requestData['parentId'] = parentId;
-      }
-
-      debugPrint('Dati richiesta: $requestData');
-
-      final response = await _dio.post(
-        'http://10.0.2.2:3000/item',
-        data: requestData,
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer ${authService.accessToken}',
-            'Content-Type': 'application/json',
-          },
-        ),
-      );
-
-      debugPrint('Risposta server: ${response.statusCode}');
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        _fetchItems();
-        debugPrint('Cartella creata con successo');
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Cartella "$name" creata con successo!'),
-              backgroundColor: Colors.green,
-            ),
-          );
-        }
-      } else {
-        debugPrint('Errore nella creazione: ${response.statusCode}');
-      }
-    } catch (e) {
-      debugPrint('Errore durante creazione folder: $e');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Errore nella creazione della cartella'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
-  }
-
-  // Rimuovi il metodo _uploadFile e sostituiscilo con due metodi separati
-  Future<void> _uploadFromGallery({String? parentId}) async {
-    try {
-      // Usa il picker generico che supporta sia immagini che video
-      final List<XFile> pickedFiles = await _picker.pickMultipleMedia();
-
-      if (pickedFiles.isEmpty) return;
-
-      // Per ora prendi solo il primo file selezionato
-      final XFile pickedFile = pickedFiles.first;
-
-      // Determina il tipo di file dal MIME type
-      final mimeType = lookupMimeType(pickedFile.path) ?? '';
-
-      if (mimeType.startsWith('image/')) {
-        debugPrint('File selezionato: Immagine');
-        await _performUpload(pickedFile, parentId);
-      } else if (mimeType.startsWith('video/')) {
-        debugPrint('File selezionato: Video');
-        await _performUpload(pickedFile, parentId);
-      } else {
-        // Gestisci altri tipi di file se necessario
-        debugPrint('Tipo di file non supportato: $mimeType');
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Tipo di file non supportato'),
-              backgroundColor: Colors.orange,
-            ),
-          );
-        }
-        return;
-      }
-    } catch (e) {
-      debugPrint('Errore durante l\'upload dalla galleria: $e');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Errore nel caricamento del file: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
-  }
-
-  Future<void> _uploadFromCamera({String? parentId}) async {
-    try {
-      // Prima chiedi all'utente se vuole scattare una foto o registrare un video
-      final String? mediaType = await showDialog<String>(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Seleziona tipo di ripresa'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ListTile(
-                  leading: Icon(Icons.camera_alt),
-                  title: Text('Foto'),
-                  onTap: () => Navigator.of(context).pop('image'),
-                ),
-                ListTile(
-                  leading: Icon(Icons.videocam),
-                  title: Text('Video'),
-                  onTap: () => Navigator.of(context).pop('video'),
-                ),
-              ],
-            ),
-          );
-        },
-      );
-
-      if (mediaType == null) return;
-
-      XFile? pickedFile;
-      if (mediaType == 'image') {
-        pickedFile = await _picker.pickImage(source: ImageSource.camera);
-      } else {
-        pickedFile = await _picker.pickVideo(source: ImageSource.camera);
-      }
-
-      if (pickedFile == null) return;
-
-      await _performUpload(pickedFile, parentId);
-    } catch (e) {
-      debugPrint('Errore durante la ripresa: $e');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Errore nella ripresa: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
-  }
-
-  Future<void> _performUpload(XFile pickedFile, String? parentId) async {
-    try {
-      // Mostra loading
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Row(
-              children: [
-                CircularProgressIndicator(strokeWidth: 2),
-                SizedBox(width: 16),
-                Text('Caricamento file in corso...'),
-              ],
-            ),
-            duration: Duration(seconds: 30),
-          ),
-        );
-      }
-
-      final authService = Provider.of<AuthService>(context, listen: false);
-      if (!authService.isAuthenticated) {
-        debugPrint('Utente non autenticato');
-        return;
-      }
-
-      // Prepara FormData
-      final formData = FormData();
-
-      // Aggiungi il file
-      final file = File(pickedFile.path);
-      final mimeType =
-          lookupMimeType(pickedFile.path) ?? 'application/octet-stream';
-
-      formData.files.add(
-        MapEntry(
-          'file',
-          await MultipartFile.fromFile(
-            file.path,
-            filename: pickedFile.name,
-            contentType: DioMediaType.parse(mimeType),
-          ),
-        ),
-      );
-
-      // Aggiungi parentId se specificato
-      if (parentId != null && parentId.isNotEmpty) {
-        formData.fields.add(MapEntry('parentId', parentId));
-      }
-
-      // Effettua l'upload
-      final response = await _dio.post(
-        'http://10.0.2.2:3000/file',
-        data: formData,
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer ${authService.accessToken}',
-            'Content-Type': 'multipart/form-data',
-          },
-        ),
-      );
-
-      // Nascondi loading
-      if (mounted) {
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      }
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        debugPrint('File caricato con successo: ${response.data}');
-
-        // Ricarica i dati
-        _fetchItems();
-
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('File "${pickedFile.name}" caricato con successo!'),
-              backgroundColor: Colors.green,
-            ),
-          );
-        }
-      } else {
-        throw Exception('Errore nel caricamento: ${response.statusCode}');
-      }
-    } catch (e) {
-      // Nascondi loading in caso di errore
-      if (mounted) {
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      }
-      rethrow;
-    }
   }
 
   @override
@@ -424,9 +164,8 @@ class FolderTabViewState extends State<FolderTabView> {
     if (_myVaultBtn != selection) {
       setState(() {
         _myVaultBtn = selection;
-        _isLoading = true; // Mostra loading durante la transizione
+        _isLoading = true;
       });
-      // Ricarica i dati quando cambia la selezione
       _fetchItems();
     }
   }
@@ -441,7 +180,7 @@ class FolderTabViewState extends State<FolderTabView> {
           children: [
             Column(
               children: [
-                // Mostra i risultati di ricerca se c'è una query attiva
+                // Risultati di ricerca
                 if (_searchQuery.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.symmetric(
@@ -471,7 +210,7 @@ class FolderTabViewState extends State<FolderTabView> {
                     ),
                   ),
 
-                // Tab buttons esistenti (solo se non c'è ricerca attiva)
+                // Tab buttons
                 if (_searchQuery.isEmpty) ...[
                   Row(
                     children: [
@@ -493,10 +232,9 @@ class FolderTabViewState extends State<FolderTabView> {
                               horizontal: 12,
                             ),
                             decoration: BoxDecoration(
-                              color:
-                                  _myVaultBtn
-                                      ? Colors.blue.withOpacity(0.2)
-                                      : Colors.transparent,
+                              color: _myVaultBtn
+                                  ? Colors.blue.withOpacity(0.2)
+                                  : Colors.transparent,
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Row(
@@ -509,10 +247,9 @@ class FolderTabViewState extends State<FolderTabView> {
                                     height: 32,
                                     child: Icon(
                                       Icons.folder,
-                                      color:
-                                          _myVaultBtn
-                                              ? Colors.blue
-                                              : Colors.white.withOpacity(0.6),
+                                      color: _myVaultBtn
+                                          ? Colors.blue
+                                          : Colors.white.withOpacity(0.6),
                                     ),
                                   ),
                                 ),
@@ -521,15 +258,13 @@ class FolderTabViewState extends State<FolderTabView> {
                                   child: AnimatedDefaultTextStyle(
                                     duration: Duration(milliseconds: 200),
                                     style: TextStyle(
-                                      color:
-                                          _myVaultBtn
-                                              ? Colors.blue
-                                              : Colors.white,
+                                      color: _myVaultBtn
+                                          ? Colors.blue
+                                          : Colors.white,
                                       fontFamily: 'Inter',
-                                      fontWeight:
-                                          _myVaultBtn
-                                              ? FontWeight.w700
-                                              : FontWeight.w600,
+                                      fontWeight: _myVaultBtn
+                                          ? FontWeight.w700
+                                          : FontWeight.w600,
                                       fontSize: 17,
                                     ),
                                     child: Text('My Vault'),
@@ -570,10 +305,9 @@ class FolderTabViewState extends State<FolderTabView> {
                               horizontal: 12,
                             ),
                             decoration: BoxDecoration(
-                              color:
-                                  !_myVaultBtn
-                                      ? Colors.blue.withOpacity(0.2)
-                                      : Colors.transparent,
+                              color: !_myVaultBtn
+                                  ? Colors.blue.withOpacity(0.2)
+                                  : Colors.transparent,
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Row(
@@ -586,10 +320,9 @@ class FolderTabViewState extends State<FolderTabView> {
                                     height: 32,
                                     child: Icon(
                                       Icons.share,
-                                      color:
-                                          !_myVaultBtn
-                                              ? Colors.blue
-                                              : Colors.white.withOpacity(0.6),
+                                      color: !_myVaultBtn
+                                          ? Colors.blue
+                                          : Colors.white.withOpacity(0.6),
                                     ),
                                   ),
                                 ),
@@ -598,15 +331,13 @@ class FolderTabViewState extends State<FolderTabView> {
                                   child: AnimatedDefaultTextStyle(
                                     duration: Duration(milliseconds: 200),
                                     style: TextStyle(
-                                      color:
-                                          !_myVaultBtn
-                                              ? Colors.blue
-                                              : Colors.white,
+                                      color: !_myVaultBtn
+                                          ? Colors.blue
+                                          : Colors.white,
                                       fontFamily: 'Inter',
-                                      fontWeight:
-                                          !_myVaultBtn
-                                              ? FontWeight.w700
-                                              : FontWeight.w600,
+                                      fontWeight: !_myVaultBtn
+                                          ? FontWeight.w700
+                                          : FontWeight.w600,
                                       fontSize: 17,
                                     ),
                                     child: Text('Shared'),
@@ -670,139 +401,12 @@ class FolderTabViewState extends State<FolderTabView> {
               ],
             ),
 
-            AnimatedPositioned(
-              duration: Duration(milliseconds: 550),
-              curve: Curves.easeInOut,
-              bottom: _isVisible ? 140 : -100,
-              right: 30,
-              child: Container(
-                width: 70,
-                height: 70,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(35),
-                  boxShadow: [
-                    BoxShadow(
-                      color: RiveAppTheme.background2.withOpacity(0.3),
-                      blurRadius: 20,
-                    ),
-                  ],
-                ),
-                child: IconButton(
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                  icon: AnimatedRotation(
-                    turns: _openBtnSection ? 0.125 : 0.0,
-                    duration: Duration(milliseconds: 300),
-                    child: const Icon(
-                      Icons.add,
-                      color: RiveAppTheme.backgroundDark,
-                      size: 40,
-                    ),
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _openBtnSection = !_openBtnSection;
-                    });
-                  },
-                ),
-              ),
+            // Floating Action Menu
+            AddItemButton(
+              isVisible: _isVisible,
+              onRefresh: _fetchItems,
+              parentId: null, // Qui puoi passare l'ID della cartella corrente se necessario
             ),
-            // Overlay con i 3 bottoni
-            if (_openBtnSection) ...[
-              Positioned.fill(
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _openBtnSection = false;
-                    });
-                  },
-                  child: Container(color: Colors.black.withOpacity(0.3)),
-                ),
-              ),
-              AnimatedPositioned(
-                duration: Duration(milliseconds: 300),
-                curve: Curves.easeOutBack,
-                bottom: _isVisible ? 230 : 90,
-                right: 30,
-                child: Column(
-                  children: [
-                    _buildActionButton(
-                      icon: Icons.folder,
-                      label: 'Cartella',
-                      onTap: () {
-                        // Azione per creare cartella
-                        setState(() {
-                          _openBtnSection = false;
-                        });
-                        setState(() {
-                          _createFolder = true;
-                        });
-                        debugPrint('Crea cartella');
-                      },
-                    ),
-                    SizedBox(height: 15),
-                    _buildActionButton(
-                      icon:
-                          Icons
-                              .perm_media, // Icona che rappresenta media generici
-                      label: 'Media',
-                      onTap: () {
-                        // Apre direttamente la galleria
-                        setState(() {
-                          _openBtnSection = false;
-                        });
-                        _uploadFromGallery();
-                        debugPrint('Upload media dalla galleria');
-                      },
-                    ),
-                    SizedBox(height: 15),
-                    _buildActionButton(
-                      icon: Icons.camera_alt,
-                      label: 'Camera',
-                      onTap: () {
-                        // Apre direttamente la fotocamera
-                        setState(() {
-                          _openBtnSection = false;
-                        });
-                        _uploadFromCamera();
-                        debugPrint('Apri fotocamera');
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ],
-            if (_createFolder) ...[
-              Positioned.fill(
-                child: Container(
-                  color: Colors.black.withOpacity(0.5),
-                  child: Center(
-                    child: CreateFolderModal(
-                      onCreateFolder: (name, color) {
-                        debugPrint('Creazione cartella: $name, Colore: $color');
-                        setState(() {
-                          _createFolder = false;
-                        });
-                        _addFolder(
-                          name,
-                          color.value
-                              .toRadixString(16)
-                              .padLeft(8, '0')
-                              .substring(2),
-                          null,
-                        );
-                      },
-                      onCancel: () {
-                        setState(() {
-                          _createFolder = false;
-                        });
-                      },
-                    ),
-                  ),
-                ),
-              ),
-            ],
           ],
         ),
       ),
@@ -812,33 +416,31 @@ class FolderTabViewState extends State<FolderTabView> {
   Widget _buildContent() {
     return Container(
       key: ValueKey('${_myVaultBtn}_${_searchQuery}'),
-      child:
-          _isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : _errorMessage != null
+      child: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _errorMessage != null
               ? Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      _errorMessage!,
-                      style: const TextStyle(color: Colors.red),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: _fetchItems,
-                      child: const Text('Riprova'),
-                    ),
-                  ],
-                ),
-              )
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        _errorMessage!,
+                        style: const TextStyle(color: Colors.red),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: _fetchItems,
+                        child: const Text('Riprova'),
+                      ),
+                    ],
+                  ),
+                )
               : _buildItemsList(),
     );
   }
 
   Widget _buildItemsList() {
-    // Verifica se non ci sono risultati
     if (_filteredFolders.isEmpty && _filteredFiles.isEmpty) {
       return Center(
         child: Column(
@@ -861,7 +463,6 @@ class FolderTabViewState extends State<FolderTabView> {
     return CustomScrollView(
       controller: _scrollController,
       slivers: [
-        // Sezione Cartelle
         if (_filteredFolders.isNotEmpty) ...[
           SliverPadding(
             padding: const EdgeInsets.only(top: 15),
@@ -890,7 +491,6 @@ class FolderTabViewState extends State<FolderTabView> {
           ),
         ],
 
-        // Sezione File
         if (_filteredFiles.isNotEmpty) ...[
           SliverToBoxAdapter(
             child: Padding(
@@ -918,35 +518,6 @@ class FolderTabViewState extends State<FolderTabView> {
 
         SliverPadding(padding: EdgeInsets.only(bottom: 100)),
       ],
-    );
-  }
-
-  Widget _buildActionButton({
-    required IconData icon,
-    required String label,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 60,
-        height: 60,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(30),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 10,
-              offset: Offset(0, 3),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [Icon(icon, color: RiveAppTheme.backgroundDark, size: 24)],
-        ),
-      ),
     );
   }
 }

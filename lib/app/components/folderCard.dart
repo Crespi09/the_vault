@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:vault_app/app/components/folder_explorer.dart';
 import 'package:vault_app/app/models/courses.dart';
 import 'package:vault_app/app/models/vault_item.dart';
 import 'package:vault_app/services/auth_service.dart';
@@ -145,6 +146,18 @@ class FolderCard extends StatelessWidget {
                   switch (value) {
                     case 'delete':
                       deleteFile();
+                      break;
+                    case 'open':
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (context) => FolderExplorer(
+                                folderId: section.itemId!,
+                              ), // Assicurati che 'path' sia definito in VaultItem o altro modello
+                        ),
+                      );
+                      ;
                       break;
                     default:
                   }

@@ -5,6 +5,7 @@ import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:vault_app/app/models/vault_item.dart';
+import 'package:vault_app/env.dart';
 import 'package:vault_app/services/auth_service.dart';
 
 class FileCard extends StatelessWidget {
@@ -24,7 +25,7 @@ class FileCard extends StatelessWidget {
         final authService = Provider.of<AuthService>(context, listen: false);
 
         final response = await _dio.delete(
-          'http://10.0.2.2:3000/item/${section.itemId}',
+          '${Env.apiBaseUrl}item/${section.itemId}',
           options: Options(
             headers: {'Authorization': 'Bearer ${authService.accessToken}'},
           ),

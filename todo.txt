@@ -34,3 +34,6 @@ TODO -
     @ sistemare doppio login per accedere
     @ sistemare tailscale
     @ sistemare doppio click su simbolo sidebar
+
+
+    + @ aggiunto db url al file .env
