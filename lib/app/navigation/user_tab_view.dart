@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:dio/dio.dart';
 import 'package:vault_app/app/theme.dart';
 import 'package:vault_app/services/auth_service.dart';
+import 'package:vault_app/services/user_service.dart';
 
 class UserTabView extends StatefulWidget {
   const UserTabView({super.key, this.onLogin});
@@ -36,33 +37,7 @@ class _UserTabViewState extends State<UserTabView> {
         return;
       }
 
-      // android studio ip : 10.0.2.2
-      // raspberry ip : 100.84.178.101
-
-      final response = await _dio.get(
-        'http://10.0.2.2:3000/users/me',
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer ${authService.accessToken}',
-            'Content-Type': 'application/json',
-          },
-        ),
-      );
-
-      if (response.statusCode == 200) {
-        setState(() {
-          _userData = response.data;
-          _isLoading = false;
-        });
-        debugPrint('Dati utente caricati: ${response.data}');
-      } else {
-        debugPrint(
-          'Errore nel caricamento dati utente: ${response.statusCode}',
-        );
-        setState(() {
-          _isLoading = false;
-        });
-      }
+      _userData = await UserService.getUser(authService.accessToken!);
     } catch (e) {
       debugPrint('Eccezione nel caricamento dati utente: $e');
       setState(() {

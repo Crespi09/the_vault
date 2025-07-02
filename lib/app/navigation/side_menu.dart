@@ -1,11 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:rive/rive.dart';
 import 'package:vault_app/app/components/menu_row.dart';
 import 'package:vault_app/app/models/menu_item.dart';
 import 'package:vault_app/app/theme.dart';
 
 import 'dart:math' show max;
+
+import 'package:vault_app/services/auth_service.dart';
+import 'package:vault_app/services/user_service.dart';
 
 class SideMenu extends StatefulWidget {
   const SideMenu({super.key});
@@ -21,6 +25,8 @@ class _SideMenuState extends State<SideMenu> {
 
   String _selectedMenu = MenuItemModel.menuItems[0].title;
   bool _isDarkMode = false;
+
+  Map<String, dynamic>? _userData;
 
   void onThemeRiveIconInit(artboard) {
     final controller = StateMachineController.fromArtboard(
@@ -46,16 +52,33 @@ class _SideMenuState extends State<SideMenu> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    try {
+      final authService = Provider.of<AuthService>(context, listen: false);
+
+      if (!authService.isAuthenticated) {
+        debugPrint('Utente non autenticato');
+        return;
+      }
+      _userData = await UserService.getUser(authService.accessToken!);
+    } catch (e) {
+      debugPrint('Eccezione nel caricamento dati utente: $e');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Container(
       padding: EdgeInsets.only(
         top: MediaQuery.of(context).padding.top,
-        bottom: max(
-          0,
-          MediaQuery.of(context).padding.bottom - 60,
-        ),
+        bottom: max(0, MediaQuery.of(context).padding.bottom - 60),
       ),
       constraints: const BoxConstraints(maxWidth: 288),
       decoration: BoxDecoration(
@@ -80,8 +103,8 @@ class _SideMenuState extends State<SideMenu> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'User1',
+                    Text(
+                      _userData?['email'] ?? 'Nome Utente',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 17,
@@ -90,7 +113,9 @@ class _SideMenuState extends State<SideMenu> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      'User description',
+                      _userData?['created_at'] != null
+                          ? '${DateTime.parse(_userData!['created_at']).day}/${DateTime.parse(_userData!['created_at']).month}/${DateTime.parse(_userData!['created_at']).year}'
+                          : 'Since',
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.7),
                         fontSize: 15,
@@ -102,7 +127,7 @@ class _SideMenuState extends State<SideMenu> {
               ],
             ),
           ),
-          
+
           // Menu sections - wrapped in Expanded for flexible space
           Expanded(
             child: SingleChildScrollView(
@@ -120,13 +145,15 @@ class _SideMenuState extends State<SideMenu> {
                     menuIcons: _historyMenuIcons,
                     onMenuPress: onMenuPress,
                   ),
-                  
+
                   // Storage section
                   Padding(
                     padding: EdgeInsets.only(
                       left: 24,
                       right: 24,
-                      top: screenHeight * 0.03, // Ridotto da 0.05 a 0.03 per più spazio
+                      top:
+                          screenHeight *
+                          0.03, // Ridotto da 0.05 a 0.03 per più spazio
                       bottom: 16,
                     ),
                     child: Column(
@@ -159,7 +186,9 @@ class _SideMenuState extends State<SideMenu> {
                         LinearProgressIndicator(
                           value: 0.4,
                           backgroundColor: RiveAppTheme.background,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.lightBlue),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.lightBlue,
+                          ),
                           borderRadius: BorderRadius.circular(5),
                           minHeight: 13,
                         ),

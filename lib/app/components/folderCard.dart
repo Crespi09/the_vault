@@ -148,16 +148,21 @@ class FolderCard extends StatelessWidget {
                       deleteFile();
                       break;
                     case 'open':
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder:
-                              (context) => FolderExplorer(
-                                folderId: section.itemId!,
-                              ), // Assicurati che 'path' sia definito in VaultItem o altro modello
-                        ),
-                      );
-                      ;
+                      if (section.itemId != null) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder:
+                                (context) =>
+                                    FolderExplorer(folderId: section.itemId!),
+                          ),
+                        );
+                      } else {
+                        // Gestisci il caso in cui itemId è null (ad esempio mostrando un dialogo di errore)
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Folder ID mancante.')),
+                        );
+                      }
                       break;
                     default:
                   }

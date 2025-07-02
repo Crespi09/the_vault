@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/rendering.dart';
+import 'package:provider/provider.dart';
 import 'package:vault_app/app/components/add_item_button.dart';
+import 'package:vault_app/app/components/fileCard.dart';
+import 'package:vault_app/app/components/folderCard.dart';
+import 'package:vault_app/app/models/vault_item.dart';
+import 'package:vault_app/app/theme.dart';
+import 'package:vault_app/services/auth_service.dart';
 
 class FolderExplorer extends StatefulWidget {
   final int folderId;
@@ -11,61 +18,102 @@ class FolderExplorer extends StatefulWidget {
 }
 
 class _FolderExplorerState extends State<FolderExplorer> {
-  // Ora folder sarà una mappa contenente 'item' e 'children'
   Object folder = {};
-  // Lista dei figli (sia cartelle che file)
   List<dynamic> children = [];
   bool isLoading = false;
   String? errorMessage;
+  final Dio _dio = Dio();
+
+  List<VaultItem> _folders = [];
+  List<VaultItem> _files = [];
+
+  String folderName = '';
+
+  // btn
+  late ScrollController _scrollController;
+  bool _isVisible = true;
 
   @override
   void initState() {
     super.initState();
-    _fetchFolderItems();
+    _scrollController = ScrollController();
+    _scrollController.addListener(_scrollListener);
+    _fetchItems();
   }
 
-  Future<void> _fetchFolderItems() async {
+  void dispose() {
+    _scrollController.removeListener(_scrollListener);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollListener() {
+    if (_scrollController.position.userScrollDirection ==
+        ScrollDirection.reverse) {
+      if (_isVisible) {
+        setState(() {
+          _isVisible = false;
+        });
+      }
+    } else if (_scrollController.position.userScrollDirection ==
+        ScrollDirection.forward) {
+      if (!_isVisible) {
+        setState(() {
+          _isVisible = true;
+        });
+      }
+    }
+  }
+
+  Future<void> _fetchItems() async {
     setState(() {
       isLoading = true;
     });
 
     try {
-      final dio = Dio();
-      // Sostituisci l'URL con il tuo endpoint API
-      final response =
-          await dio.get('http://10.0.2.2:3000/folder/${widget.folderId}');
-
+      final authService = Provider.of<AuthService>(context, listen: false);
+      String url = 'http://10.0.2.2:3000/item/${widget.folderId}';
+      final response = await _dio.get(
+        url,
+        options: Options(
+          headers: {'Authorization': 'Bearer ${authService.accessToken}'},
+        ),
+      );
 
       if (response.statusCode == 200) {
         final data = response.data;
-        // Estrai file e cartelle da "children"
-        final List<dynamic> files = data['children']['files'] ?? [];
-        final List<dynamic> folders = data['children']['folders'] ?? [];
 
-        List<dynamic> childrenItems = [];
-        // Per le cartelle, aggiungiamo un flag per identificarle
-        for (var f in folders) {
-          f['isFolder'] = true;
-          childrenItems.add(f);
+        List<VaultItem> folders = [];
+        List<VaultItem> files = [];
+
+        folderName = data['item']['name'];
+
+        if (data['children']['folders'] != null) {
+          for (var folder in data['children']['folders']) {
+            folders.add(VaultItem.fromFolderJson(folder));
+          }
         }
-        // Per i file, aggiungiamo un flag e usiamo fileName al posto di name
-        for (var f in files) {
-          f['isFolder'] = false;
-          f['name'] = f['fileName'];
-          childrenItems.add(f);
+
+        if (data['children']['files'] != null) {
+          for (var file in data['children']['files']) {
+            files.add(VaultItem.fromFileJson(file));
+          }
         }
+
         setState(() {
-          folder = data;
-          children = childrenItems;
+          isLoading = false;
+          _folders = folders;
+          _files = files;
+        });
+      } else {
+        setState(() {
+          errorMessage =
+              'Cartella non trovata (status: ${response.statusCode})';
         });
       }
-    } catch (error) {
+    } catch (e) {
       setState(() {
-        errorMessage = 'Errore durante il caricamento dei dati';
-      });
-    } finally {
-      setState(() {
-        isLoading = false;
+        errorMessage = e.toString();
       });
     }
   }
@@ -73,13 +121,15 @@ class _FolderExplorerState extends State<FolderExplorer> {
   Widget _buildBreadcrumbs() {
     // Utilizza il nome della cartella padre presente in folder['item']['name']
     String folderName =
-        (folder is Map && (folder as Map).containsKey('item') && (folder as Map)['item'] != null)
+        (folder is Map &&
+                (folder as Map).containsKey('item') &&
+                (folder as Map)['item'] != null)
             ? (folder as Map)['item']['name']
             : '';
     List<String> parts = folderName.split('/');
     return Wrap(
       children: List.generate(parts.length, (index) {
-        String pathItem = parts[index];
+        String pathItem = folderName;
         String path = parts.sublist(0, index + 1).join('/');
         return GestureDetector(
           onTap: () {
@@ -95,7 +145,10 @@ class _FolderExplorerState extends State<FolderExplorer> {
             padding: const EdgeInsets.symmetric(horizontal: 4),
             child: Text(
               '$pathItem >',
-              style: const TextStyle(fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
           ),
         );
@@ -105,10 +158,13 @@ class _FolderExplorerState extends State<FolderExplorer> {
 
   @override
   Widget build(BuildContext context) {
+    List<VaultItem> displayItems = [..._folders, ..._files];
+
     return Scaffold(
       appBar: AppBar(
+        iconTheme: IconThemeData(color: Colors.white),
         title: _buildBreadcrumbs(),
-        backgroundColor: Colors.blueAccent,
+        backgroundColor: RiveAppTheme.background2,
       ),
       body: Stack(
         children: [
@@ -129,90 +185,107 @@ class _FolderExplorerState extends State<FolderExplorer> {
                   ),
                 ],
               ),
-              child: isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : errorMessage != null
+              child:
+                  isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : errorMessage != null
                       ? Center(
-                          child: Text(
-                            errorMessage!,
-                            style: const TextStyle(color: Colors.red),
-                          ),
-                        )
-                      : ListView.builder(
-                          itemCount: children.length,
-                          itemBuilder: (_, index) {
-                            final item = children[index];
-                            final bool isFolder = item['isFolder'] == true;
-                            // Usa il colore in base al tipo (puoi eventualmente usare item['color'] se impostato)
-                            final Color bgColor =
-                                isFolder ? Colors.blueAccent : Colors.deepPurple;
-                            final IconData iconData =
-                                isFolder ? Icons.folder : Icons.insert_drive_file;
-                            final String title = item['name'] ?? '';
-                            final String subtitle =
-                                (item['createdAt'] != null && item['createdAt'] is String)
-                                    ? item['createdAt'].toString().split('T').first
-                                    : '';
-                            return Container(
-                              margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-                              padding: const EdgeInsets.all(15),
-                              decoration: BoxDecoration(
-                                color: bgColor,
-                                borderRadius: BorderRadius.circular(15),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.1),
-                                    blurRadius: 5,
-                                    offset: const Offset(0, 3),
+                        child: Text(
+                          errorMessage!,
+                          style: const TextStyle(color: Colors.red),
+                        ),
+                      )
+                      : CustomScrollView(
+                        controller: _scrollController,
+                        slivers: [
+                          if (_folders.isNotEmpty) ...[
+                            SliverPadding(
+                              padding: const EdgeInsets.only(top: 15),
+                              sliver: SliverToBoxAdapter(
+                                child: Padding(
+                                  padding: const EdgeInsets.fromLTRB(
+                                    20,
+                                    0,
+                                    20,
+                                    10,
                                   ),
-                                ],
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(iconData, color: Colors.white, size: 28),
-                                  const SizedBox(width: 20),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          title,
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          subtitle,
-                                          style: const TextStyle(
-                                            color: Colors.white70,
-                                            fontSize: 14,
-                                          ),
-                                        ),
-                                      ],
+                                  child: Text(
+                                    "Cartelle (${_folders.length})",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  IconButton(
-                                    icon: const Icon(Icons.more_vert, color: Colors.white),
-                                    onPressed: () {
-                                      // Eventuali azioni per ciascun elemento
-                                    },
-                                  ),
-                                ],
-                                
+                                ),
                               ),
-                              
-                            );
-                          },
-                        ),
+                            ),
+                            SliverList(
+                              delegate: SliverChildBuilderDelegate(
+                                (context, index) => Padding(
+                                  key: _folders[index].id,
+                                  padding: const EdgeInsets.fromLTRB(
+                                    10,
+                                    0,
+                                    10,
+                                    10,
+                                  ),
+                                  child: FolderCard(
+                                    section: _folders[index],
+                                    onDeleted: _fetchItems,
+                                  ),
+                                ),
+                                childCount: _folders.length,
+                              ),
+                            ),
+                          ],
+
+                          if (_files.isNotEmpty) ...[
+                            SliverToBoxAdapter(
+                              child: Padding(
+                                padding: const EdgeInsets.fromLTRB(
+                                  20,
+                                  20,
+                                  20,
+                                  10,
+                                ),
+                                child: Text(
+                                  "File (${_files.length})",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SliverList(
+                              delegate: SliverChildBuilderDelegate(
+                                (context, index) => Padding(
+                                  key: _files[index].id,
+                                  padding: const EdgeInsets.fromLTRB(
+                                    10,
+                                    0,
+                                    10,
+                                    10,
+                                  ),
+                                  child: FileCard(
+                                    section: _files[index],
+                                    onDeleted: _fetchItems,
+                                  ),
+                                ),
+                                childCount: _files.length,
+                              ),
+                            ),
+                          ],
+
+                          SliverPadding(padding: EdgeInsets.only(bottom: 100)),
+                        ],
+                      ),
             ),
           ),
           // Floating Action Menu
           AddItemButton(
             isVisible: true,
-            onRefresh: _fetchFolderItems,
+            onRefresh: _fetchItems,
             parentId: widget.folderId.toString(),
           ),
         ],

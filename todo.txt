@@ -8,15 +8,15 @@ TODO -
     @ edit nome file
 
             FOLDER
-    @ apertura folder
+    + @ apertura folder
     + @ collegare api delete folder
-    @ collegare api edit folder
+    @ edit folder
 
 
             MENU
     @ gestire cestino
     @ gestire preferiti
-    @ gestire file recenti
+    - @ gestire file recenti
     @ gestire folder recenti
             
             SEARCHBAR
