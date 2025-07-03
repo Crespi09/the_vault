@@ -17,6 +17,47 @@ class FileCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Inseriamo la logica drag all'interno di LongPressDraggable.
+    return LongPressDraggable<VaultItem>(
+      data: section,
+      // Se vuoi fornire un feedback personalizzato durante il drag
+      feedback: Material(
+        color: Colors.transparent,
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.9,
+          decoration: BoxDecoration(
+            color: section.color.withOpacity(0.8),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+          child: Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 5, right: 20),
+                child: Icon(section.icon, color: Colors.white),
+              ),
+              Expanded(
+                child: Text(
+                  section.title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontFamily: 'Poppins',
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      childWhenDragging: Opacity(opacity: 0.5, child: _buildCard(context)),
+      // NOTA: LongPressDraggable attiva il drag dopo un long press (default ~500ms).
+      // Per 2 secondi potresti dover implementare una soluzione custom.
+      child: _buildCard(context),
+    );
+  }
+
+  Widget _buildCard(BuildContext context) {
     GlobalKey key = GlobalKey();
     final Dio _dio = Dio();
     String? _errorMessage;
@@ -98,9 +139,37 @@ class FileCard extends StatelessWidget {
             (context) => EditDialog(
               currentName: section.title,
               isFolder: false,
-              onEdit: (newName) {
-                // chiamata API
-                print('Nuovo nome: $newName');
+              onEdit: (newName) async {
+                try {
+                  final authService = Provider.of<AuthService>(
+                    context,
+                    listen: false,
+                  );
+
+                  final fileId = section.fileId;
+
+                  final response = await _dio.put(
+                    '${Env.apiBaseUrl}file/$fileId ',
+                    data: {'name': newName},
+                    options: Options(
+                      headers: {
+                        'Authorization': 'Bearer ${authService.accessToken}',
+                      },
+                    ),
+                  );
+
+                  if (response.statusCode == 200 ||
+                      response.statusCode == 204) {
+                    // lo uso per ricaricare
+                    if (onDeleted != null) {
+                      onDeleted!();
+                    }
+                  }
+
+                  debugPrint('Nuovo nome: $newName');
+                } catch (e) {
+                  _errorMessage = 'Error Edit File';
+                }
               },
             ),
       );

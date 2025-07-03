@@ -5,7 +5,7 @@ TODO -
     + @ apertura fotocamera con upload file
     + @ apertura file
     + @ delete file
-    @ edit nome file
+    + @ edit nome file
 
             FOLDER
     + @ apertura folder
