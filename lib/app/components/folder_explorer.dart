@@ -73,7 +73,7 @@ class _FolderExplorerState extends State<FolderExplorer> {
 
     try {
       final authService = Provider.of<AuthService>(context, listen: false);
-      String url = '${Env.apiBaseUrl}item/${widget.folderId}';
+      String url = 'http://100.84.178.101:3000/item/${widget.folderId}';
       final response = await _dio.get(
         url,
         options: Options(

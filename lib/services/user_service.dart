@@ -10,7 +10,7 @@ class UserService {
       debugPrint('Con token: $accessToken');
 
       final response = await _dio.get(
-        '${Env.apiBaseUrl}users/me',
+        'http://100.84.178.101:3000/users/me',
         options: Options(
           headers: {
             'Authorization': 'Bearer $accessToken',

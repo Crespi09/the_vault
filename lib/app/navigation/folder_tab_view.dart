@@ -58,8 +58,8 @@ class FolderTabViewState extends State<FolderTabView> {
 
       String apiUrl =
           _myVaultBtn
-              ? '${Env.apiBaseUrl}item/all?limit=50&offset=0'
-              : '${Env.apiBaseUrl}shared/all?limit=5&offset=0';
+              ? 'http://100.84.178.101:3000/item/all?limit=50&offset=0'
+              : 'http://100.84.178.101:3000/shared/all?limit=5&offset=0';
 
       final response = await _dio.get(
         apiUrl,

@@ -92,7 +92,7 @@ class _SigninViewState extends State<SigninView> {
     try {
       // Configura Dio per non lanciare eccezioni sui codici di stato 4xx
       final response = await _dio.post(
-        '${Env.apiBaseUrl}auth/signin',
+        'http://100.84.178.101:3000/auth/signin',
         data: {'username': email, 'password': password},
         options: Options(
           validateStatus: (status) {
