@@ -7,7 +7,6 @@ class UserService {
 
   static Future<Map<String, dynamic>> getUser(String accessToken) async {
     try {
-      debugPrint('Chiamata API a: http://10.0.2.2:3000/users/me');
       debugPrint('Con token: $accessToken');
 
       final response = await _dio.get(

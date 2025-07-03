@@ -65,9 +65,6 @@ class _UserTabViewState extends State<UserTabView> {
         return;
       }
 
-      // android studio ip : 10.0.2.2
-      // raspberry ip : 100.84.178.101
-
       final response = await _dio.get(
         '${Env.apiBaseUrl}users/items-stats',
         options: Options(
