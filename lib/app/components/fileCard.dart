@@ -5,6 +5,7 @@ import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:vault_app/app/components/edit_dialog.dart';
+import 'package:vault_app/app/models/recent_files.dart';
 import 'package:vault_app/app/models/vault_item.dart';
 import 'package:vault_app/env.dart';
 import 'package:vault_app/services/auth_service.dart';
@@ -84,6 +85,9 @@ class FileCard extends StatelessWidget {
     }
 
     void openFile() async {
+
+      RecentFile().addFileToList(section.fileId!);
+
       try {
         final authService = Provider.of<AuthService>(context, listen: false);
 
