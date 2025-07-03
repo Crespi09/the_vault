@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:vault_app/app/components/folder_explorer.dart';
 import 'package:vault_app/app/models/courses.dart';
 import 'package:vault_app/app/models/vault_item.dart';
+import 'package:vault_app/env.dart';
 import 'package:vault_app/services/auth_service.dart';
 
 class FolderCard extends StatelessWidget {
@@ -86,26 +87,36 @@ class FolderCard extends StatelessWidget {
         return data != null && data.itemId != section.itemId;
       },
       onAccept: (data) async {
+        // debug
         debugPrint('DATA_ITEM_ID :');
         debugPrint(data.itemId.toString());
+        debugPrint('IMPORTO IN : ');
+        debugPrint(section.itemId.toString());
+
         if (data.fileId != null) {
           debugPrint('FILE_ID :');
           debugPrint(data.fileId.toString());
         }
-        // try {
-        //   final response = await _dio.put(
-        //     'http://10.0.2.2:3000/item/${data.itemId}',
-        //     data: {'parentId': section.itemId},
-        //     options: Options(
-        //       // Aggiungi headers di autenticazione se necessario
-        //     ),
-        //   );
-        //   if (response.statusCode == 200 || response.statusCode == 204) {
-        //     // Logica post-drop in caso di successo (ad esempio aggiornare l'interfaccia)
-        //   }
-        // } catch (e) {
-        //   _errorMessage = 'Errore durante l\'aggiornamento del parentId';
-        // }
+
+        try {
+          final authService = Provider.of<AuthService>(context, listen: false);
+
+          final response = await _dio.put(
+            '${Env.apiBaseUrl}item/${data.itemId}',
+            data: {'parentId': (section.itemId).toString()},
+            options: Options(
+              headers: {'Authorization': 'Bearer ${authService.accessToken}'},
+            ),
+          );
+          if (response.statusCode == 200 || response.statusCode == 204) {
+            // per aggiornare interfaccia
+            if (onDeleted != null) {
+              onDeleted!();
+            }
+          }
+        } catch (e) {
+          _errorMessage = 'Errore durante l\'aggiornamento del parentId';
+        }
       },
       builder: (context, candidateData, rejectedData) {
         return Container(
