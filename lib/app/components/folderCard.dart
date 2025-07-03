@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:vault_app/app/components/edit_dialog.dart';
 import 'package:vault_app/app/components/folder_explorer.dart';
 import 'package:vault_app/app/models/courses.dart';
 import 'package:vault_app/app/models/vault_item.dart';
@@ -79,6 +80,49 @@ class FolderCard extends StatelessWidget {
       } catch (e) {
         _errorMessage = 'Errore eliminazione File';
       }
+    }
+
+    void editFolder() async {
+      showDialog(
+        context: context,
+        builder:
+            (context) => EditDialog(
+              currentName: section.title,
+              isFolder: true,
+              onEdit: (newName) async {
+                try {
+                  final authService = Provider.of<AuthService>(
+                    context,
+                    listen: false,
+                  );
+
+                  final itemId = section.itemId;
+
+                  final response = await _dio.put(
+                    '${Env.apiBaseUrl}item/${itemId}',
+                    data: {'name': newName},
+                    options: Options(
+                      headers: {
+                        'Authorization': 'Bearer ${authService.accessToken}',
+                      },
+                    ),
+                  );
+
+                  if (response.statusCode == 200 ||
+                      response.statusCode == 204) {
+                    // lo uso per ricaricare
+                    if (onDeleted != null) {
+                      onDeleted!();
+                    }
+                  }
+
+                  debugPrint('Nuovo nome: $newName');
+                } catch (e) {
+                  _errorMessage = 'Error Edit File';
+                }
+              },
+            ),
+      );
     }
 
     // La FolderCard funge da DragTarget per VaultItem
@@ -192,6 +236,19 @@ class FolderCard extends StatelessWidget {
                         ),
                       ),
                       PopupMenuItem(
+                        value: 'edit',
+                        child: Center(
+                          child: Text(
+                            'Edit',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontFamily: 'Poppins',
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                      ),
+                      PopupMenuItem(
                         value: 'delete',
                         child: Center(
                           child: Text(
@@ -234,6 +291,9 @@ class FolderCard extends StatelessWidget {
                               ),
                             );
                           }
+                          break;
+                        case 'edit':
+                          editFolder();
                           break;
                         default:
                       }

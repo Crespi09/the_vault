@@ -10,7 +10,7 @@ TODO -
             FOLDER
     + @ apertura folder
     + @ collegare api delete folder
-    @ edit folder
+    + @ edit folder
 
 
             MENU
@@ -37,3 +37,8 @@ TODO -
 
 
     + @ aggiunto db url al file .env
+
+            COSE DA SISTEMARE
+   @ nome folder in folder_explore
+   @ poter trascinare al folder precedente file o altri folder
+   @ sistemare searchbar per file / folder innestati
