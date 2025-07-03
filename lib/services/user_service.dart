@@ -1,10 +1,14 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
 class UserService {
   static final Dio _dio = Dio();
 
   static Future<Map<String, dynamic>> getUser(String accessToken) async {
     try {
+      debugPrint('Chiamata API a: http://10.0.2.2:3000/users/me');
+      debugPrint('Con token: $accessToken');
+
       final response = await _dio.get(
         'http://10.0.2.2:3000/users/me',
         options: Options(
@@ -15,15 +19,26 @@ class UserService {
         ),
       );
 
+      debugPrint('Status code: ${response.statusCode}');
+      debugPrint('Response data: ${response.data}');
+
       if (response.statusCode == 200) {
         return response.data;
       } else {
-        throw Exception(
-          'Errore nel caricamento dati utente: ${response.statusCode}',
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          message: 'Errore nel caricamento dati utente: ${response.statusCode}',
         );
       }
+    } on DioException catch (e) {
+      debugPrint('DioException: ${e.message}');
+      debugPrint('Response: ${e.response?.data}');
+      debugPrint('Status code: ${e.response?.statusCode}');
+      rethrow;
     } catch (e) {
-      throw Exception('Errore durante fetchUserData: $e');
+      debugPrint('Errore generico: $e');
+      rethrow;
     }
   }
 }

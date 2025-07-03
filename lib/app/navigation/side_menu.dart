@@ -65,9 +65,15 @@ class _SideMenuState extends State<SideMenu> {
         debugPrint('Utente non autenticato');
         return;
       }
+
+      debugPrint('Token: ${authService.accessToken}'); // Debug del token
       _userData = await UserService.getUser(authService.accessToken!);
+      debugPrint('Dati utente ricevuti: $_userData'); // Debug dei dati
+
+      setState(() {}); // Aggiorna UI dopo aver ricevuto i dati
     } catch (e) {
       debugPrint('Eccezione nel caricamento dati utente: $e');
+      debugPrint('Tipo di errore: ${e.runtimeType}');
     }
   }
 
@@ -113,8 +119,8 @@ class _SideMenuState extends State<SideMenu> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      _userData?['created_at'] != null
-                          ? '${DateTime.parse(_userData!['created_at']).day}/${DateTime.parse(_userData!['created_at']).month}/${DateTime.parse(_userData!['created_at']).year}'
+                      _userData?['createdAt'] != null
+                          ? 'Since ${DateTime.parse(_userData!['createdAt']).day}/${DateTime.parse(_userData!['createdAt']).month}/${DateTime.parse(_userData!['createdAt']).year}'
                           : 'Since',
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.7),
