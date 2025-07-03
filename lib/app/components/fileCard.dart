@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:vault_app/app/components/edit_dialog.dart';
 import 'package:vault_app/app/models/vault_item.dart';
 import 'package:vault_app/env.dart';
 import 'package:vault_app/services/auth_service.dart';
@@ -90,6 +91,21 @@ class FileCard extends StatelessWidget {
       }
     }
 
+    void editFile() async {
+      showDialog(
+        context: context,
+        builder:
+            (context) => EditDialog(
+              currentName: section.title,
+              isFolder: false,
+              onEdit: (newName) {
+                // chiamata API
+                print('Nuovo nome: $newName');
+              },
+            ),
+      );
+    }
+
     return Container(
       constraints: const BoxConstraints(maxHeight: 70),
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
@@ -165,10 +181,10 @@ class FileCard extends StatelessWidget {
                     ),
                   ),
                   PopupMenuItem(
-                    value: 'move_to',
+                    value: 'edit',
                     child: Center(
                       child: Text(
-                        'Move To',
+                        'Edit',
                         style: TextStyle(
                           fontSize: 14,
                           fontFamily: 'Poppins',
@@ -204,6 +220,10 @@ class FileCard extends StatelessWidget {
                       break;
                     case 'open':
                       openFile();
+                      break;
+                    case 'edit':
+                      editFile();
+                      break;
                     default:
                   }
                 }
