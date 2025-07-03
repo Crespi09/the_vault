@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:dio/dio.dart';
 import 'package:vault_app/app/theme.dart';
+import 'package:vault_app/env.dart';
 import 'package:vault_app/services/auth_service.dart';
 import 'package:vault_app/services/user_service.dart';
 
@@ -68,7 +69,7 @@ class _UserTabViewState extends State<UserTabView> {
       // raspberry ip : 100.84.178.101
 
       final response = await _dio.get(
-        'http://10.0.2.2:3000/users/items-stats',
+        '${Env.apiBaseUrl}users/items-stats',
         options: Options(
           headers: {
             'Authorization': 'Bearer ${authService.accessToken}',

@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:vault_app/env.dart';
 
 class UserService {
   static final Dio _dio = Dio();
@@ -10,7 +11,7 @@ class UserService {
       debugPrint('Con token: $accessToken');
 
       final response = await _dio.get(
-        'http://10.0.2.2:3000/users/me',
+        '${Env.apiBaseUrl}users/me',
         options: Options(
           headers: {
             'Authorization': 'Bearer $accessToken',

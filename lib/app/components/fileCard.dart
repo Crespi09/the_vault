@@ -85,14 +85,13 @@ class FileCard extends StatelessWidget {
     }
 
     void openFile() async {
-
       RecentFile().addFileToList(section.fileId!);
 
       try {
         final authService = Provider.of<AuthService>(context, listen: false);
 
         final response = await _dio.get(
-          'http://10.0.2.2:3000/file/${section.fileId}',
+          '${Env.apiBaseUrl}file/${section.fileId}',
           options: Options(
             headers: {'Authorization': 'Bearer ${authService.accessToken}'},
             responseType: ResponseType.bytes, // Recupera i bytes del file

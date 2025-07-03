@@ -7,6 +7,7 @@ import 'package:vault_app/app/components/fileCard.dart';
 import 'package:vault_app/app/components/folderCard.dart';
 import 'package:vault_app/app/models/vault_item.dart';
 import 'package:vault_app/app/theme.dart';
+import 'package:vault_app/env.dart';
 import 'package:vault_app/services/auth_service.dart';
 
 class FolderExplorer extends StatefulWidget {
@@ -72,7 +73,7 @@ class _FolderExplorerState extends State<FolderExplorer> {
 
     try {
       final authService = Provider.of<AuthService>(context, listen: false);
-      String url = 'http://10.0.2.2:3000/item/${widget.folderId}';
+      String url = '${Env.apiBaseUrl}item/${widget.folderId}';
       final response = await _dio.get(
         url,
         options: Options(

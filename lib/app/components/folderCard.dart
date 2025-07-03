@@ -66,7 +66,7 @@ class FolderCard extends StatelessWidget {
         final authService = Provider.of<AuthService>(context, listen: false);
 
         final response = await _dio.delete(
-          'http://10.0.2.2:3000/item/${section.itemId}',
+          '${Env.apiBaseUrl}item/${section.itemId}',
           options: Options(
             headers: {'Authorization': 'Bearer ${authService.accessToken}'},
           ),

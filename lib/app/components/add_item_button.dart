@@ -6,6 +6,7 @@ import 'package:mime/mime.dart';
 import 'package:provider/provider.dart';
 import 'package:vault_app/app/components/create_folder_modal.dart';
 import 'package:vault_app/app/theme.dart';
+import 'package:vault_app/env.dart';
 import 'package:vault_app/services/auth_service.dart';
 
 class AddItemButton extends StatefulWidget {
@@ -43,16 +44,14 @@ class _AddItemButtonState extends State<AddItemButton> {
 
       if (parentId != null && parentId.isNotEmpty) {
         requestData['parentId'] = parentId;
-      }else{
+      } else {
         requestData['parentId'] = '';
       }
-
-      
 
       debugPrint('Dati richiesta: $requestData');
 
       final response = await _dio.post(
-        'http://10.0.2.2:3000/item',
+        '${Env.apiBaseUrl}item',
         data: requestData,
         options: Options(
           headers: {
@@ -101,7 +100,9 @@ class _AddItemButtonState extends State<AddItemButton> {
       final mimeType = lookupMimeType(pickedFile.path) ?? '';
 
       if (mimeType.startsWith('image/') || mimeType.startsWith('video/')) {
-        debugPrint('File selezionato: ${mimeType.startsWith('image/') ? 'Immagine' : 'Video'}');
+        debugPrint(
+          'File selezionato: ${mimeType.startsWith('image/') ? 'Immagine' : 'Video'}',
+        );
         await _performUpload(pickedFile, parentId);
       } else {
         debugPrint('Tipo di file non supportato: $mimeType');
@@ -204,7 +205,8 @@ class _AddItemButtonState extends State<AddItemButton> {
 
       final formData = FormData();
       final file = File(pickedFile.path);
-      final mimeType = lookupMimeType(pickedFile.path) ?? 'application/octet-stream';
+      final mimeType =
+          lookupMimeType(pickedFile.path) ?? 'application/octet-stream';
 
       formData.files.add(
         MapEntry(
@@ -222,7 +224,7 @@ class _AddItemButtonState extends State<AddItemButton> {
       }
 
       final response = await _dio.post(
-        'http://10.0.2.2:3000/file',
+        '${Env.apiBaseUrl}file',
         data: formData,
         options: Options(
           headers: {
@@ -401,7 +403,10 @@ class _AddItemButtonState extends State<AddItemButton> {
                     });
                     _addFolder(
                       name,
-                      color.value.toRadixString(16).padLeft(8, '0').substring(2),
+                      color.value
+                          .toRadixString(16)
+                          .padLeft(8, '0')
+                          .substring(2),
                       widget.parentId,
                     );
                   },

@@ -8,6 +8,7 @@ import 'package:vault_app/app/components/fileCard.dart';
 import 'package:vault_app/app/components/folderCard.dart';
 import 'package:vault_app/app/models/vault_item.dart';
 import 'package:vault_app/app/theme.dart';
+import 'package:vault_app/env.dart';
 import 'package:vault_app/services/auth_service.dart';
 
 class FolderTabView extends StatefulWidget {
@@ -55,9 +56,10 @@ class FolderTabViewState extends State<FolderTabView> {
         return;
       }
 
-      String apiUrl = _myVaultBtn
-          ? 'http://10.0.2.2:3000/item/all?limit=50&offset=0'
-          : 'http://10.0.2.2:3000/shared/all?limit=5&offset=0';
+      String apiUrl =
+          _myVaultBtn
+              ? '${Env.apiBaseUrl}item/all?limit=50&offset=0'
+              : '${Env.apiBaseUrl}shared/all?limit=5&offset=0';
 
       final response = await _dio.get(
         apiUrl,
@@ -118,15 +120,17 @@ class FolderTabViewState extends State<FolderTabView> {
       } else {
         final lowerQuery = query.toLowerCase();
 
-        _filteredFolders = _folders.where((folder) {
-          return folder.title.toLowerCase().contains(lowerQuery) ||
-              folder.subtitle.toLowerCase().contains(lowerQuery);
-        }).toList();
+        _filteredFolders =
+            _folders.where((folder) {
+              return folder.title.toLowerCase().contains(lowerQuery) ||
+                  folder.subtitle.toLowerCase().contains(lowerQuery);
+            }).toList();
 
-        _filteredFiles = _files.where((file) {
-          return file.title.toLowerCase().contains(lowerQuery) ||
-              file.subtitle.toLowerCase().contains(lowerQuery);
-        }).toList();
+        _filteredFiles =
+            _files.where((file) {
+              return file.title.toLowerCase().contains(lowerQuery) ||
+                  file.subtitle.toLowerCase().contains(lowerQuery);
+            }).toList();
       }
     });
   }
@@ -232,9 +236,10 @@ class FolderTabViewState extends State<FolderTabView> {
                               horizontal: 12,
                             ),
                             decoration: BoxDecoration(
-                              color: _myVaultBtn
-                                  ? Colors.blue.withOpacity(0.2)
-                                  : Colors.transparent,
+                              color:
+                                  _myVaultBtn
+                                      ? Colors.blue.withOpacity(0.2)
+                                      : Colors.transparent,
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Row(
@@ -247,9 +252,10 @@ class FolderTabViewState extends State<FolderTabView> {
                                     height: 32,
                                     child: Icon(
                                       Icons.folder,
-                                      color: _myVaultBtn
-                                          ? Colors.blue
-                                          : Colors.white.withOpacity(0.6),
+                                      color:
+                                          _myVaultBtn
+                                              ? Colors.blue
+                                              : Colors.white.withOpacity(0.6),
                                     ),
                                   ),
                                 ),
@@ -258,13 +264,15 @@ class FolderTabViewState extends State<FolderTabView> {
                                   child: AnimatedDefaultTextStyle(
                                     duration: Duration(milliseconds: 200),
                                     style: TextStyle(
-                                      color: _myVaultBtn
-                                          ? Colors.blue
-                                          : Colors.white,
+                                      color:
+                                          _myVaultBtn
+                                              ? Colors.blue
+                                              : Colors.white,
                                       fontFamily: 'Inter',
-                                      fontWeight: _myVaultBtn
-                                          ? FontWeight.w700
-                                          : FontWeight.w600,
+                                      fontWeight:
+                                          _myVaultBtn
+                                              ? FontWeight.w700
+                                              : FontWeight.w600,
                                       fontSize: 17,
                                     ),
                                     child: Text('My Vault'),
@@ -305,9 +313,10 @@ class FolderTabViewState extends State<FolderTabView> {
                               horizontal: 12,
                             ),
                             decoration: BoxDecoration(
-                              color: !_myVaultBtn
-                                  ? Colors.blue.withOpacity(0.2)
-                                  : Colors.transparent,
+                              color:
+                                  !_myVaultBtn
+                                      ? Colors.blue.withOpacity(0.2)
+                                      : Colors.transparent,
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Row(
@@ -320,9 +329,10 @@ class FolderTabViewState extends State<FolderTabView> {
                                     height: 32,
                                     child: Icon(
                                       Icons.share,
-                                      color: !_myVaultBtn
-                                          ? Colors.blue
-                                          : Colors.white.withOpacity(0.6),
+                                      color:
+                                          !_myVaultBtn
+                                              ? Colors.blue
+                                              : Colors.white.withOpacity(0.6),
                                     ),
                                   ),
                                 ),
@@ -331,13 +341,15 @@ class FolderTabViewState extends State<FolderTabView> {
                                   child: AnimatedDefaultTextStyle(
                                     duration: Duration(milliseconds: 200),
                                     style: TextStyle(
-                                      color: !_myVaultBtn
-                                          ? Colors.blue
-                                          : Colors.white,
+                                      color:
+                                          !_myVaultBtn
+                                              ? Colors.blue
+                                              : Colors.white,
                                       fontFamily: 'Inter',
-                                      fontWeight: !_myVaultBtn
-                                          ? FontWeight.w700
-                                          : FontWeight.w600,
+                                      fontWeight:
+                                          !_myVaultBtn
+                                              ? FontWeight.w700
+                                              : FontWeight.w600,
                                       fontSize: 17,
                                     ),
                                     child: Text('Shared'),
@@ -405,7 +417,8 @@ class FolderTabViewState extends State<FolderTabView> {
             AddItemButton(
               isVisible: _isVisible,
               onRefresh: _fetchItems,
-              parentId: null, // Qui puoi passare l'ID della cartella corrente se necessario
+              parentId:
+                  null, // Qui puoi passare l'ID della cartella corrente se necessario
             ),
           ],
         ),
@@ -416,26 +429,27 @@ class FolderTabViewState extends State<FolderTabView> {
   Widget _buildContent() {
     return Container(
       key: ValueKey('${_myVaultBtn}_${_searchQuery}'),
-      child: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _errorMessage != null
+      child:
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : _errorMessage != null
               ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        _errorMessage!,
-                        style: const TextStyle(color: Colors.red),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: _fetchItems,
-                        child: const Text('Riprova'),
-                      ),
-                    ],
-                  ),
-                )
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      _errorMessage!,
+                      style: const TextStyle(color: Colors.red),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: _fetchItems,
+                      child: const Text('Riprova'),
+                    ),
+                  ],
+                ),
+              )
               : _buildItemsList(),
     );
   }
