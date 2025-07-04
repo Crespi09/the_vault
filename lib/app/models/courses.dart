@@ -8,6 +8,7 @@ class CourseModel {
     this.caption = "",
     this.color = Colors.white,
     this.image = "",
+
   });
 
   UniqueKey? id = UniqueKey();
@@ -41,29 +42,27 @@ class CourseModel {
   ];
 
   static List<CourseModel> recents = [
-    CourseModel(
-      title: 'File - 1',
-      caption: 'Modificato il 15/06/2024',
-      color: const Color(0xFF9CC5FF),
-      image: 'assets/samples/ui/rive_app/images/topics/topic_2.png',
-    ),
-    CourseModel(
-      title: 'File - 2',
-      caption: 'Modificato il 08/05/2025',
-      color: const Color(0xFF6E6AE8),
-      image: 'assets/samples/ui/rive_app/images/topics/topic_1.png',
-    ),
-    CourseModel(
-      title: 'File - 3',
-      caption: 'Modificato il 18/10/2024',
-      color: const Color(0xFF005FE7),
-      image: 'assets/samples/ui/rive_app/images/topics/topic_2.png',
-    ),
-    CourseModel(
-      title: 'File - 4',
-      caption: 'Modificato il 09/02/2024',
-      color: const Color(0xFFBBA6FF),
-      image: 'assets/samples/ui/rive_app/images/topics/topic_1.png',
-    ),
+    // CourseModel(*+
+    //   title: 'File - 1',
+    //   caption: 'Modificato il 15/06/2024',
+    //   color: const Color(0xFF9CC5FF),
+    //   image: 'assets/samples/ui/rive_app/images/topics/topic_2.png',
+    // ),
+    // CourseModel(
+    //   title: 'File - 2',
+    //   caption: 'Modificato il 08/05/2025',
+    //   color: const Color(0xFF6E6AE8),
+    //   image: 'assets/samples/ui/rive_app/images/topics/topic_1.png',
+    // ),    //   title: 'File - 3',
+    //   caption: 'Modificato il 18/10/2024',
+    //   color: const Color(0xFF005FE7),
+    //   image: 'assets/samples/ui/rive_app/images/topics/topic_2.png',
+    // ),
+    // CourseModel(
+    //   title: 'File - 4',
+    //   caption: 'Modificato il 09/02/2024',
+    //   color: const Color(0xFFBBA6FF),
+    //   image: 'assets/samples/ui/rive_app/images/topics/topic_1.png',
+    // ),
   ];
 }

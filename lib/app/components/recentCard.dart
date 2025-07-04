@@ -1,17 +1,75 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:open_file/open_file.dart';
+import 'package:provider/provider.dart';
 import 'package:vault_app/app/models/courses.dart';
+import 'package:vault_app/app/models/recent_files.dart';
+import 'package:vault_app/services/auth_service.dart';
 
 class RecenteCard extends StatelessWidget {
   const RecenteCard({super.key, required this.section});
 
   final CourseModel section;
 
+  void openFile() async {
+    RecentFile().addFileToList(section.!);
+
+    try {
+      final authService = Provider.of<AuthService>(context, listen: false);
+
+      final response = await _dio.get(
+        'http://10.0.2.2:3000/file/${section.fileId}',
+        options: Options(
+          headers: {'Authorization': 'Bearer ${authService.accessToken}'},
+          responseType: ResponseType.bytes, // Recupera i bytes del file
+        ),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        // Salva il file nella directory temporanea
+        final dir = await getTemporaryDirectory();
+
+        // Determina estensione basata sul content-type restituito dall'API
+        final contentType = response.headers.value('content-type');
+        String extension = 'pdf'; // default
+
+        if (contentType != null) {
+          if (contentType.contains('pdf')) {
+            extension = 'pdf';
+          } else if (contentType.contains('jpeg')) {
+            extension = 'jpg';
+          } else if (contentType.contains('png')) {
+            extension = 'png';
+          } else if (contentType.contains('html')) {
+            extension = 'html';
+          } else if (contentType.contains('mp3') ||
+              contentType.contains('mpeg')) {
+            extension = 'mp3';
+          } else if (contentType.contains('mp4')) {
+            extension = 'mp4';
+          }
+        }
+
+        final filePath = '${dir.path}/${section.fileId}.$extension';
+        final file = File(filePath);
+        await file.writeAsBytes(response.data);
+
+        // Apri il file con un'app esterna
+        await OpenFile.open(filePath);
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     GlobalKey key = GlobalKey();
 
     return Container(
-      constraints: const BoxConstraints(maxHeight: 110),
+      constraints: const BoxConstraints(maxHeight: 90),
       padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
       decoration: BoxDecoration(
         color: section.color,
@@ -27,7 +85,7 @@ class RecenteCard extends StatelessWidget {
                 Text(
                   section.title,
                   style: const TextStyle(
-                    fontSize: 24,
+                    fontSize: 18,
                     fontFamily: 'Poppins',
                     color: Colors.white,
                   ),
@@ -36,7 +94,7 @@ class RecenteCard extends StatelessWidget {
                 Text(
                   section.caption,
                   style: const TextStyle(
-                    fontSize: 17,
+                    fontSize: 14,
                     fontFamily: 'Inter',
                     color: Colors.white,
                   ),
@@ -88,32 +146,6 @@ class RecenteCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  PopupMenuItem(
-                    value: 'move_to',
-                    child: Center(
-                      child: Text(
-                        'Move To',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontFamily: 'Poppins',
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: 'delete',
-                    child: Center(
-                      child: Text(
-                        'Delete',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontFamily: 'Poppins',
-                          color: Color.fromRGBO(179, 41, 41, 1),
-                        ),
-                      ),
-                    ),
-                  ),
                 ],
                 elevation: 8.0,
                 color: Colors.white,
@@ -122,7 +154,14 @@ class RecenteCard extends StatelessWidget {
                 ),
               ).then((value) {
                 // Gestisci il valore selezionato
-                if (value != null) {}
+                if (value != null) {
+                    switch (value) {
+                      case 'open':
+                        openFile();
+                        break;
+                    default:
+                  }
+                }
               });
             },
           ),

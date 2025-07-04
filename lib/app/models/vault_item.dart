@@ -25,7 +25,7 @@ class VaultItem {
     String name = json['name'] ?? '';
 
     if (name.length > 12) {
-      name = '${name.substring(0, 12)}...';
+      name = '${name.substring(0, 12)} ...';
     }
 
     return VaultItem(
@@ -43,7 +43,7 @@ class VaultItem {
     String name = json['fileName'] ?? '';
 
     if (name.length > 12) {
-      name = '${name.substring(0, 12)}...';
+      name = '${name.substring(0, 12)} ...';
     }
 
     return VaultItem(
