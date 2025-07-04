@@ -57,7 +57,7 @@ class _OnboardingViewState extends State<OnboardingView>
       body: Stack(
         children: [
           ImageFiltered(
-            imageFilter: ImageFilter.blur(sigmaX: 50, sigmaY: 50),
+            imageFilter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
             child: Center(
               child: OverflowBox(
                 maxWidth: double.infinity,
@@ -72,7 +72,7 @@ class _OnboardingViewState extends State<OnboardingView>
             ),
           ),
           ImageFiltered(
-            imageFilter: ImageFilter.blur(sigmaX: 60, sigmaY: 60),
+            imageFilter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
             child: const rive.RiveAnimation.asset(
               'assets/samples/ui/rive_app/rive/shapes.riv',
             ),

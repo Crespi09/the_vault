@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 
 class RecentFile {
+  // Singleton pattern
+  static final RecentFile _instance = RecentFile._internal();
+  factory RecentFile() => _instance;
+  RecentFile._internal();
+
   List<int> recentFiles = [];
   static const int maxRecentFiles = 5;
 
@@ -15,7 +20,7 @@ class RecentFile {
     recentFiles.insert(0, fileId);
 
     if (recentFiles.length > maxRecentFiles) {
-      int lastFile = recentFiles[recentFiles.length];
+      int lastFile = recentFiles[recentFiles.length - 1];
       recentFiles.remove(lastFile);
     }
 

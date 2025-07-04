@@ -68,7 +68,7 @@ class FileCard extends StatelessWidget {
         final authService = Provider.of<AuthService>(context, listen: false);
 
         final response = await _dio.delete(
-          'http://100.84.178.101:3000/item/${section.itemId}',
+          'http://10.0.2.2:3000/item/${section.itemId}',
           options: Options(
             headers: {'Authorization': 'Bearer ${authService.accessToken}'},
           ),
@@ -91,7 +91,7 @@ class FileCard extends StatelessWidget {
         final authService = Provider.of<AuthService>(context, listen: false);
 
         final response = await _dio.get(
-          'http://100.84.178.101:3000/file/${section.fileId}',
+          'http://10.0.2.2:3000/file/${section.fileId}',
           options: Options(
             headers: {'Authorization': 'Bearer ${authService.accessToken}'},
             responseType: ResponseType.bytes, // Recupera i bytes del file
@@ -152,7 +152,7 @@ class FileCard extends StatelessWidget {
                   final fileId = section.fileId;
 
                   final response = await _dio.put(
-                    'http://100.84.178.101:3000/file/$fileId ',
+                    'http://10.0.2.2:3000/file/$fileId ',
                     data: {'name': newName},
                     options: Options(
                       headers: {
