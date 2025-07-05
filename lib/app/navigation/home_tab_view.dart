@@ -155,8 +155,8 @@ class _HomeTabViewState extends State<HomeTabView> {
                               file['fileName'].length > 15
                                   ? '${file['fileName'].substring(0, 15)} ...'
                                   : file['fileName'],
-                          fileId: file['itemId'],
-                          itemId: file['id'],
+                          fileId: file['id'],
+                          itemId: file['itemId'],
                           caption:
                               'Modificato ${DateTime.parse(file!['updatedAt']).day}/${DateTime.parse(file!['updatedAt']).month}/${DateTime.parse(file!['updatedAt']).year}',
                           subtitle: file['fileType'] ?? '',
