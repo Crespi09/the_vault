@@ -7,14 +7,16 @@ import 'package:provider/provider.dart';
 import 'package:vault_app/app/models/courses.dart';
 import 'package:vault_app/app/models/recent_files.dart';
 import 'package:vault_app/services/auth_service.dart';
+import 'package:path_provider/path_provider.dart';
 
 class RecenteCard extends StatelessWidget {
-  const RecenteCard({super.key, required this.section});
+  RecenteCard({super.key, required this.section});
 
   final CourseModel section;
+  final Dio _dio = Dio();
 
-  void openFile() async {
-    RecentFile().addFileToList(section.!);
+  void openFile(BuildContext context) async {
+    RecentFile().addFileToList(section.fileId!);
 
     try {
       final authService = Provider.of<AuthService>(context, listen: false);
@@ -155,10 +157,10 @@ class RecenteCard extends StatelessWidget {
               ).then((value) {
                 // Gestisci il valore selezionato
                 if (value != null) {
-                    switch (value) {
-                      case 'open':
-                        openFile();
-                        break;
+                  switch (value) {
+                    case 'open':
+                      openFile(context);
+                      break;
                     default:
                   }
                 }

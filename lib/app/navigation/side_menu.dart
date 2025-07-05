@@ -54,7 +54,7 @@ class _SideMenuState extends State<SideMenu> {
   @override
   void initState() {
     super.initState();
-    _fetchUserData();
+    // _fetchUserData();
   }
 
   Future<void> _fetchUserData() async {

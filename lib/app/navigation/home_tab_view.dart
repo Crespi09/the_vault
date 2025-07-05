@@ -151,7 +151,12 @@ class _HomeTabViewState extends State<HomeTabView> {
                       child: RecenteCard(
                         section: CourseModel(
                           // id: ValueKey(file['id']),
-                          title: file['fileName'].length > 15 ? '${file['fileName'].substring(0, 15)} ...' : file['fileName'],
+                          title:
+                              file['fileName'].length > 15
+                                  ? '${file['fileName'].substring(0, 15)} ...'
+                                  : file['fileName'],
+                          fileId: file['itemId'],
+                          itemId: file['id'],
                           caption:
                               'Modificato ${DateTime.parse(file!['updatedAt']).day}/${DateTime.parse(file!['updatedAt']).month}/${DateTime.parse(file!['updatedAt']).year}',
                           subtitle: file['fileType'] ?? '',

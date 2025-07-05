@@ -32,7 +32,7 @@ TODO -
 
             ERRORI
     @ sistemare doppio login per accedere
-    @ sistemare tailscale
+    + @ sistemare tailscale
     @ sistemare doppio click su simbolo sidebar
 
 

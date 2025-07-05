@@ -3,15 +3,18 @@ import 'package:flutter/material.dart';
 class CourseModel {
   CourseModel({
     this.id,
+    this.itemId,
+    this.fileId,
     this.title = "",
     this.subtitle = "",
     this.caption = "",
     this.color = Colors.white,
     this.image = "",
-
   });
 
   UniqueKey? id = UniqueKey();
+  int? itemId;
+  int? fileId;
   String title, caption, image;
   String? subtitle;
   Color color;
