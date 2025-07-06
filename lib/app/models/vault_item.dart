@@ -40,7 +40,7 @@ class VaultItem {
       icon: Icons.folder,
       color: _hexToColor(json['color'] ?? '#000000'),
       image: '',
-      isFavourite: json['isFavourite'],
+      isFavourite: json['isFavourite'] ?? false,
     );
   }
 
@@ -60,7 +60,7 @@ class VaultItem {
       icon: Icons.description,
       color: const Color(0xFF7850F0),
       image: json['path'] ?? '',
-      isFavourite: json['isFavourite'],
+      isFavourite: json['isFavourite'] ?? false,
     );
   }
 

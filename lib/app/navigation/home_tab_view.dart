@@ -154,7 +154,7 @@ class _HomeTabViewState extends State<HomeTabView> {
                               size: 64,
                               color: Colors.grey[400],
                             ),
-                            SizedBox(height: 16),
+                            SizedBox(height: 18),
                             Text(
                               'Nessun file recente',
                               style: TextStyle(
