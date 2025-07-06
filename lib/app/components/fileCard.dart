@@ -178,6 +178,54 @@ class FileCard extends StatelessWidget {
       );
     }
 
+    void favouriteBtnClicked(VaultItem file) async {
+      if (file.isFavourite) {
+        try {
+          final authService = Provider.of<AuthService>(context, listen: false);
+
+          final itemId = section.itemId;
+
+          final response = await _dio.delete(
+            'http://10.0.2.2:3000/favorite/$itemId ',
+            options: Options(
+              headers: {'Authorization': 'Bearer ${authService.accessToken}'},
+            ),
+          );
+
+          if (response.statusCode == 200 || response.statusCode == 204) {
+            // lo uso per ricaricare
+            if (onDeleted != null) {
+              onDeleted!();
+            }
+          }
+        } catch (e) {
+          _errorMessage = 'Error Edit File';
+        }
+      } else {
+
+        try {
+          final authService = Provider.of<AuthService>(context, listen: false);
+
+          final response = await _dio.post(
+            'http://10.0.2.2:3000/favorite',
+             data: {'itemId': (section.itemId).toString()},
+            options: Options(
+              headers: {'Authorization': 'Bearer ${authService.accessToken}'},
+            ),
+          );
+
+          if (response.statusCode == 200 || response.statusCode == 201) {
+            // lo uso per ricaricare
+            if (onDeleted != null) {
+              onDeleted!();
+            }
+          }
+        } catch (e) {
+          _errorMessage = 'Error Edit File $e';
+        }
+      }
+    }
+
     return Container(
       constraints: const BoxConstraints(maxHeight: 70),
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
@@ -215,6 +263,15 @@ class FileCard extends StatelessWidget {
                 ),
               ],
             ),
+          ),
+          IconButton(
+            icon: Icon(
+              section.isFavourite ? Icons.star : Icons.star_border,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              favouriteBtnClicked(section);
+            },
           ),
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),

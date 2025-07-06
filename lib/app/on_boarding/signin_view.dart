@@ -321,8 +321,10 @@ class _SigninViewState extends State<SigninView> {
                             },
                           ),
                         ),
+                        const SizedBox(height: 27),
+
                         Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 24.0),
+                          padding: const EdgeInsets.symmetric(vertical: 13.0),
                           child: Row(
                             children: [
                               const Expanded(child: Divider()),
@@ -343,14 +345,14 @@ class _SigninViewState extends State<SigninView> {
                             ],
                           ),
                         ),
-                        const Text(
-                          "Sign Up with Email, Apple or Google",
-                          style: TextStyle(
-                            color: CupertinoColors.secondaryLabel,
-                            fontFamily: 'Inter',
-                            fontSize: 15,
-                          ),
-                        ),
+                        // const Text(
+                        //   "Sign Up with Email, Apple or Google",
+                        //   style: TextStyle(
+                        //     color: CupertinoColors.secondaryLabel,
+                        //     fontFamily: 'Inter',
+                        //     fontSize: 15,
+                        //   ),
+                        // ),
                         const SizedBox(height: 24),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 
 class VaultItem {
@@ -10,6 +12,7 @@ class VaultItem {
     this.icon = Icons.folder,
     this.color = Colors.white,
     this.image = "",
+    this.isFavourite = false,
   });
 
   UniqueKey? id;
@@ -19,6 +22,7 @@ class VaultItem {
   String subtitle;
   IconData icon;
   Color color;
+  bool isFavourite;
 
   // Factory per creare VaultItem da una mappa JSON
   factory VaultItem.fromFolderJson(Map<String, dynamic> json) {
@@ -36,6 +40,7 @@ class VaultItem {
       icon: Icons.folder,
       color: _hexToColor(json['color'] ?? '#000000'),
       image: '',
+      isFavourite: json['isFavourite'],
     );
   }
 
@@ -55,6 +60,7 @@ class VaultItem {
       icon: Icons.description,
       color: const Color(0xFF7850F0),
       image: json['path'] ?? '',
+      isFavourite: json['isFavourite'],
     );
   }
 
