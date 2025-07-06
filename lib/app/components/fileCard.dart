@@ -67,12 +67,20 @@ class FileCard extends StatelessWidget {
       try {
         final authService = Provider.of<AuthService>(context, listen: false);
 
-        final response = await _dio.delete(
-          'http://10.0.2.2:3000/item/${section.itemId}',
+        final response = await _dio.post(
+          'http://10.0.2.2:3000/bin',
+          data: {'itemId': section.itemId},
           options: Options(
             headers: {'Authorization': 'Bearer ${authService.accessToken}'},
           ),
         );
+
+        // final response = await _dio.delete(
+        //   'http://10.0.2.2:3000/item/${section.itemId}',
+        //   options: Options(
+        //     headers: {'Authorization': 'Bearer ${authService.accessToken}'},
+        //   ),
+        // );
 
         if (response.statusCode == 200 || response.statusCode == 204) {
           if (onDeleted != null) {
@@ -202,13 +210,12 @@ class FileCard extends StatelessWidget {
           _errorMessage = 'Error Edit File';
         }
       } else {
-
         try {
           final authService = Provider.of<AuthService>(context, listen: false);
 
           final response = await _dio.post(
             'http://10.0.2.2:3000/favorite',
-             data: {'itemId': (section.itemId).toString()},
+            data: {'itemId': (section.itemId).toString()},
             options: Options(
               headers: {'Authorization': 'Bearer ${authService.accessToken}'},
             ),
