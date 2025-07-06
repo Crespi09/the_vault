@@ -15,7 +15,7 @@ TODO -
 
             MENU
     @ gestire cestino
-    @ gestire preferiti
+    - @ gestire preferiti
     + @ gestire file recenti
     @ gestire folder recenti
             

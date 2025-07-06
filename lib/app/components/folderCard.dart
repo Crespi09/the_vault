@@ -99,7 +99,7 @@ class FolderCard extends StatelessWidget {
                   final itemId = section.itemId;
 
                   final response = await _dio.put(
-                    'http://10.0.2.2:3000/item/${itemId}',
+                    'http://10.0.2.2:3000/item/$itemId',
                     data: {'name': newName},
                     options: Options(
                       headers: {

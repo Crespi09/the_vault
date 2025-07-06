@@ -143,29 +143,65 @@ class _HomeTabViewState extends State<HomeTabView> {
                     ),
                   ),
                   // Usa i dati dalla API invece di _recents
-                  ...List.generate(_recentFilesFromApi.length, (index) {
-                    final file = _recentFilesFromApi[index];
-                    return Padding(
-                      key: ValueKey(file['id']),
-                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                      child: RecenteCard(
-                        section: CourseModel(
-                          // id: ValueKey(file['id']),
-                          title:
-                              file['fileName'].length > 15
-                                  ? '${file['fileName'].substring(0, 15)} ...'
-                                  : file['fileName'],
-                          fileId: file['id'],
-                          itemId: file['itemId'],
-                          caption:
-                              'Modificato ${DateTime.parse(file!['updatedAt']).day}/${DateTime.parse(file!['updatedAt']).month}/${DateTime.parse(file!['updatedAt']).year}',
-                          subtitle: file['fileType'] ?? '',
-                          color: file['color'] ?? Colors.blue,
-                          image: _getFileTypeImage(file['fileType']),
+                  if (_recentFilesFromApi.isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Center(
+                        child: Column(
+                          children: [
+                            Icon(
+                              Icons.folder_open_outlined,
+                              size: 64,
+                              color: Colors.grey[400],
+                            ),
+                            SizedBox(height: 16),
+                            Text(
+                              'Nessun file recente',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey[600],
+                                fontFamily: 'Poppins',
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              'I tuoi file recenti appariranno qui',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey[500],
+                                fontFamily: 'Poppins',
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
                         ),
                       ),
-                    );
-                  }),
+                    )
+                  else
+                    ...List.generate(_recentFilesFromApi.length, (index) {
+                      final file = _recentFilesFromApi[index];
+                      return Padding(
+                        key: ValueKey(file['id']),
+                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                        child: RecenteCard(
+                          section: CourseModel(
+                            // id: ValueKey(file['id']),
+                            title:
+                                file['fileName'].length > 15
+                                    ? '${file['fileName'].substring(0, 15)} ...'
+                                    : file['fileName'],
+                            fileId: file['id'],
+                            itemId: file['itemId'],
+                            caption:
+                                'Modificato ${DateTime.parse(file!['updatedAt']).day}/${DateTime.parse(file!['updatedAt']).month}/${DateTime.parse(file!['updatedAt']).year}',
+                            subtitle: file['fileType'] ?? '',
+                            color: file['color'] ?? Colors.blue,
+                            image: _getFileTypeImage(file['fileType']),
+                          ),
+                        ),
+                      );
+                    }),
                 ],
               ),
             ),
@@ -175,22 +211,3 @@ class _HomeTabViewState extends State<HomeTabView> {
     );
   }
 }
-
-
-
-      // return Center(
-      //   child: Column(
-      //     mainAxisAlignment: MainAxisAlignment.center,
-      //     children: [
-      //       Icon(Icons.search_off, size: 64, color: Colors.grey[400]),
-      //       SizedBox(height: 16),
-      //       Text(
-      //         _searchQuery.isNotEmpty
-      //             ? 'Nessun risultato trovato per "$_searchQuery"'
-      //             : 'Nessun elemento disponibile',
-      //         style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-      //         textAlign: TextAlign.center,
-      //       ),
-      //     ],
-      //   ),
-      // );
