@@ -69,7 +69,7 @@ class FileCard extends StatelessWidget {
 
         final response = await _dio.post(
           'http://10.0.2.2:3000/bin',
-          data: {'itemId': section.itemId},
+          data: {'itemId': (section.itemId).toString()},
           options: Options(
             headers: {'Authorization': 'Bearer ${authService.accessToken}'},
           ),
@@ -82,7 +82,7 @@ class FileCard extends StatelessWidget {
         //   ),
         // );
 
-        if (response.statusCode == 200 || response.statusCode == 204) {
+        if (response.statusCode == 200 || response.statusCode == 201) {
           if (onDeleted != null) {
             onDeleted!();
           }

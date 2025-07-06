@@ -28,19 +28,19 @@ class CourseModel {
       image: 'assets/samples/ui/rive_app/images/topics/topic_1.png',
     ),
     CourseModel(
-      title: "Recenti",
-      subtitle: "Build and animate an IOS app from scratch",
-      caption: "89 sections - 99 hours",
-      color: const Color(0xFF6792FF),
-      image: 'assets/samples/ui/rive_app/images/topics/topic_2.png',
-    ),
-    CourseModel(
       title: "Cestino",
       subtitle:
           "Build and animate an IOS app from scratch aaaaaaaaaaaaaaaaaaaaaaa",
       caption: "2 sections - 33 hours",
       color: const Color(0xFF005FE7),
       image: 'assets/samples/ui/rive_app/images/topics/topic_1.png',
+    ),
+    CourseModel(
+      title: "Recenti",
+      subtitle: "Build and animate an IOS app from scratch",
+      caption: "89 sections - 99 hours",
+      color: const Color(0xFF6792FF),
+      image: 'assets/samples/ui/rive_app/images/topics/topic_2.png',
     ),
   ];
 

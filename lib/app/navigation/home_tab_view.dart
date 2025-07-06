@@ -142,7 +142,7 @@ class _HomeTabViewState extends State<HomeTabView> {
                       style: TextStyle(fontSize: 22, fontFamily: 'Poppins'),
                     ),
                   ),
-                  // Usa i dati dalla API invece di _recents
+
                   if (_recentFilesFromApi.isEmpty)
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),

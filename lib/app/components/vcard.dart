@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:vault_app/app/components/category_page.dart';
 import 'package:vault_app/app/models/courses.dart';
 
 class VCard extends StatefulWidget {
@@ -108,19 +109,14 @@ class _VCardState extends State<VCard> {
               ),
             ],
           ),
-          // TODO - mettere un bottone con 3 puntini
           Positioned(
             right: 0 - 10,
             top: -10,
             // child: Image.asset(widget.course.image),
             child: IconButton(
               key: key,
-              icon: const Icon(
-                Icons.more_vert, // Icona con 3 puntini verticali
-                color: Colors.white,
-              ),
+              icon: const Icon(Icons.more_vert, color: Colors.white),
               onPressed: () {
-                // Azione da eseguire quando il pulsante viene premuto
                 RenderBox box =
                     key.currentContext?.findRenderObject() as RenderBox;
                 Offset btnPressed = box.localToGlobal(
@@ -139,35 +135,34 @@ class _VCardState extends State<VCard> {
                   ),
                   items: [
                     PopupMenuItem(
-                      value: 'edit',
+                      value: 'open',
                       child: Center(
                         child: Text(
-                          'Edit',
+                          'open',
                           style: TextStyle(
                             fontSize: 16,
                             fontFamily: 'Poppins',
                             color: Colors.black,
                             // fontWeight: FontWeight.bold,
-                            // Altri attributi di stile che desideri
                           ),
                         ),
                       ),
                     ),
-                    PopupMenuItem(
-                      value: 'delete',
-                      child: Center(
-                        child: Text(
-                          'Delete',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontFamily: 'Poppins',
-                            color: Color.fromRGBO(179, 41, 41, 1),
-                            // fontWeight: FontWeight.bold,
-                            // Altri attributi di stile che desideri
-                          ),
-                        ),
-                      ),
-                    ),
+                    // PopupMenuItem(
+                    //   value: 'delete',
+                    //   child: Center(
+                    //     child: Text(
+                    //       'Delete',
+                    //       style: TextStyle(
+                    //         fontSize: 16,
+                    //         fontFamily: 'Poppins',
+                    //         color: Color.fromRGBO(179, 41, 41, 1),
+                    //         // fontWeight: FontWeight.bold,
+                    //         // Altri attributi di stile che desideri
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                   elevation: 8.0,
                   color: Colors.white, // colore di sfondo del menu
@@ -175,10 +170,20 @@ class _VCardState extends State<VCard> {
                     borderRadius: BorderRadius.circular(15),
                   ),
                 ).then((value) {
-                  // Gestisci il valore selezionato
                   if (value != null) {
-                    // print('Azione selezionata: $value');
-                    // Aggiungi qui la logica per gestire le diverse azioni
+                    switch (value) {
+                      case 'open':
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder:
+                                (context) =>
+                                    CategoryPage(title: widget.course.title),
+                          ),
+                        );
+                        break;
+                      default:
+                    }
                   }
                 });
               },
