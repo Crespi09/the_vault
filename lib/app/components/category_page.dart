@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vault_app/app/components/SearchBarComponents.dart';
 import 'package:vault_app/app/components/fileCard.dart';
+import 'package:vault_app/app/components/file_bin_card.dart';
 import 'package:vault_app/app/components/folderCard.dart';
+import 'package:vault_app/app/components/folder_bin_card.dart';
 import 'package:vault_app/app/models/vault_item.dart';
 import 'package:vault_app/app/theme.dart';
 import 'package:vault_app/services/auth_service.dart';
@@ -235,14 +237,24 @@ class _CategoryPageState extends State<CategoryPage> {
                               padding: const EdgeInsets.only(bottom: 12),
                               child:
                                   item.fileId != null
-                                      ? FileCard(
-                                        section: item,
-                                        onDeleted: _onItemDeleted,
-                                      )
-                                      : FolderCard(
-                                        section: item,
-                                        onDeleted: _onItemDeleted,
-                                      ),
+                                      ? (widget.title.toLowerCase() == 'cestino'
+                                          ? FileBinCard(
+                                            section: item,
+                                            onDeleted: _onItemDeleted,
+                                          )
+                                          : FileCard(
+                                            section: item,
+                                            onDeleted: _onItemDeleted,
+                                          ))
+                                      : (widget.title.toLowerCase() == 'cestino'
+                                          ? FolderBinCard(
+                                            section: item,
+                                            onDeleted: _onItemDeleted,
+                                          )
+                                          : FolderCard(
+                                            section: item,
+                                            onDeleted: _onItemDeleted,
+                                          )),
                             );
                           },
                         ),

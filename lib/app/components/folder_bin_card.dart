@@ -8,8 +8,8 @@ import 'package:vault_app/app/models/vault_item.dart';
 import 'package:vault_app/env.dart';
 import 'package:vault_app/services/auth_service.dart';
 
-class FolderCard extends StatelessWidget {
-  const FolderCard({super.key, required this.section, this.onDeleted});
+class FolderBinCard extends StatelessWidget {
+  const FolderBinCard({super.key, required this.section, this.onDeleted});
 
   final VaultItem section;
   final VoidCallback? onDeleted;
@@ -65,20 +65,12 @@ class FolderCard extends StatelessWidget {
       try {
         final authService = Provider.of<AuthService>(context, listen: false);
 
-        final response = await _dio.post(
-          'http://10.0.2.2:3000/bin',
-          data: {'itemId': (section.itemId).toString()},
+        final response = await _dio.delete(
+          'http://10.0.2.2:3000/item/${section.itemId}',
           options: Options(
             headers: {'Authorization': 'Bearer ${authService.accessToken}'},
           ),
         );
-
-        // final response = await _dio.delete(
-        //   'http://10.0.2.2:3000/item/${section.itemId}',
-        //   options: Options(
-        //     headers: {'Authorization': 'Bearer ${authService.accessToken}'},
-        //   ),
-        // );
 
         if (response.statusCode == 200 || response.statusCode == 204) {
           if (onDeleted != null) {
@@ -90,97 +82,30 @@ class FolderCard extends StatelessWidget {
       }
     }
 
-    void editFolder() async {
-      showDialog(
-        context: context,
-        builder:
-            (context) => EditDialog(
-              currentName: section.title,
-              isFolder: true,
-              onEdit: (newName) async {
-                try {
-                  final authService = Provider.of<AuthService>(
-                    context,
-                    listen: false,
-                  );
+    void restoreFolder() async {
+      try {
+        final authService = Provider.of<AuthService>(context, listen: false);
 
-                  final itemId = section.itemId;
+        final itemId = section.itemId;
 
-                  final response = await _dio.put(
-                    'http://10.0.2.2:3000/item/$itemId',
-                    data: {'name': newName},
-                    options: Options(
-                      headers: {
-                        'Authorization': 'Bearer ${authService.accessToken}',
-                      },
-                    ),
-                  );
+        final response = await _dio.delete(
+          'http://10.0.2.2:3000/bin/$itemId',
+          options: Options(
+            headers: {'Authorization': 'Bearer ${authService.accessToken}'},
+          ),
+        );
 
-                  if (response.statusCode == 200 ||
-                      response.statusCode == 204) {
-                    // lo uso per ricaricare
-                    if (onDeleted != null) {
-                      onDeleted!();
-                    }
-                  }
-
-                  debugPrint('Nuovo nome: $newName');
-                } catch (e) {
-                  _errorMessage = 'Error Edit File';
-                }
-              },
-            ),
-      );
-    }
-
-    void favouriteBtnClicked(VaultItem file) async {
-      if (file.isFavourite) {
-        try {
-          final authService = Provider.of<AuthService>(context, listen: false);
-
-          final itemId = section.itemId;
-
-          final response = await _dio.delete(
-            'http://10.0.2.2:3000/favorite/$itemId ',
-            options: Options(
-              headers: {'Authorization': 'Bearer ${authService.accessToken}'},
-            ),
-          );
-
-          if (response.statusCode == 200 || response.statusCode == 204) {
-            // lo uso per ricaricare
-            if (onDeleted != null) {
-              onDeleted!();
-            }
+        if (response.statusCode == 200 || response.statusCode == 204) {
+          // lo uso per ricaricare
+          if (onDeleted != null) {
+            onDeleted!();
           }
-        } catch (e) {
-          _errorMessage = 'Error Edit File';
         }
-      } else {
-        try {
-          final authService = Provider.of<AuthService>(context, listen: false);
-
-          final response = await _dio.post(
-            'http://10.0.2.2:3000/favorite',
-            data: {'itemId': (section.itemId).toString()},
-            options: Options(
-              headers: {'Authorization': 'Bearer ${authService.accessToken}'},
-            ),
-          );
-
-          if (response.statusCode == 200 || response.statusCode == 201) {
-            // lo uso per ricaricare
-            if (onDeleted != null) {
-              onDeleted!();
-            }
-          }
-        } catch (e) {
-          _errorMessage = 'Error Edit File $e';
-        }
+      } catch (e) {
+        _errorMessage = 'Error Edit File';
       }
     }
 
-    // La FolderCard funge da DragTarget per VaultItem
     return DragTarget<VaultItem>(
       onWillAccept: (data) {
         return data != null && data.itemId != section.itemId;
@@ -256,15 +181,6 @@ class FolderCard extends StatelessWidget {
                   ],
                 ),
               ),
-              IconButton(
-                icon: Icon(
-                  section.isFavourite ? Icons.star : Icons.star_border,
-                  color: Colors.white,
-                ),
-                onPressed: () {
-                  favouriteBtnClicked(section);
-                },
-              ),
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
                 child: VerticalDivider(thickness: 2, width: 0),
@@ -300,10 +216,10 @@ class FolderCard extends StatelessWidget {
                         ),
                       ),
                       PopupMenuItem(
-                        value: 'edit',
+                        value: 'restore',
                         child: Center(
                           child: Text(
-                            'Edit',
+                            'Restore',
                             style: TextStyle(
                               fontSize: 14,
                               fontFamily: 'Poppins',
@@ -357,8 +273,8 @@ class FolderCard extends StatelessWidget {
                             );
                           }
                           break;
-                        case 'edit':
-                          editFolder();
+                        case 'restore':
+                          restoreFolder();
                           break;
                         default:
                       }

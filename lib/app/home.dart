@@ -56,6 +56,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
     artboard.addController(controller!);
     _menuBtn = controller.findInput<bool>('isOpen') as SMIBool;
+    _menuBtn.value = true;
   }
 
   void onMenuPress() {
@@ -150,7 +151,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               },
               child: FadeTransition(
                 opacity: _sidebarAnim,
-                child: const SideMenu(),
+                child: SideMenu(
+                  onTabChange: (tabIndex) {
+                    setState(() {
+                      _currentTabIndex = tabIndex;
+                      _tabBody = _screens[tabIndex];
+                    });
+                  },
+                ),
               ),
             ),
           ),

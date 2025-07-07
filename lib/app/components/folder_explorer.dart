@@ -11,8 +11,13 @@ import 'package:vault_app/env.dart';
 import 'package:vault_app/services/auth_service.dart';
 
 class FolderExplorer extends StatefulWidget {
+  const FolderExplorer({
+    Key? key,
+    required this.folderId,
+    required this.folderName,
+  }) : super(key: key);
   final int folderId;
-  const FolderExplorer({Key? key, required this.folderId}) : super(key: key);
+  final String folderName;
 
   @override
   _FolderExplorerState createState() => _FolderExplorerState();
@@ -121,24 +126,23 @@ class _FolderExplorerState extends State<FolderExplorer> {
 
   Widget _buildBreadcrumbs() {
     // Utilizza il nome della cartella padre presente in folder['item']['name']
-    String folderName =
-        (folder is Map &&
-                (folder as Map).containsKey('item') &&
-                (folder as Map)['item'] != null)
-            ? (folder as Map)['item']['name']
-            : '';
+    String folderName = widget.folderName;
     List<String> parts = folderName.split('/');
     return Wrap(
       children: List.generate(parts.length, (index) {
         String pathItem = folderName;
-        String path = parts.sublist(0, index + 1).join('/');
+        // String path = parts.sublist(0, index + 1).join('/');
         return GestureDetector(
           onTap: () {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
                 // Assicurati di passare il folderId corretto; qui è stato mantenuto "widget.folderId" di esempio
-                builder: (_) => FolderExplorer(folderId: widget.folderId),
+                builder:
+                    (_) => FolderExplorer(
+                      folderId: widget.folderId,
+                      folderName: widget.folderName,
+                    ),
               ),
             );
           },

@@ -14,7 +14,7 @@ TODO -
 
 
             MENU
-    - @ gestire cestino
+    + @ gestire cestino
     + @ gestire preferiti
     + @ gestire file recenti
     @ gestire folder recenti
@@ -22,23 +22,28 @@ TODO -
             SEARCHBAR
     + @ searchbar
 
-            SIDEBAR
-    @ aggiungere collegamento alle pagine
-
 
             PROFILO
-    @ aggiungere modal condivisione file
+   @ aggiungere modal condivisione file
+
+
+            ARCHIVIAZIONE
+   @ aggiungere API spazio totale e spazio usato
+   @ collegare API spazio usato
+      
+            SIDEBAR
+    + @ aggiungere collegamento alle pagine
 
 
             ERRORI
     @ sistemare doppio login per accedere
+    + @ sistemare doppio click su simbolo sidebar
     + @ sistemare tailscale
-    @ sistemare doppio click su simbolo sidebar
 
 
     + @ aggiunto db url al file .env
 
             COSE DA SISTEMARE
-   @ nome folder in folder_explore
+   + @ nome folder in folder_explore
    @ poter trascinare al folder precedente file o altri folder
    @ sistemare searchbar per file / folder innestati

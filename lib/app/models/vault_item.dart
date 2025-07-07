@@ -13,6 +13,7 @@ class VaultItem {
     this.color = Colors.white,
     this.image = "",
     this.isFavourite = false,
+    // this.isBin = false,
   });
 
   UniqueKey? id;
@@ -23,6 +24,7 @@ class VaultItem {
   IconData icon;
   Color color;
   bool isFavourite;
+  // bool isBin;
 
   // Factory per creare VaultItem da una mappa JSON
   factory VaultItem.fromFolderJson(Map<String, dynamic> json) {
@@ -41,6 +43,7 @@ class VaultItem {
       color: _hexToColor(json['color'] ?? '#000000'),
       image: '',
       isFavourite: json['isFavourite'] ?? false,
+      // isBin: json['isBin'] ?? false,
     );
   }
 
@@ -61,13 +64,14 @@ class VaultItem {
       color: const Color(0xFF7850F0),
       image: json['path'] ?? '',
       isFavourite: json['isFavourite'] ?? false,
+      // isBin: json['isBin'] ?? false,
     );
   }
 
   // Utility per convertire hex in Color
   static Color _hexToColor(String hex) {
     hex = hex.replaceAll('#', '');
-    if (hex.length == 6) hex = 'FF' + hex;
+    if (hex.length == 6) hex = 'FF$hex';
     return Color(int.parse(hex, radix: 16));
   }
 

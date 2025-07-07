@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rive/rive.dart';
+import 'package:vault_app/app/components/category_page.dart';
 import 'package:vault_app/app/components/menu_row.dart';
 import 'package:vault_app/app/models/menu_item.dart';
 import 'package:vault_app/app/theme.dart';
@@ -12,7 +13,10 @@ import 'package:vault_app/services/auth_service.dart';
 import 'package:vault_app/services/user_service.dart';
 
 class SideMenu extends StatefulWidget {
-  const SideMenu({super.key});
+  final Function(int)? onTabChange;
+  final VoidCallback? onMenuClose;
+
+  const SideMenu({super.key, this.onTabChange, this.onMenuClose});
 
   @override
   State<SideMenu> createState() => _SideMenuState();
@@ -41,6 +45,34 @@ class _SideMenuState extends State<SideMenu> {
   void onMenuPress(MenuItemModel menu) {
     setState(() {
       _selectedMenu = menu.title;
+
+      switch (menu.title.toLowerCase()) {
+        case 'home':
+          widget.onTabChange?.call(0); // redirect a home
+          widget.onMenuClose?.call(); // chiude il menu
+          break;
+        case 'files':
+          widget.onTabChange?.call(1); // redirect a folder
+          // widget.onMenuClose?.call();
+          break;
+        case 'speciali':
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CategoryPage(title: menu.title),
+            ),
+          );
+          break;
+        case 'cestino':
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CategoryPage(title: menu.title),
+            ),
+          );
+          break;
+        default:
+      }
     });
   }
 
