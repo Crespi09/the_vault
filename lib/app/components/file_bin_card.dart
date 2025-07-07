@@ -75,6 +75,8 @@ class FileBinCard extends StatelessWidget {
         );
 
         if (response.statusCode == 200 || response.statusCode == 204) {
+          RecentFile().removeFileFromList(section.fileId!);
+
           if (onDeleted != null) {
             onDeleted!();
           }

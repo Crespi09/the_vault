@@ -80,11 +80,7 @@ class _HomeTabViewState extends State<HomeTabView> {
     }
   }
 
-  String _formatDate(String dateString) {
-    // Implementa la formattazione della data qui
-    return dateString;
-  }
-
+  // todo - da rivedere
   String _getFileTypeImage(String fileType) {
     // Implementa la logica per ottenere l'immagine in base al tipo di file
     return 'assets/images/file_icon.png';

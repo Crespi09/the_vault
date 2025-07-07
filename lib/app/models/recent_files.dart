@@ -33,4 +33,17 @@ class RecentFile {
   List<int> getFiles() {
     return List.from(recentFiles);
   }
+
+  void removeFileFromList(int fileId) {
+    if (recentFiles.contains(fileId)) {
+      recentFiles.remove(fileId);
+      debugPrint('FILE REMOVED: $fileId');
+      debugPrint('RECENT FILES:');
+      for (var id in recentFiles) {
+        debugPrint(id.toString());
+      }
+    } else {
+      debugPrint('FILE NOT FOUND: $fileId');
+    }
+  }
 }

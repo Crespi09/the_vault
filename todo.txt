@@ -17,7 +17,7 @@ TODO -
     + @ gestire cestino
     + @ gestire preferiti
     + @ gestire file recenti
-    @ gestire folder recenti
+    + @ gestire folder recenti
             
             SEARCHBAR
     + @ searchbar

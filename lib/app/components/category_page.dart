@@ -6,6 +6,7 @@ import 'package:vault_app/app/components/fileCard.dart';
 import 'package:vault_app/app/components/file_bin_card.dart';
 import 'package:vault_app/app/components/folderCard.dart';
 import 'package:vault_app/app/components/folder_bin_card.dart';
+import 'package:vault_app/app/models/recent_folders.dart';
 import 'package:vault_app/app/models/vault_item.dart';
 import 'package:vault_app/app/theme.dart';
 import 'package:vault_app/services/auth_service.dart';
@@ -29,6 +30,9 @@ class _CategoryPageState extends State<CategoryPage> {
   List<VaultItem> _filteredFolders = [];
   List<VaultItem> _filteredFiles = [];
 
+  List<dynamic> _recentFoldersFromApi = [];
+  Object queryPar = {};
+
   @override
   void initState() {
     super.initState();
@@ -45,6 +49,8 @@ class _CategoryPageState extends State<CategoryPage> {
       final authService = Provider.of<AuthService>(context, listen: false);
 
       String endpoint;
+      Map<String, dynamic>? queryParams;
+
       switch (widget.title.toLowerCase()) {
         case 'speciali':
           endpoint = 'http://10.0.2.2:3000/favorite';
@@ -52,32 +58,59 @@ class _CategoryPageState extends State<CategoryPage> {
         case 'cestino':
           endpoint = 'http://10.0.2.2:3000/bin';
           break;
+        case 'recenti':
+          endpoint = 'http://10.0.2.2:3000/item';
+          List<int> recentFolderIds = RecentFolders().getFolders();
+
+          if (recentFolderIds.isEmpty) {
+            debugPrint('Nessun folder recente');
+            setState(() {
+              _folders = [];
+              _files = [];
+              _filteredFolders = [];
+              _filteredFiles = [];
+              _isLoading = false;
+            });
+            return;
+          }
+          String idsString = recentFolderIds.join(',');
+          queryParams = {'ids': idsString};
+          break;
         default:
-          endpoint = 'http://10.0.2.2:3000/items';
+          endpoint = 'http://10.0.2.2:3000/item';
       }
 
       final response = await _dio.get(
         endpoint,
+        queryParameters: queryParams,
         options: Options(
           headers: {'Authorization': 'Bearer ${authService.accessToken}'},
         ),
       );
 
       if (response.statusCode == 200) {
-        final responseData = response.data as Map<String, dynamic>;
-
         List<VaultItem> folders = [];
         List<VaultItem> files = [];
 
-        if (responseData['folders'] != null) {
-          for (var folder in responseData['folders']) {
-            folders.add(VaultItem.fromFolderJson(folder));
-          }
-        }
+        if (widget.title.toLowerCase() == 'recenti') {
+          final responseData = response.data as List<dynamic>;
 
-        if (responseData['files'] != null) {
-          for (var file in responseData['files']) {
-            files.add(VaultItem.fromFileJson(file));
+          for (var item in responseData) {
+            folders.add(VaultItem.fromFolderJson(item));
+          }
+        } else {
+          final responseData = response.data as Map<String, dynamic>;
+
+          if (responseData['folders'] != null) {
+            for (var folder in responseData['folders']) {
+              folders.add(VaultItem.fromFolderJson(folder));
+            }
+          }
+
+          if (responseData['files'] != null) {
+            for (var file in responseData['files']) {
+              files.add(VaultItem.fromFileJson(file));
+            }
           }
         }
 
@@ -90,7 +123,6 @@ class _CategoryPageState extends State<CategoryPage> {
         });
       }
     } catch (e) {
-      debugPrint('ERRORE CESTINO');
       debugPrint(e.toString());
       setState(() {
         _errorMessage = 'Errore nel caricamento dei dati';

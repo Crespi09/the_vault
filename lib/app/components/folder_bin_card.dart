@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:vault_app/app/components/edit_dialog.dart';
 import 'package:vault_app/app/components/folder_explorer.dart';
 import 'package:vault_app/app/models/courses.dart';
+import 'package:vault_app/app/models/recent_folders.dart';
 import 'package:vault_app/app/models/vault_item.dart';
 import 'package:vault_app/env.dart';
 import 'package:vault_app/services/auth_service.dart';
@@ -73,6 +74,8 @@ class FolderBinCard extends StatelessWidget {
         );
 
         if (response.statusCode == 200 || response.statusCode == 204) {
+          RecentFolders().removeFolderFromList(section.itemId!);
+
           if (onDeleted != null) {
             onDeleted!();
           }
