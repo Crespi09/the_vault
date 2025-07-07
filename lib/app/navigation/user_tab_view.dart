@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:dio/dio.dart';
+import 'package:vault_app/app/components/share_file_modal.dart';
+import 'package:vault_app/app/models/vault_item.dart';
 import 'package:vault_app/app/theme.dart';
 import 'package:vault_app/env.dart';
 import 'package:vault_app/services/auth_service.dart';
@@ -21,6 +23,8 @@ class _UserTabViewState extends State<UserTabView> {
   Map<String, dynamic>? _userData;
   Map<String, dynamic>? _stats;
   bool _isLoading = true;
+  List<VaultItem> _folders = [];
+  List<VaultItem> _files = [];
 
   @override
   void initState() {
@@ -113,6 +117,15 @@ class _UserTabViewState extends State<UserTabView> {
     if (widget.onLogin != null) {
       widget.onLogin!(false);
     }
+  }
+
+  void onSharePressed() async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return ShareFileModal();
+      },
+    );
   }
 
   @override
@@ -276,7 +289,7 @@ class _UserTabViewState extends State<UserTabView> {
                                 child: Center(
                                   child: CupertinoButton(
                                     pressedOpacity: 1,
-                                    onPressed: onLogoutPressed,
+                                    onPressed: onSharePressed,
                                     padding: const EdgeInsets.symmetric(
                                       horizontal: 30,
                                       vertical: 10,
