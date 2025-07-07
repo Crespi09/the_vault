@@ -24,7 +24,7 @@ TODO -
 
 
             PROFILO
-   @ aggiungere modal condivisione file
+   + @ aggiungere modal condivisione file
 
 
             ARCHIVIAZIONE

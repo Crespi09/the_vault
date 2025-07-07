@@ -1,5 +1,8 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:vault_app/app/models/vault_item.dart';
+import 'package:vault_app/services/auth_service.dart';
 
 class ShareFileModal extends StatefulWidget {
   const ShareFileModal({Key? key}) : super(key: key);
@@ -12,15 +15,91 @@ class _ShareFileModalState extends State<ShareFileModal> {
   VaultItem? selectedItem;
   String email = '';
 
-  final List<VaultItem> folders = [
-    VaultItem(itemId: 1, title: 'Folder 1'),
-    VaultItem(itemId: 2, title: 'Folder 2'),
-  ];
+  List<VaultItem> _folders = [];
+  List<VaultItem> _files = [];
+  final Dio _dio = Dio();
 
-  final List<VaultItem> files = [
-    VaultItem(fileId: 10, itemId: 10, title: 'File 1'),
-    VaultItem(fileId: 11, itemId: 11, title: 'File 2'),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _fetchItems();
+  }
+
+  Future<void> _fetchItems() async {
+    try {
+      final authService = Provider.of<AuthService>(context, listen: false);
+
+      if (!authService.isAuthenticated) {
+        debugPrint('Utente non autenticato');
+        return;
+      }
+
+      final response = await _dio.get(
+        'http://10.0.2.2:3000/item/all?limit=50&offset=0',
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer ${authService.accessToken}',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      final responseData = response.data as Map<String, dynamic>;
+
+      List<VaultItem> folders = [];
+      List<VaultItem> files = [];
+
+      if (responseData['folders'] != null) {
+        for (var folder in responseData['folders']) {
+          folders.add(VaultItem.fromFolderJson(folder));
+        }
+      }
+
+      if (responseData['files'] != null) {
+        for (var file in responseData['files']) {
+          files.add(VaultItem.fromFileJson(file));
+        }
+      }
+
+      setState(() {
+        _folders = folders;
+        _files = files;
+      });
+
+      debugPrint('Items ottenuti: $responseData');
+    } catch (e) {
+      setState(() {
+        debugPrint('Errore durante il caricamento: $e');
+      });
+      debugPrint('Errore durante il fetch degli items: $e');
+    }
+  }
+
+  void onShareBtn(int id, String email) async {
+    try {
+      final authService = Provider.of<AuthService>(context, listen: false);
+
+      if (!authService.isAuthenticated) {
+        debugPrint('Utente non autenticato');
+        return;
+      }
+
+      final response = await _dio.post(
+        'http://10.0.2.2:3000/shared',
+        data: {'item_id': id.toString(), 'shared_with': email},
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer ${authService.accessToken}',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {}
+    } catch (e) {
+      debugPrint('Error sharing file: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +158,7 @@ class _ShareFileModalState extends State<ShareFileModal> {
             ),
           ),
           onPressed: () {
-            // Azione per condividere: utilizza selectedItem e email
+            onShareBtn(selectedItem!.itemId!, email);
             Navigator.of(context).pop();
           },
           child: const Text('Condividi'),
@@ -98,7 +177,7 @@ class _ShareFileModalState extends State<ShareFileModal> {
       ),
     );
     items.addAll(
-      folders.map(
+      _folders.map(
         (folder) => DropdownMenuItem<VaultItem>(
           value: folder,
           child: Padding(
@@ -116,7 +195,7 @@ class _ShareFileModalState extends State<ShareFileModal> {
       ),
     );
     items.addAll(
-      files.map(
+      _files.map(
         (file) => DropdownMenuItem<VaultItem>(
           value: file,
           child: Padding(
