@@ -100,7 +100,7 @@ class FileBinCard extends StatelessWidget {
           ),
         );
 
-        if (response.statusCode == 200 || response.statusCode == 204) {
+        if (response.statusCode == 200 || response.statusCode == 204 || response.statusCode == 201) {
           // Salva il file nella directory temporanea
           final dir = await getTemporaryDirectory();
 

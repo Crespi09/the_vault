@@ -1,3 +1,6 @@
+import 'dart:ffi';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -26,6 +29,10 @@ class _SideMenuState extends State<SideMenu> {
   final List<MenuItemModel> _browseMenuIcons = MenuItemModel.menuItems;
   final List<MenuItemModel> _historyMenuIcons = MenuItemModel.menuItems2;
   final List<MenuItemModel> _themeMenuIcons = MenuItemModel.menuItems3;
+
+  double storageUsed = 0;
+  int totaleStorage = 500;
+  final Dio _dio = Dio();
 
   String _selectedMenu = MenuItemModel.menuItems[0].title;
   bool _isDarkMode = false;
@@ -87,6 +94,7 @@ class _SideMenuState extends State<SideMenu> {
   void initState() {
     super.initState();
     _fetchUserData();
+    _getStorageUsed();
   }
 
   Future<void> _fetchUserData() async {
@@ -106,6 +114,35 @@ class _SideMenuState extends State<SideMenu> {
     } catch (e) {
       debugPrint('Eccezione nel caricamento dati utente: $e');
       debugPrint('Tipo di errore: ${e.runtimeType}');
+    }
+  }
+
+  Future<void> _getStorageUsed() async {
+    try {
+      final authService = Provider.of<AuthService>(context, listen: false);
+
+      final response = await _dio.get(
+        'http://10.0.2.2:3000/storage',
+        options: Options(
+          headers: {'Authorization': 'Bearer ${authService.accessToken}'},
+        ),
+      );
+
+      debugPrint('STORAGEEEE');
+      debugPrint(response.data['storage'].toString());
+      if (response.statusCode == 200 || response.statusCode == 201) {
+          double storageInBytes = response.data['storage'].toDouble();
+          double storageInGB = storageInBytes / (1024 * 1024 * 1024);
+        setState(() {
+          storageUsed = double.parse(storageInGB.toStringAsFixed(2));
+        });
+
+        debugPrint(storageInBytes.toString());
+        debugPrint(storageInGB.toString());
+        debugPrint(storageUsed.toString());
+      }
+    } catch (e) {
+      debugPrint('Eccezione nel caricamento total storage: $e');
     }
   }
 
@@ -210,7 +247,7 @@ class _SideMenuState extends State<SideMenu> {
                             ),
                             Spacer(),
                             Text(
-                              "4gb / 10gb",
+                              "$storageUsed / $totaleStorage GB",
                               style: TextStyle(
                                 fontFamily: 'Inter',
                                 fontSize: 13,
@@ -222,7 +259,7 @@ class _SideMenuState extends State<SideMenu> {
                         ),
                         SizedBox(height: 8),
                         LinearProgressIndicator(
-                          value: 0.4,
+                          value: storageUsed,
                           backgroundColor: RiveAppTheme.background,
                           valueColor: AlwaysStoppedAnimation<Color>(
                             Colors.lightBlue,

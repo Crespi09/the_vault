@@ -28,11 +28,11 @@ TODO -
 
 
             ARCHIVIAZIONE
-   @ aggiungere API spazio totale e spazio usato
-   @ collegare API spazio usato
+   + @ aggiungere API spazio totale e spazio usato
+   + @ collegare API spazio usato
       
             SIDEBAR
-    + @ aggiungere collegamento alle pagine
+   + @ aggiungere collegamento alle pagine
 
 
             ERRORI
