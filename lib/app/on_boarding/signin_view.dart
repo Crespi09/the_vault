@@ -70,11 +70,11 @@ class _SigninViewState extends State<SigninView> {
       _isLoading = true;
     });
 
-    // String email = _emailController.text.trim();
-    // String password = _passwordController.text.trim();
+    String email = _emailController.text.trim();
+    String password = _passwordController.text.trim();
 
-    String email = 'pierino';
-    String password = 'password';
+    // String email = '';
+    // String password = '';
 
     bool isEmailValid = email.isNotEmpty;
     bool isPassValid = password.isNotEmpty;
