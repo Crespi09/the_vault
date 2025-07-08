@@ -35,7 +35,7 @@ class _ShareFileModalState extends State<ShareFileModal> {
       }
 
       final response = await _dio.get(
-        'http://10.0.2.2:3000/item/all?limit=50&offset=0',
+        'http://100.84.178.101:3000/item/all?limit=50&offset=0',
         options: Options(
           headers: {
             'Authorization': 'Bearer ${authService.accessToken}',
@@ -85,7 +85,7 @@ class _ShareFileModalState extends State<ShareFileModal> {
       }
 
       final response = await _dio.post(
-        'http://10.0.2.2:3000/shared',
+        'http://100.84.178.101:3000/shared',
         data: {'item_id': id.toString(), 'shared_with': email},
         options: Options(
           headers: {

@@ -51,7 +51,7 @@ class AuthService extends ChangeNotifier {
     }
   }
 
-  // Logout - elimina i token
+  // logout
   Future<void> logout() async {
     try {
       await _storage.delete(key: _accessTokenKey);
@@ -61,6 +61,7 @@ class AuthService extends ChangeNotifier {
       _refreshToken = null;
       _isAuthenticated = false;
 
+      clearAllData();
       notifyListeners();
       debugPrint('Logout completato');
     } catch (e) {

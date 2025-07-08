@@ -67,7 +67,7 @@ class FolderCard extends StatelessWidget {
         final authService = Provider.of<AuthService>(context, listen: false);
 
         final response = await _dio.post(
-          'http://10.0.2.2:3000/bin',
+          'http://100.84.178.101:3000/bin',
           data: {'itemId': (section.itemId).toString()},
           options: Options(
             headers: {'Authorization': 'Bearer ${authService.accessToken}'},
@@ -75,7 +75,7 @@ class FolderCard extends StatelessWidget {
         );
 
         // final response = await _dio.delete(
-        //   'http://10.0.2.2:3000/item/${section.itemId}',
+        //   'http://100.84.178.101:3000/item/${section.itemId}',
         //   options: Options(
         //     headers: {'Authorization': 'Bearer ${authService.accessToken}'},
         //   ),
@@ -108,7 +108,7 @@ class FolderCard extends StatelessWidget {
                   final itemId = section.itemId;
 
                   final response = await _dio.put(
-                    'http://10.0.2.2:3000/item/$itemId',
+                    'http://100.84.178.101:3000/item/$itemId',
                     data: {'name': newName},
                     options: Options(
                       headers: {
@@ -142,7 +142,7 @@ class FolderCard extends StatelessWidget {
           final itemId = section.itemId;
 
           final response = await _dio.delete(
-            'http://10.0.2.2:3000/favorite/$itemId ',
+            'http://100.84.178.101:3000/favorite/$itemId ',
             options: Options(
               headers: {'Authorization': 'Bearer ${authService.accessToken}'},
             ),
@@ -162,7 +162,7 @@ class FolderCard extends StatelessWidget {
           final authService = Provider.of<AuthService>(context, listen: false);
 
           final response = await _dio.post(
-            'http://10.0.2.2:3000/favorite',
+            'http://100.84.178.101:3000/favorite',
             data: {'itemId': (section.itemId).toString()},
             options: Options(
               headers: {'Authorization': 'Bearer ${authService.accessToken}'},
@@ -202,7 +202,7 @@ class FolderCard extends StatelessWidget {
           final authService = Provider.of<AuthService>(context, listen: false);
 
           final response = await _dio.put(
-            'http://10.0.2.2:3000/item/${data.itemId}',
+            'http://100.84.178.101:3000/item/${data.itemId}',
             data: {'parentId': (section.itemId).toString()},
             options: Options(
               headers: {'Authorization': 'Bearer ${authService.accessToken}'},

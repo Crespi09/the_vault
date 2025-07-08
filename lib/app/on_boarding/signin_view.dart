@@ -73,7 +73,7 @@ class _SigninViewState extends State<SigninView> {
     // String email = _emailController.text.trim();
     // String password = _passwordController.text.trim();
 
-    String email = 'gianfranco';
+    String email = 'pierino';
     String password = 'password';
 
     bool isEmailValid = email.isNotEmpty;
@@ -92,7 +92,7 @@ class _SigninViewState extends State<SigninView> {
     try {
       // Configura Dio per non lanciare eccezioni sui codici di stato 4xx
       final response = await _dio.post(
-        'http://10.0.2.2:3000/auth/signin',
+        'http://100.84.178.101:3000/auth/signin',
         data: {'username': email, 'password': password},
         options: Options(
           validateStatus: (status) {
@@ -177,7 +177,6 @@ class _SigninViewState extends State<SigninView> {
         });
       }
 
-      // Gestisci solo errori di rete o server (5xx)
       if (e is DioException) {
         if (e.response?.statusCode != null && e.response!.statusCode! >= 500) {
           debugPrint('Errore del server: ${e.response?.statusCode}');
