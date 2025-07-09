@@ -70,7 +70,7 @@ class _UserTabViewState extends State<UserTabView> {
       }
 
       final response = await _dio.get(
-        'http://10.0.2.2:3000/users/items-stats',
+        'http://100.84.178.101:3000/users/items-stats',
         options: Options(
           headers: {
             'Authorization': 'Bearer ${authService.accessToken}',

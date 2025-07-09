@@ -67,7 +67,7 @@ class FolderBinCard extends StatelessWidget {
         final authService = Provider.of<AuthService>(context, listen: false);
 
         final response = await _dio.delete(
-          'http://10.0.2.2:3000/item/${section.itemId}',
+          'http://100.84.178.101:3000/item/${section.itemId}',
           options: Options(
             headers: {'Authorization': 'Bearer ${authService.accessToken}'},
           ),
@@ -92,7 +92,7 @@ class FolderBinCard extends StatelessWidget {
         final itemId = section.itemId;
 
         final response = await _dio.delete(
-          'http://10.0.2.2:3000/bin/$itemId',
+          'http://100.84.178.101:3000/bin/$itemId',
           options: Options(
             headers: {'Authorization': 'Bearer ${authService.accessToken}'},
           ),
@@ -129,7 +129,7 @@ class FolderBinCard extends StatelessWidget {
           final authService = Provider.of<AuthService>(context, listen: false);
 
           final response = await _dio.put(
-            'http://10.0.2.2:3000/item/${data.itemId}',
+            'http://100.84.178.101:3000/item/${data.itemId}',
             data: {'parentId': (section.itemId).toString()},
             options: Options(
               headers: {'Authorization': 'Bearer ${authService.accessToken}'},

@@ -122,7 +122,7 @@ class _SideMenuState extends State<SideMenu> {
       final authService = Provider.of<AuthService>(context, listen: false);
 
       final response = await _dio.get(
-        'http://10.0.2.2:3000/storage',
+        'http://100.84.178.101:3000/storage',
         options: Options(
           headers: {'Authorization': 'Bearer ${authService.accessToken}'},
         ),
@@ -131,8 +131,8 @@ class _SideMenuState extends State<SideMenu> {
       debugPrint('STORAGEEEE');
       debugPrint(response.data['storage'].toString());
       if (response.statusCode == 200 || response.statusCode == 201) {
-          double storageInBytes = response.data['storage'].toDouble();
-          double storageInGB = storageInBytes / (1024 * 1024 * 1024);
+        double storageInBytes = response.data['storage'].toDouble();
+        double storageInGB = storageInBytes / (1024 * 1024 * 1024);
         setState(() {
           storageUsed = double.parse(storageInGB.toStringAsFixed(2));
         });

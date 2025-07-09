@@ -68,7 +68,7 @@ class FileBinCard extends StatelessWidget {
         final authService = Provider.of<AuthService>(context, listen: false);
 
         final response = await _dio.delete(
-          'http://10.0.2.2:3000/item/${section.itemId}',
+          'http://100.84.178.101:3000/item/${section.itemId}',
           options: Options(
             headers: {'Authorization': 'Bearer ${authService.accessToken}'},
           ),
@@ -93,14 +93,16 @@ class FileBinCard extends StatelessWidget {
         final authService = Provider.of<AuthService>(context, listen: false);
 
         final response = await _dio.get(
-          'http://10.0.2.2:3000/file/${section.fileId}',
+          'http://100.84.178.101:3000/file/${section.fileId}',
           options: Options(
             headers: {'Authorization': 'Bearer ${authService.accessToken}'},
             responseType: ResponseType.bytes, // Recupera i bytes del file
           ),
         );
 
-        if (response.statusCode == 200 || response.statusCode == 204 || response.statusCode == 201) {
+        if (response.statusCode == 200 ||
+            response.statusCode == 204 ||
+            response.statusCode == 201) {
           // Salva il file nella directory temporanea
           final dir = await getTemporaryDirectory();
 
@@ -144,7 +146,7 @@ class FileBinCard extends StatelessWidget {
         final itemId = section.itemId;
 
         final response = await _dio.delete(
-          'http://10.0.2.2:3000/bin/$itemId ',
+          'http://100.84.178.101:3000/bin/$itemId ',
           options: Options(
             headers: {'Authorization': 'Bearer ${authService.accessToken}'},
           ),

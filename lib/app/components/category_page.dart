@@ -53,13 +53,13 @@ class _CategoryPageState extends State<CategoryPage> {
 
       switch (widget.title.toLowerCase()) {
         case 'speciali':
-          endpoint = 'http://10.0.2.2:3000/favorite';
+          endpoint = 'http://100.84.178.101:3000/favorite';
           break;
         case 'cestino':
-          endpoint = 'http://10.0.2.2:3000/bin';
+          endpoint = 'http://100.84.178.101:3000/bin';
           break;
         case 'recenti':
-          endpoint = 'http://10.0.2.2:3000/item';
+          endpoint = 'http://100.84.178.101:3000/item';
           List<int> recentFolderIds = RecentFolders().getFolders();
 
           if (recentFolderIds.isEmpty) {
@@ -77,7 +77,7 @@ class _CategoryPageState extends State<CategoryPage> {
           queryParams = {'ids': idsString};
           break;
         default:
-          endpoint = 'http://10.0.2.2:3000/item';
+          endpoint = 'http://100.84.178.101:3000/item';
       }
 
       final response = await _dio.get(

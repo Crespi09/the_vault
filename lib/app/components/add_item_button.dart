@@ -51,7 +51,7 @@ class _AddItemButtonState extends State<AddItemButton> {
       debugPrint('Dati richiesta: $requestData');
 
       final response = await _dio.post(
-        'http://10.0.2.2:3000/item',
+        'http://100.84.178.101:3000/item',
         data: requestData,
         options: Options(
           headers: {
@@ -224,7 +224,7 @@ class _AddItemButtonState extends State<AddItemButton> {
       }
 
       final response = await _dio.post(
-        'http://10.0.2.2:3000/file',
+        'http://100.84.178.101:3000/file',
         data: formData,
         options: Options(
           headers: {
