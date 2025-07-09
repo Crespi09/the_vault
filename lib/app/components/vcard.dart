@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:vault_app/app/components/category_page.dart';
 import 'package:vault_app/app/models/courses.dart';
+import 'package:vault_app/app/theme.dart';
 
 class VCard extends StatefulWidget {
   const VCard({super.key, required this.course});
@@ -15,15 +16,15 @@ class VCard extends StatefulWidget {
 }
 
 class _VCardState extends State<VCard> {
-  final avatars = [4, 5, 6];
+  final icons = [Icons.folder, Icons.description, Icons.photo,];
   GlobalKey key = GlobalKey();
 
   // serve per randomizzare gli avatar -> inutile
-  @override
-  void initState() {
-    avatars.shuffle();
-    super.initState();
-  }
+  // @override
+  // void initState() {
+  //   avatars.shuffle();
+  //   super.initState();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -92,16 +93,25 @@ class _VCardState extends State<VCard> {
               Wrap(
                 spacing: 8,
                 children: List.generate(
-                  avatars.length,
+                  icons.length,
                   (index) => Transform.translate(
-                    offset: Offset(index * -20, 0),
-                    child: ClipRRect(
+                    offset: Offset(index * -30, 0),
+                    child: Container(
                       key: Key(index.toString()),
-                      borderRadius: BorderRadius.circular(22),
-                      child: Image.asset(
-                        'assets/samples/ui/rive_app/images/avatars/avatar_${avatars[index]}.jpg',
-                        width: 44,
-                        height: 44,
+                      width: 52,
+                      height: 52,
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(153, 63, 63, 111).withOpacity(1),
+                        borderRadius: BorderRadius.circular(26),
+                        border: Border.all(
+                          color: RiveAppTheme.backgroundDark.withOpacity(0.6),
+                          width: 2,
+                        ),
+                      ),
+                      child: Icon(
+                        icons[index],
+                        size: 24,
+                        color: Colors.white,
                       ),
                     ),
                   ),
