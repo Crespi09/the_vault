@@ -125,19 +125,16 @@ class _FolderExplorerState extends State<FolderExplorer> {
   }
 
   Widget _buildBreadcrumbs() {
-    // Utilizza il nome della cartella padre presente in folder['item']['name']
     String folderName = widget.folderName;
     List<String> parts = folderName.split('/');
     return Wrap(
       children: List.generate(parts.length, (index) {
         String pathItem = folderName;
-        // String path = parts.sublist(0, index + 1).join('/');
         return GestureDetector(
           onTap: () {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                // Assicurati di passare il folderId corretto; qui è stato mantenuto "widget.folderId" di esempio
                 builder:
                     (_) => FolderExplorer(
                       folderId: widget.folderId,
@@ -166,10 +163,58 @@ class _FolderExplorerState extends State<FolderExplorer> {
     List<VaultItem> displayItems = [..._folders, ..._files];
 
     return Scaffold(
-      appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.white),
-        title: _buildBreadcrumbs(),
-        backgroundColor: RiveAppTheme.background2,
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(kToolbarHeight),
+        child: DragTarget<VaultItem>(
+          onAccept: (VaultItem item) async {
+            // Sposta l'item nella cartella precedente
+            await _moveItemToParent(item);
+          },
+          onWillAccept: (VaultItem? item) {
+            // Accetta solo se l'item non è null
+            return item != null;
+          },
+          builder: (context, candidateData, rejectedData) {
+            bool isHovering = candidateData.isNotEmpty;
+
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              decoration: BoxDecoration(
+                color:
+                    isHovering
+                        ? RiveAppTheme.background2.withOpacity(0.8)
+                        : RiveAppTheme.background2,
+                border:
+                    isHovering
+                        ? Border.all(color: Colors.white, width: 2)
+                        : null,
+              ),
+              child: AppBar(
+                iconTheme: IconThemeData(color: Colors.white),
+                title: Row(
+                  children: [
+                    if (isHovering) ...[
+                      Icon(Icons.arrow_upward, color: Colors.white, size: 20),
+                      SizedBox(width: 8),
+                      Text(
+                        'Sposta qui',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(width: 16),
+                    ],
+                    Expanded(child: _buildBreadcrumbs()),
+                  ],
+                ),
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+              ),
+            );
+          },
+        ),
       ),
       body: Stack(
         children: [
@@ -287,7 +332,7 @@ class _FolderExplorerState extends State<FolderExplorer> {
                       ),
             ),
           ),
-          // Floating Action Menu
+          // button
           AddItemButton(
             isVisible: true,
             onRefresh: _fetchItems,
@@ -296,5 +341,40 @@ class _FolderExplorerState extends State<FolderExplorer> {
         ],
       ),
     );
+  }
+
+  Future<void> _moveItemToParent(VaultItem item) async {
+    try {
+      final authService = Provider.of<AuthService>(context, listen: false);
+
+      // debugPrint('WIDGET PARENT ID :');
+      // debugPrint(widget.parentId.toString());
+
+      final response = await _dio.put(
+        'http://10.0.2.2:3000/item/${item.itemId}',
+        data: {'parentId': null},
+        options: Options(
+          headers: {'Authorization': 'Bearer ${authService.accessToken}'},
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        await _fetchItems();
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${item.title} spostato con successo'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Errore durante lo spostamento: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 }

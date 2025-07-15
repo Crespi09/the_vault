@@ -17,7 +17,7 @@ class FolderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Wrappa il DragTarget in LongPressDraggable per rendere draggable la folder
+    // serve per il drag dell' elemento
     return LongPressDraggable<VaultItem>(
       data: section,
       feedback: Material(
@@ -181,22 +181,22 @@ class FolderCard extends StatelessWidget {
       }
     }
 
-    // La FolderCard funge da DragTarget per VaultItem
+    // questo serve per rendere folderCard il target del drag and drop
     return DragTarget<VaultItem>(
       onWillAccept: (data) {
         return data != null && data.itemId != section.itemId;
       },
       onAccept: (data) async {
         // debug
-        debugPrint('DATA_ITEM_ID :');
-        debugPrint(data.itemId.toString());
-        debugPrint('IMPORTO IN : ');
-        debugPrint(section.itemId.toString());
+        // debugPrint('DATA_ITEM_ID :');
+        // debugPrint(data.itemId.toString());
+        // debugPrint('IMPORTO IN : ');
+        // debugPrint(section.itemId.toString());
 
-        if (data.fileId != null) {
-          debugPrint('FILE_ID :');
-          debugPrint(data.fileId.toString());
-        }
+        // if (data.fileId != null) {
+        //   debugPrint('FILE_ID :');
+        //   debugPrint(data.fileId.toString());
+        // }
 
         try {
           final authService = Provider.of<AuthService>(context, listen: false);

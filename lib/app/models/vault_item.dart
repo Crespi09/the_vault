@@ -13,12 +13,14 @@ class VaultItem {
     this.color = Colors.white,
     this.image = "",
     this.isFavourite = false,
+    this.parentId,
     // this.isBin = false,
   });
 
   UniqueKey? id;
   int? itemId;
   int? fileId;
+  int? parentId;
   String title, image;
   String subtitle;
   IconData icon;
@@ -43,6 +45,7 @@ class VaultItem {
       color: _hexToColor(json['color'] ?? '#000000'),
       image: '',
       isFavourite: json['isFavourite'] ?? false,
+      parentId: json['parentId'],
       // isBin: json['isBin'] ?? false,
     );
   }
@@ -64,6 +67,7 @@ class VaultItem {
       color: const Color(0xFF7850F0),
       image: json['path'] ?? '',
       isFavourite: json['isFavourite'] ?? false,
+      parentId: json['parentId'],
       // isBin: json['isBin'] ?? false,
     );
   }
