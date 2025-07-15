@@ -92,7 +92,7 @@ class _SigninViewState extends State<SigninView> {
     try {
       // Configura Dio per non lanciare eccezioni sui codici di stato 4xx
       final response = await _dio.post(
-        'http://100.84.178.101:3000/auth/signin',
+        'http://10.0.2.2:3000/auth/signin',
         data: {'username': email, 'password': password},
         options: Options(
           validateStatus: (status) {
@@ -237,7 +237,7 @@ class _SigninViewState extends State<SigninView> {
                         ),
                         const SizedBox(height: 24),
                         const Text(
-                          "Acces to 240+ gbs of free space where you can store all your personal datas.",
+                          "Acces to 500 GB of free space where you can store all your personal datas.",
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontFamily: 'Inter',

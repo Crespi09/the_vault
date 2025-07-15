@@ -18,10 +18,8 @@ class FileCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Inseriamo la logica drag all'interno di LongPressDraggable.
     return LongPressDraggable<VaultItem>(
       data: section,
-      // Se vuoi fornire un feedback personalizzato durante il drag
       feedback: Material(
         color: Colors.transparent,
         child: Container(
@@ -51,9 +49,8 @@ class FileCard extends StatelessWidget {
           ),
         ),
       ),
+      // dragging elemento
       childWhenDragging: Opacity(opacity: 0.5, child: _buildCard(context)),
-      // NOTA: LongPressDraggable attiva il drag dopo un long press (default ~500ms).
-      // Per 2 secondi potresti dover implementare una soluzione custom.
       child: _buildCard(context),
     );
   }
@@ -68,7 +65,7 @@ class FileCard extends StatelessWidget {
         final authService = Provider.of<AuthService>(context, listen: false);
 
         final response = await _dio.post(
-          'http://100.84.178.101:3000/bin',
+          'http://10.0.2.2:3000/bin',
           data: {'itemId': (section.itemId).toString()},
           options: Options(
             headers: {'Authorization': 'Bearer ${authService.accessToken}'},
@@ -76,7 +73,7 @@ class FileCard extends StatelessWidget {
         );
 
         // final response = await _dio.delete(
-        //   'http://100.84.178.101:3000/item/${section.itemId}',
+        //   'http://10.0.2.2:3000/item/${section.itemId}',
         //   options: Options(
         //     headers: {'Authorization': 'Bearer ${authService.accessToken}'},
         //   ),
@@ -99,18 +96,16 @@ class FileCard extends StatelessWidget {
         final authService = Provider.of<AuthService>(context, listen: false);
 
         final response = await _dio.get(
-          'http://100.84.178.101:3000/file/${section.fileId}',
+          'http://10.0.2.2:3000/file/${section.fileId}',
           options: Options(
             headers: {'Authorization': 'Bearer ${authService.accessToken}'},
-            responseType: ResponseType.bytes, // Recupera i bytes del file
+            responseType: ResponseType.bytes,
           ),
         );
 
         if (response.statusCode == 200 || response.statusCode == 204) {
-          // Salva il file nella directory temporanea
           final dir = await getTemporaryDirectory();
 
-          // Determina estensione basata sul content-type restituito dall'API
           final contentType = response.headers.value('content-type');
           String extension = 'pdf'; // default
 
@@ -135,7 +130,7 @@ class FileCard extends StatelessWidget {
           final file = File(filePath);
           await file.writeAsBytes(response.data);
 
-          // Apri il file con un'app esterna
+          // serve per aprire un file con l'applicazione integrata del telefono
           await OpenFile.open(filePath);
         }
       } catch (e) {
@@ -160,7 +155,7 @@ class FileCard extends StatelessWidget {
                   final fileId = section.fileId;
 
                   final response = await _dio.put(
-                    'http://100.84.178.101:3000/file/$fileId ',
+                    'http://10.0.2.2:3000/file/$fileId ',
                     data: {'name': newName},
                     options: Options(
                       headers: {
@@ -191,10 +186,15 @@ class FileCard extends StatelessWidget {
         try {
           final authService = Provider.of<AuthService>(context, listen: false);
 
+          if (!authService.isAuthenticated) {
+            debugPrint('Utente non autenticato');
+            return;
+          }
+
           final itemId = section.itemId;
 
           final response = await _dio.delete(
-            'http://100.84.178.101:3000/favorite/$itemId ',
+            'http://10.0.2.2:3000/favorite/$itemId',
             options: Options(
               headers: {'Authorization': 'Bearer ${authService.accessToken}'},
             ),
@@ -213,8 +213,13 @@ class FileCard extends StatelessWidget {
         try {
           final authService = Provider.of<AuthService>(context, listen: false);
 
+          if (!authService.isAuthenticated) {
+            debugPrint('Utente non autenticato');
+            return;
+          }
+
           final response = await _dio.post(
-            'http://100.84.178.101:3000/favorite',
+            'http://10.0.2.2:3000/favorite',
             data: {'itemId': (section.itemId).toString()},
             options: Options(
               headers: {'Authorization': 'Bearer ${authService.accessToken}'},
@@ -228,7 +233,13 @@ class FileCard extends StatelessWidget {
             }
           }
         } catch (e) {
-          _errorMessage = 'Error Edit File $e';
+          if (e is DioException) {
+            debugPrint('DioException - Status: ${e.response?.statusCode}');
+            debugPrint('DioException - Data: ${e.response?.data}');
+            debugPrint('DioException - Headers: ${e.response?.headers}');
+          }
+          debugPrint('Errore completo: $e');
+          _errorMessage = '$e';
         }
       }
     }

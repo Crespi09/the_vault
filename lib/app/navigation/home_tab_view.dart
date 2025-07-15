@@ -53,7 +53,7 @@ class _HomeTabViewState extends State<HomeTabView> {
       String idsString = recentFileIds.join(',');
 
       final response = await _dio.get(
-        'http://100.84.178.101:3000/file',
+        'http://10.0.2.2:3000/file',
         queryParameters: {
           'ids': idsString, // "1,2,3,4,5"
         },
