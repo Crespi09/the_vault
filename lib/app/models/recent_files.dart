@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 class RecentFile {
-  // Singleton pattern
   static final RecentFile _instance = RecentFile._internal();
   factory RecentFile() => _instance;
   RecentFile._internal();

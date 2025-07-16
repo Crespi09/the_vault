@@ -28,7 +28,7 @@ class _OnboardingViewState extends State<OnboardingView>
     super.initState();
     _signInAnimController = AnimationController(
       duration: const Duration(milliseconds: 350),
-      upperBound: 1, // di default impostato a 1
+      upperBound: 1,
       vsync: this,
     );
     _btnController = rive.OneShotAnimation("active", autoplay: false);

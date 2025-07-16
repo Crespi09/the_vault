@@ -131,7 +131,7 @@ class _VCardState extends State<VCard> {
                     key.currentContext?.findRenderObject() as RenderBox;
                 Offset btnPressed = box.localToGlobal(
                   Offset.zero,
-                ); //this is global position
+                );
 
                 showMenu(
                   context: context,

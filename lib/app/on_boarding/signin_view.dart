@@ -33,7 +33,6 @@ class _SigninViewState extends State<SigninView> {
   // ignore: prefer_final_fields
   bool _isLoading = false;
 
-  // in order to avoid any memory leaks
   // serve per accedere alle cose che scrivo all'interno dei due campi input
   @override
   void dispose() {
@@ -63,7 +62,7 @@ class _SigninViewState extends State<SigninView> {
   }
 
   void login() async {
-    // Aggiungi un piccolo delay per assicurarti che i controller Rive siano inizializzati
+    // TODO - delay per far inizializzare i componenti ( non funziona )
     await Future.delayed(const Duration(milliseconds: 100));
 
     setState(() {
@@ -90,13 +89,11 @@ class _SigninViewState extends State<SigninView> {
     }
 
     try {
-      // Configura Dio per non lanciare eccezioni sui codici di stato 4xx
       final response = await _dio.post(
         'http://10.0.2.2:3000/auth/signin',
         data: {'username': email, 'password': password},
         options: Options(
           validateStatus: (status) {
-            // Accetta tutti i codici di stato senza lanciare eccezioni
             return status != null && status < 500;
           },
         ),
@@ -124,14 +121,11 @@ class _SigninViewState extends State<SigninView> {
           });
           _confettiAnim.fire();
 
-          // Clear dei campi
           _emailController.text = '';
           _passwordController.text = '';
 
-          // Chiudi il modal immediatamente
           widget.closeModal!();
 
-          // Chiama onLogin dopo la chiusura del modal
           if (widget.onLogin != null) {
             widget.onLogin!(true);
           }
@@ -144,7 +138,6 @@ class _SigninViewState extends State<SigninView> {
             _isLoading = false;
           });
         }
-        // Mostra messaggio di errore all'utente
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Credenziali non valide. Riprova.'),

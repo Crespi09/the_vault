@@ -28,11 +28,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   late final List<Widget> _screens;
 
-  // Aggiungi una chiave globale per la FolderTabView
   final GlobalKey<FolderTabViewState> _folderTabKey =
       GlobalKey<FolderTabViewState>();
 
-  // Aggiungi una variabile per tracciare il tab corrente
   int _currentTabIndex = 0;
 
   final springDesc = const SpringDescription(
@@ -73,28 +71,23 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 
-  // Aggiungi questo metodo per gestire la ricerca
   void _handleSearch(String query) {
-    // Se non siamo già nel tab delle cartelle (indice 1), cambia tab
     if (_currentTabIndex != 1) {
       setState(() {
         _currentTabIndex = 1;
         _tabBody = _screens[1];
       });
 
-      // Aspetta un frame per assicurarsi che il widget sia costruito
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _folderTabKey.currentState?.performSearch(query);
       });
     } else {
-      // Se siamo già nel tab delle cartelle, esegui direttamente la ricerca
       _folderTabKey.currentState?.performSearch(query);
     }
   }
 
   @override
   void initState() {
-    // Usa la chiave globale per la FolderTabView
     _screens = [
       const HomeTabView(),
       FolderTabView(key: _folderTabKey),
@@ -232,7 +225,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               )
               : SizedBox(),
 
-          // Search bar modificata per gestire la ricerca
           _logged
               ? Positioned(
                 top:
@@ -264,8 +256,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   child: SearchBarComponents(
                     onSearch: _handleSearch,
                     onSearchPressed: () {
-                      // Opzionale: gestisci il tap sulla search bar
-                      // Ad esempio, potresti voler navigare al tab delle cartelle
                       if (_currentTabIndex != 1) {
                         setState(() {
                           _currentTabIndex = 1;

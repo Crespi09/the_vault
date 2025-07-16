@@ -25,17 +25,15 @@ class RecenteCard extends StatelessWidget {
         'http://10.0.2.2:3000/file/${section.fileId}',
         options: Options(
           headers: {'Authorization': 'Bearer ${authService.accessToken}'},
-          responseType: ResponseType.bytes, // Recupera i bytes del file
+          responseType: ResponseType.bytes,
         ),
       );
 
       if (response.statusCode == 200 || response.statusCode == 204) {
-        // Salva il file nella directory temporanea
         final dir = await getTemporaryDirectory();
 
-        // Determina estensione basata sul content-type restituito dall'API
         final contentType = response.headers.value('content-type');
-        String extension = 'pdf'; // default
+        String extension = 'pdf';
 
         if (contentType != null) {
           if (contentType.contains('pdf')) {
@@ -58,7 +56,6 @@ class RecenteCard extends StatelessWidget {
         final file = File(filePath);
         await file.writeAsBytes(response.data);
 
-        // Apri il file con un'app esterna
         await OpenFile.open(filePath);
       }
     } catch (e) {
@@ -113,16 +110,15 @@ class RecenteCard extends StatelessWidget {
           IconButton(
             key: key,
             icon: const Icon(
-              Icons.more_vert, // Icona con 3 puntini verticali
+              Icons.more_vert,
               color: Colors.white,
             ),
             onPressed: () {
-              // Azione da eseguire quando il pulsante viene premuto
               RenderBox box =
                   key.currentContext?.findRenderObject() as RenderBox;
               Offset btnPressed = box.localToGlobal(
                 Offset.zero,
-              ); //this is global position
+              );
 
               showMenu(
                 context: context,
@@ -155,7 +151,6 @@ class RecenteCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(15),
                 ),
               ).then((value) {
-                // Gestisci il valore selezionato
                 if (value != null) {
                   switch (value) {
                     case 'open':

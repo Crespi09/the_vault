@@ -17,14 +17,12 @@ class MainApp extends StatelessWidget {
     return FutureBuilder<AuthService>(
       future: _initializeAuthService(),
       builder: (context, snapshot) {
-        // Mostra loading mentre inizializza
         if (snapshot.connectionState == ConnectionState.waiting) {
           return MaterialApp(
             home: Scaffold(body: Center(child: CircularProgressIndicator())),
           );
         }
 
-        // Se c'è un errore
         if (snapshot.hasError) {
           return MaterialApp(
             home: Scaffold(
@@ -33,7 +31,6 @@ class MainApp extends StatelessWidget {
           );
         }
 
-        // Quando l'inizializzazione è completata
         final authService = snapshot.data!;
         return ChangeNotifierProvider<AuthService>(
           create: (_) => authService,

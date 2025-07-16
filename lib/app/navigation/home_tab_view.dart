@@ -19,7 +19,6 @@ class _HomeTabViewState extends State<HomeTabView> {
   final List<CourseModel> _courses = CourseModel.courses;
   final List<CourseModel> _recents = CourseModel.recents;
 
-  // Aggiungi questa variabile per memorizzare i file recenti dalla API
   List<dynamic> _recentFilesFromApi = [];
 
   final Dio _dio = Dio();
@@ -49,13 +48,12 @@ class _HomeTabViewState extends State<HomeTabView> {
         return;
       }
 
-      // Converti la lista di ID in una stringa separata da virgole
       String idsString = recentFileIds.join(',');
 
       final response = await _dio.get(
         'http://10.0.2.2:3000/file',
         queryParameters: {
-          'ids': idsString, // "1,2,3,4,5"
+          'ids': idsString,
         },
         options: Options(
           headers: {
@@ -68,7 +66,6 @@ class _HomeTabViewState extends State<HomeTabView> {
       debugPrint('Recent files IDs: $idsString');
       debugPrint('Response data: ${response.data}');
 
-      // Aggiorna lo stato con i dati della risposta
       setState(() {
         _recentFilesFromApi = response.data ?? [];
       });
@@ -80,9 +77,8 @@ class _HomeTabViewState extends State<HomeTabView> {
     }
   }
 
-  // todo - da rivedere
+  // TODO - da rivedere
   String _getFileTypeImage(String fileType) {
-    // Implementa la logica per ottenere l'immagine in base al tipo di file
     return 'assets/images/file_icon.png';
   }
 

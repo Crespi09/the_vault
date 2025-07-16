@@ -16,6 +16,7 @@ class FolderExplorer extends StatefulWidget {
     required this.folderId,
     required this.folderName,
   }) : super(key: key);
+  
   final int folderId;
   final String folderName;
 

@@ -71,11 +71,9 @@ class _EditDialogState extends State<EditDialog> {
   }
 }
 
-/// Rappresenta una cartella disponibile per lo spostamento.
 class Folder {
   final String id;
   final String name;
-  // Puoi aggiungere altre proprietà se necessario
 
   Folder({required this.id, required this.name});
 }
@@ -106,22 +104,20 @@ class _MoveToDialogState extends State<MoveToDialog> {
     if (_selectedFolder != null) {
       widget.onMove(_selectedFolder!);
       Navigator.of(context).pop();
-    } else {
-      // Opzionalmente mostra un messaggio di errore
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: Colors.blueGrey[50], // Colore di sfondo personalizzato
+      backgroundColor: Colors.blueGrey[50],
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20), // Bordo arrotondato
+        borderRadius: BorderRadius.circular(20),
       ),
       title: const Text('Sposta in'),
       content: Container(
         width: double.maxFinite,
-        height: 300, // Altezza fissa per la lista (modifica se necessario)
+        height: 300,
         child: ListView.builder(
           shrinkWrap: true,
           itemCount: widget.folders.length,

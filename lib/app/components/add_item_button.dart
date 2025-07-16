@@ -294,7 +294,7 @@ class _AddItemButtonState extends State<AddItemButton> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // Bottone principale
+        // bottone principale
         AnimatedPositioned(
           duration: Duration(milliseconds: 550),
           curve: Curves.easeInOut,
@@ -334,7 +334,7 @@ class _AddItemButtonState extends State<AddItemButton> {
           ),
         ),
 
-        // Overlay e bottoni azione
+        // altri 3 bottoni
         if (_openBtnSection) ...[
           Positioned.fill(
             child: GestureDetector(
@@ -390,7 +390,7 @@ class _AddItemButtonState extends State<AddItemButton> {
           ),
         ],
 
-        // Modal creazione cartella
+        // modal per folder
         if (_createFolder)
           Positioned.fill(
             child: Container(

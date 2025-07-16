@@ -184,7 +184,7 @@ class FolderTabViewState extends State<FolderTabView> {
           children: [
             Column(
               children: [
-                // Risultati di ricerca
+                // risultati ricerca
                 if (_searchQuery.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.symmetric(
@@ -214,7 +214,6 @@ class FolderTabViewState extends State<FolderTabView> {
                     ),
                   ),
 
-                // Tab buttons
                 if (_searchQuery.isEmpty) ...[
                   Row(
                     children: [
@@ -413,12 +412,12 @@ class FolderTabViewState extends State<FolderTabView> {
               ],
             ),
 
-            // Floating Action Menu
+            // bottone +
             AddItemButton(
               isVisible: _isVisible,
               onRefresh: _fetchItems,
               parentId:
-                  null, // Qui puoi passare l'ID della cartella corrente se necessario
+                  null,
             ),
           ],
         ),

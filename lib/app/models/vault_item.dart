@@ -28,7 +28,6 @@ class VaultItem {
   bool isFavourite;
   // bool isBin;
 
-  // Factory per creare VaultItem da una mappa JSON
   factory VaultItem.fromFolderJson(Map<String, dynamic> json) {
     String name = json['name'] ?? '';
 
@@ -72,7 +71,6 @@ class VaultItem {
     );
   }
 
-  // Utility per convertire hex in Color
   static Color _hexToColor(String hex) {
     hex = hex.replaceAll('#', '');
     if (hex.length == 6) hex = 'FF$hex';

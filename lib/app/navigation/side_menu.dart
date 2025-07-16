@@ -106,11 +106,11 @@ class _SideMenuState extends State<SideMenu> {
         return;
       }
 
-      debugPrint('Token: ${authService.accessToken}'); // Debug del token
+      debugPrint('Token: ${authService.accessToken}');
       _userData = await UserService.getUser(authService.accessToken!);
-      debugPrint('Dati utente ricevuti: $_userData'); // Debug dei dati
+      debugPrint('Dati utente ricevuti: $_userData');
 
-      setState(() {}); // Aggiorna UI dopo aver ricevuto i dati
+      setState(() {});
     } catch (e) {
       debugPrint('Eccezione nel caricamento dati utente: $e');
       debugPrint('Tipo di errore: ${e.runtimeType}');
@@ -163,7 +163,6 @@ class _SideMenuState extends State<SideMenu> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // User info section
           Padding(
             padding: const EdgeInsets.all(16),
             child: Row(
@@ -203,7 +202,6 @@ class _SideMenuState extends State<SideMenu> {
             ),
           ),
 
-          // Menu sections - wrapped in Expanded for flexible space
           Expanded(
             child: SingleChildScrollView(
               child: Column(
@@ -221,14 +219,13 @@ class _SideMenuState extends State<SideMenu> {
                     onMenuPress: onMenuPress,
                   ),
 
-                  // Storage section
                   Padding(
                     padding: EdgeInsets.only(
                       left: 24,
                       right: 24,
                       top:
                           screenHeight *
-                          0.03, // Ridotto da 0.05 a 0.03 per più spazio
+                          0.03,
                       bottom: 16,
                     ),
                     child: Column(
@@ -275,7 +272,6 @@ class _SideMenuState extends State<SideMenu> {
             ),
           ),
 
-          // Footer della sidebar - sempre fisso in basso
           Padding(
             padding: const EdgeInsets.all(20),
             child: Row(

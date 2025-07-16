@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:vault_app/app/theme.dart';
 
 class SearchBarComponents extends StatefulWidget {
-  final Function(String)? onSearch; // Callback per la ricerca
-  final VoidCallback? onSearchPressed; // Callback per il tap sulla search bar
+  final Function(String)? onSearch;
+  final VoidCallback? onSearchPressed;
 
   const SearchBarComponents({super.key, this.onSearch, this.onSearchPressed});
 
@@ -32,9 +32,9 @@ class _SearchbarState extends State<SearchBarComponents> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final searchBarWidth =
-        screenWidth * 0.7; // 70% della larghezza dello schermo
+        screenWidth * 0.7;
     final searchBarHeight =
-        screenWidth * 0.09; // 9% della larghezza (per mantenere proporzioni)
+        screenWidth * 0.09;
 
     return GestureDetector(
       onTap: widget.onSearchPressed,
@@ -49,13 +49,12 @@ class _SearchbarState extends State<SearchBarComponents> {
             icon: const Icon(Icons.close, size: 16),
             onPressed: () {
               _controller.clear();
-              widget.onSearch?.call(''); // Reset della ricerca
+              widget.onSearch?.call('');
             },
           ),
         ],
         hintText: 'Search...',
         onChanged: (value) {
-          // Ricerca in tempo reale (opzionale)
           if (value.isEmpty) {
             widget.onSearch?.call('');
           }

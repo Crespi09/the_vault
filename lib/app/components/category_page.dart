@@ -158,7 +158,6 @@ class _CategoryPageState extends State<CategoryPage> {
     _loadItems();
   }
 
-  // Combina folders e files per la visualizzazione
   List<VaultItem> get _filteredItems {
     return [..._filteredFolders, ..._filteredFiles];
   }

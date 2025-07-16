@@ -107,7 +107,7 @@ class FileCard extends StatelessWidget {
           final dir = await getTemporaryDirectory();
 
           final contentType = response.headers.value('content-type');
-          String extension = 'pdf'; // default
+          String extension = 'pdf';
 
           if (contentType != null) {
             if (contentType.contains('pdf')) {

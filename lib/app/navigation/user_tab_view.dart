@@ -50,7 +50,6 @@ class _UserTabViewState extends State<UserTabView> {
       });
 
       if (e is DioException && e.response?.statusCode == 401) {
-        // Token scaduto, fai logout
         final authService = Provider.of<AuthService>(context, listen: false);
         await authService.logout();
         if (widget.onLogin != null) {
@@ -100,7 +99,7 @@ class _UserTabViewState extends State<UserTabView> {
       });
 
       if (e is DioException && e.response?.statusCode == 401) {
-        // Token scaduto, fai logout
+        // token scaduto
         final authService = Provider.of<AuthService>(context, listen: false);
         await authService.logout();
         if (widget.onLogin != null) {
@@ -143,10 +142,8 @@ class _UserTabViewState extends State<UserTabView> {
               ? const Center(child: CircularProgressIndicator())
               : Stack(
                 children: [
-                  // Column containing both containers
                   Column(
                     children: [
-                      // First component - 35% of screen height
                       Container(
                         height: screenHeight * 0.34,
                         width: double.infinity,
@@ -166,7 +163,6 @@ class _UserTabViewState extends State<UserTabView> {
                           ),
                         ),
                       ),
-                      // Second component - 60% of screen height
                       Container(
                         height: screenHeight * 0.6,
                         width: double.infinity,
@@ -352,7 +348,6 @@ class _UserTabViewState extends State<UserTabView> {
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(90),
                                         color: Colors.white,
-                                        // Opzionale: aggiunta di un'ombra
                                         boxShadow: [
                                           BoxShadow(
                                             color: Colors.black.withOpacity(

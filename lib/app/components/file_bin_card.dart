@@ -18,10 +18,8 @@ class FileBinCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Inseriamo la logica drag all'interno di LongPressDraggable.
     return LongPressDraggable<VaultItem>(
       data: section,
-      // Se vuoi fornire un feedback personalizzato durante il drag
       feedback: Material(
         color: Colors.transparent,
         child: Container(
@@ -52,8 +50,7 @@ class FileBinCard extends StatelessWidget {
         ),
       ),
       childWhenDragging: Opacity(opacity: 0.5, child: _buildCard(context)),
-      // NOTA: LongPressDraggable attiva il drag dopo un long press (default ~500ms).
-      // Per 2 secondi potresti dover implementare una soluzione custom.
+
       child: _buildCard(context),
     );
   }
@@ -96,19 +93,17 @@ class FileBinCard extends StatelessWidget {
           'http://10.0.2.2:3000/file/${section.fileId}',
           options: Options(
             headers: {'Authorization': 'Bearer ${authService.accessToken}'},
-            responseType: ResponseType.bytes, // Recupera i bytes del file
+            responseType: ResponseType.bytes,
           ),
         );
 
         if (response.statusCode == 200 ||
             response.statusCode == 204 ||
             response.statusCode == 201) {
-          // Salva il file nella directory temporanea
           final dir = await getTemporaryDirectory();
 
-          // Determina estensione basata sul content-type restituito dall'API
           final contentType = response.headers.value('content-type');
-          String extension = 'pdf'; // default
+          String extension = 'pdf';
 
           if (contentType != null) {
             if (contentType.contains('pdf')) {
@@ -131,7 +126,7 @@ class FileBinCard extends StatelessWidget {
           final file = File(filePath);
           await file.writeAsBytes(response.data);
 
-          // Apri il file con un'app esterna
+          // serve per aprire file con app esterna
           await OpenFile.open(filePath);
         }
       } catch (e) {
