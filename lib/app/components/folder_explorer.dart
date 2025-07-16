@@ -19,6 +19,8 @@ class FolderExplorer extends StatefulWidget {
   final int folderId;
   final String folderName;
 
+
+
   @override
   _FolderExplorerState createState() => _FolderExplorerState();
 }
@@ -34,7 +36,7 @@ class _FolderExplorerState extends State<FolderExplorer> {
   List<VaultItem> _files = [];
 
   String folderName = '';
-
+  String? parentId = null;
   // btn
   late ScrollController _scrollController;
   bool _isVisible = true;
@@ -93,6 +95,7 @@ class _FolderExplorerState extends State<FolderExplorer> {
         List<VaultItem> files = [];
 
         folderName = data['item']['name'];
+        parentId = data['item']['parentId']?.toString();
 
         if (data['children']['folders'] != null) {
           for (var folder in data['children']['folders']) {
@@ -167,11 +170,9 @@ class _FolderExplorerState extends State<FolderExplorer> {
         preferredSize: Size.fromHeight(kToolbarHeight),
         child: DragTarget<VaultItem>(
           onAccept: (VaultItem item) async {
-            // Sposta l'item nella cartella precedente
             await _moveItemToParent(item);
           },
           onWillAccept: (VaultItem? item) {
-            // Accetta solo se l'item non è null
             return item != null;
           },
           builder: (context, candidateData, rejectedData) {
@@ -348,11 +349,11 @@ class _FolderExplorerState extends State<FolderExplorer> {
       final authService = Provider.of<AuthService>(context, listen: false);
 
       // debugPrint('WIDGET PARENT ID :');
-      // debugPrint(widget.parentId.toString());
+      // debugPrint(widget.folderId.toString());
 
       final response = await _dio.put(
         'http://10.0.2.2:3000/item/${item.itemId}',
-        data: {'parentId': null},
+        data: {'parentId': parentId},
         options: Options(
           headers: {'Authorization': 'Bearer ${authService.accessToken}'},
         ),
