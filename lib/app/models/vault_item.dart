@@ -14,7 +14,7 @@ class VaultItem {
     this.image = "",
     this.isFavourite = false,
     this.parentId,
-    // this.isBin = false,
+    this.isBin = false,
   });
 
   UniqueKey? id;
@@ -26,7 +26,7 @@ class VaultItem {
   IconData icon;
   Color color;
   bool isFavourite;
-  // bool isBin;
+  bool isBin;
 
   factory VaultItem.fromFolderJson(Map<String, dynamic> json) {
     String name = json['name'] ?? '';
@@ -45,7 +45,7 @@ class VaultItem {
       image: '',
       isFavourite: json['isFavourite'] ?? false,
       parentId: json['parentId'],
-      // isBin: json['isBin'] ?? false,
+      isBin: json['isBin'] ?? false,
     );
   }
 
@@ -67,7 +67,7 @@ class VaultItem {
       image: json['path'] ?? '',
       isFavourite: json['isFavourite'] ?? false,
       parentId: json['parentId'],
-      // isBin: json['isBin'] ?? false,
+      isBin: json['isBin'] ?? false,
     );
   }
 

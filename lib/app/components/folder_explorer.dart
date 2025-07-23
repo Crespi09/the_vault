@@ -100,13 +100,19 @@ class _FolderExplorerState extends State<FolderExplorer> {
 
         if (data['children']['folders'] != null) {
           for (var folder in data['children']['folders']) {
-            folders.add(VaultItem.fromFolderJson(folder));
+            // Filtra le cartelle che non sono nel cestino
+            if (folder['isBin'] == false) {
+              folders.add(VaultItem.fromFolderJson(folder));
+            }
           }
         }
 
         if (data['children']['files'] != null) {
           for (var file in data['children']['files']) {
-            files.add(VaultItem.fromFileJson(file));
+            // Filtra i file che non sono nel cestino
+            if (file['isBin'] == false) {
+              files.add(VaultItem.fromFileJson(file));
+            }
           }
         }
 
